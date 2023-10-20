@@ -12,6 +12,9 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
+    
+    - name: config
+      uses: unset CI
 
     - name: Install dependencies
       run: npm install
