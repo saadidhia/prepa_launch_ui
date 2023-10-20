@@ -1,0 +1,70 @@
+import React, { useState, useEffect } from "react";
+import { Navigation } from "./components/navigation";
+import { Header } from "./components/header";
+import { Features } from "./components/features";
+import { About } from "./components/about";
+import { Services } from "./components/services";
+import { Gallery } from "./components/gallery";
+import { Testimonials } from "./components/testimonials";
+import { Team } from "./components/Team";
+import { Contact } from "./components/contact";
+import { AuthProvider } from './components/context/AuthContext';
+import JsonData from "./data/data.json";
+import SmoothScroll from "smooth-scroll";
+import { Routes, Route, BrowserRouter as Router } from "react-router-dom";
+import { Connexion } from './components/connexion';
+import Dashboard from "./components/dashboard";
+import PrivateRoute from './PrivateRoute';
+import PrivateRouteAdmin from './PrivateRouteAdmin'
+import navigations from "./Navigations";
+import { SignUp } from "./components/admin/signUp";
+
+import "./App.css";
+
+export const scroll = new SmoothScroll('a[href*="#"]', {
+  speed: 1000,
+  speedAsDuration: true,
+});
+
+const App = () => {
+  const [landingPageData, setLandingPageData] = useState({});
+
+
+  useEffect(() => {
+    setLandingPageData(JsonData);
+  }, []);
+
+  return (
+    <AuthProvider>
+      <Router>
+        <Routes>
+          <Route
+            path="/"
+            element={
+              <div>
+                <Navigation />
+                <Header data={landingPageData.Header} />
+                <Features data={landingPageData.Features} />
+                <About data={landingPageData.About} />
+                <Services data={landingPageData.Services} />
+                <Gallery data={landingPageData.Gallery} />
+                <Testimonials data={landingPageData.Testimonials} />
+                <Team data={landingPageData.Team} />
+                <Contact data={landingPageData.Contact} />
+              </div>
+            }
+          />
+          <Route path="/connexion" element={<Connexion />} />
+          <Route path="/dashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} >
+            {navigations.map((navElement, index) => (
+
+              <Route key={index} exact path={navElement.link} element={<navElement.component />} />
+            ))}
+          </Route>
+        </Routes>
+      </Router>
+    </AuthProvider>
+  );
+};
+
+export default App;
