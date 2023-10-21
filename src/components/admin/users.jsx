@@ -13,8 +13,9 @@ export function Users() {
     useEffect(() => {
         // Fetch user data when the component mounts
         const fetchUsers = async () => {
+          const currentAdmin = Auth.getUser();
           try {
-              const response = await adminApi.getUsers(admin)
+              const response = await adminApi.getUsers(currentAdmin)
               console.log("response", response)
               const data = response.data;
               console.log("data users", data)
@@ -24,7 +25,7 @@ export function Users() {
           }
       };
         fetchUsers();
-    }, [deletedUser]);
+    }, [deletedUser,Auth]);
 
     
 
