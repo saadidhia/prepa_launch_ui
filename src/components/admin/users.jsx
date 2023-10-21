@@ -24,7 +24,7 @@ export function Users() {
           }
       };
         fetchUsers();
-    }, [deletedUser,admin]);
+    }, [deletedUser]);
 
     
 
@@ -51,6 +51,9 @@ export function Users() {
               <TableCell>Email</TableCell>
               <TableCell>Role</TableCell>
               <TableCell>Level</TableCell>
+              <TableCell>Start Date</TableCell>
+              <TableCell>Months</TableCell>
+              <TableCell>End Date</TableCell>
               <TableCell>Action</TableCell> {/* Add a new column for the delete button */}
             </TableRow>
           </TableHead>
@@ -63,6 +66,9 @@ export function Users() {
                 <TableCell>{user.email}</TableCell>
                 <TableCell>{user.role}</TableCell>
                 <TableCell>{user.level}</TableCell>
+                <TableCell>{user.startDate}</TableCell>
+                <TableCell>{user.months}</TableCell>
+                <TableCell>{user.expireDate}</TableCell>
                 <TableCell>
                   <Button
                     variant="outlined"
