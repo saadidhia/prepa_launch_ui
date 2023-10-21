@@ -1,7 +1,7 @@
-import React, { useState, useContext, useEffect} from "react"
+import React, { useState} from "react"
 //import AuthContext from "./context/AuthContext"
 import { authApi } from '../../apis/AuthApi'
-import { parseJwt, handleLogError } from '../../misc/Helpers'
+import { handleLogError } from '../../misc/Helpers'
 //import { errors } from '../constants'
 //import { Navigate } from "react-router-dom"
 import {useAuth} from '../context/AuthContext'
@@ -19,8 +19,6 @@ export function SignUp() {
   const [email, setEmail] = useState("")
   const [level, setLevel] = useState("PREMIERE"); 
   const [field, setField] = useState("MP")
-  const [isError, setIsError] = useState(false)
-  const [errorMessage, setErrorMessage] = useState('')
 
 
   const [successmessage, setSuccessMessage] = useState("")
@@ -30,8 +28,7 @@ export function SignUp() {
     e.preventDefault()
 
     if (!(username && password && name && email && level && field)) {
-      setIsError(true)
-      setErrorMessage('Please, inform all fields!')
+      
       return
     }
     
@@ -41,7 +38,7 @@ export function SignUp() {
 
     try {
 
-      const response = await authApi.signup(user,admin)
+       await authApi.signup(user,admin)
       setSuccessMessage('User Is Created')
       
       setUsername("")
@@ -49,11 +46,9 @@ export function SignUp() {
       setName("")
       setEmail("")
       setLevel("Premiere")
-      setIsError(false)
-      setErrorMessage("")
     } catch (error) {
       handleLogError(error)
-      if (error.response && error.response.data) {
+      /*if (error.response && error.response.data) {
         const errorData = error.response.data
         let errorMessage = 'Invalid fields'
         if (errorData.status === 409) {
@@ -61,9 +56,9 @@ export function SignUp() {
         } else if (errorData.status === 400) {
           errorMessage = errorData.errors[0].defaultMessage
         }
-        setIsError(true)
-        setErrorMessage(errorMessage)
-      }
+       
+        
+      }*/
     }
   }
 

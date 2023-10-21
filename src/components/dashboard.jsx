@@ -16,7 +16,6 @@ import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
-import InboxIcon from '@mui/icons-material/MoveToInbox';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import adminNavigations from '../adminNavigations';
 import candidateNavigations from '../candidateNavigations';

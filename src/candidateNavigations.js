@@ -1,5 +1,4 @@
 
-import OverviewIcon from './assets/css/icons/icon_overview.png'
 import {Premiere} from './components/user/premiere'
 
 

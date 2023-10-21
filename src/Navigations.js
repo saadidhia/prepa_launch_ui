@@ -1,5 +1,3 @@
-
-import OverviewIcon from './assets/css/icons/icon_overview.png'
 import {Premiere} from './components/user/premiere'
 import {Users} from './components/admin/users'
 import { SignUp } from './components/admin/signUp';

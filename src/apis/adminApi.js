@@ -1,6 +1,5 @@
 import axios from 'axios'
 import { config } from '../constants'
-import { parseJwt } from '../misc/Helpers'
 import { bearerAuth } from './AuthApi'
 
 export const adminApi = {

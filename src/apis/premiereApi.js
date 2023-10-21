@@ -1,5 +1,3 @@
-import { config } from '../constants'
-import { parseJwt } from '../misc/Helpers'
 import { bearerAuth } from './AuthApi'
 import { instance } from './adminApi'
 

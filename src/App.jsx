@@ -15,9 +15,7 @@ import { Routes, Route, BrowserRouter as Router } from "react-router-dom";
 import { Connexion } from './components/connexion';
 import Dashboard from "./components/dashboard";
 import PrivateRoute from './PrivateRoute';
-import PrivateRouteAdmin from './PrivateRouteAdmin'
 import navigations from "./Navigations";
-import { SignUp } from "./components/admin/signUp";
 
 import "./App.css";
 

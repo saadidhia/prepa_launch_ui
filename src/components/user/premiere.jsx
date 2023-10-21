@@ -10,18 +10,19 @@ export function Premiere() {
   const [pdfFiles, setPdfFiles] = useState([]);
 
   useEffect(() => {
+    const fetchPdfs = async () => {
+      try {
+        const response = await premiereApi.getPdfs(user);
+        console.log(response.data);
+        setPdfFiles(response.data);
+      } catch (error) {
+        console.error("Error fetching PDFs:", error);
+      }
+    };
     fetchPdfs();
-  }, []);
+  }, [user]);
 
-  const fetchPdfs = async () => {
-    try {
-      const response = await premiereApi.getPdfs(user);
-      console.log(response.data);
-      setPdfFiles(response.data);
-    } catch (error) {
-      console.error("Error fetching PDFs:", error);
-    }
-  };
+  
 
   return (
     <div>

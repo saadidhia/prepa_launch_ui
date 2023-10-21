@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from "react"
+import React, { useState, useEffect } from "react"
 import { Button,Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material';
 import { adminApi } from '../../apis/adminApi'
 import { useAuth } from '../context/AuthContext'
@@ -12,24 +12,25 @@ export function Users() {
 
     useEffect(() => {
         // Fetch user data when the component mounts
+        const fetchUsers = async () => {
+          try {
+              const response = await adminApi.getUsers(admin)
+              console.log("response", response)
+              const data = response.data;
+              console.log("data users", data)
+              setUsers(data);
+          } catch (error) {
+              console.error('Error fetching users:', error);
+          }
+      };
         fetchUsers();
-    }, [deletedUser]);
+    }, [deletedUser,admin]);
 
-    const fetchUsers = async () => {
-        try {
-            const response = await adminApi.getUsers(admin)
-            console.log("response", response)
-            const data = response.data;
-            console.log("data users", data)
-            setUsers(data);
-        } catch (error) {
-            console.error('Error fetching users:', error);
-        }
-    };
+    
 
     const handleDeleteUser = async (username) => {
        console.log("username!",username)
-      const response = await adminApi.deleteUser(admin,username).then(
+       await adminApi.deleteUser(admin,username).then(
         (response)=>setDeletedUser(response.data)
       );
       
