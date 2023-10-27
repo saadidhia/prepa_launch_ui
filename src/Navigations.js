@@ -1,6 +1,7 @@
 import {Premiere} from './components/user/premiere'
 import {Users} from './components/admin/users'
 import { SignUp } from './components/admin/signUp';
+import { NotifCandidates } from './components/admin/notifCandidates';
 
 
 
@@ -9,7 +10,6 @@ const navigations = [
         text: "Premiere",
         link: "premiere",
         component: Premiere,
-      //  icon: OverviewIcon
         role: "user"
     },
    
@@ -18,13 +18,18 @@ const navigations = [
         text: "users",
         link: "users",
         component: Users,
-       // icon: HistoryIcon
         role: "admin"
     },
     {
         text: "Register",
         link: "register",
         component: SignUp,
+        role: "admin"
+    },
+    {
+        text: "NotifCandidates",
+        link: "NotifiedCandidates",
+        component: NotifCandidates,
         role: "admin"
     }
 

@@ -5,7 +5,8 @@ import { bearerAuth } from './AuthApi'
 export const adminApi = {
 
   getUsers,
-  deleteUser
+  deleteUser,
+  getNotifiedUsers,
 }
 
 export const instance = axios.create({
@@ -23,11 +24,21 @@ function getUsers(admin) {
 
 
 function deleteUser(admin, username) {
-  console.log("user2", username)
   return instance.delete(`/api/admin/delete/${username}`, {
     headers: {
       'Authorization': bearerAuth(admin),
       'Content-type': 'application/json'
     }
   })
+}
+
+function getNotifiedUsers(admin){
+  console.log(admin)
+  return instance.get('/api/admin/users/notified',{
+    headers: {
+      'Authorization': bearerAuth(admin),
+      'Content-type': 'application/json'
+    }
+  })
+
 }

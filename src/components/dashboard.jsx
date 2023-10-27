@@ -17,8 +17,7 @@ import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
-import adminNavigations from '../adminNavigations';
-import candidateNavigations from '../candidateNavigations';
+import navigations from '../Navigations';
 
 import { Outlet, useNavigate } from 'react-router-dom';
 import { useAuth } from './context/AuthContext';
@@ -178,14 +177,14 @@ export default function Dashboard() {
           <Divider />
           <List>
             {user.data.rol[0] === "ADMIN"
-              ? adminNavigations.map((item, index) => (
+              ? navigations.filter(navigation=>navigation.role==="admin").map((item, index) => (
                   <ListItem key={index} disablePadding>
                     <ListItemButton>
                       <MenuItem key={index} item={item} handleNavigation={handleNavigation} />
                     </ListItemButton>
                   </ListItem>
                 ))
-              : candidateNavigations.map((item, index) => (
+              : navigations.filter(navigation=> navigation.role==="user").map((item, index) => (
                   <ListItem key={index} disablePadding>
                     <ListItemButton>
                       <MenuItem key={index} item={item} handleNavigation={handleNavigation} />
