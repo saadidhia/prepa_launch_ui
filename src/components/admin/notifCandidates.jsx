@@ -37,6 +37,7 @@ export function NotifCandidates() {
               <TableCell>Username</TableCell>
               <TableCell>Name</TableCell>
               <TableCell>Email</TableCell>
+              <TableCell>Phone number</TableCell>
               <TableCell>Level</TableCell>
               <TableCell>Field</TableCell>
               <TableCell>Start Date</TableCell>
@@ -52,6 +53,7 @@ export function NotifCandidates() {
                 <TableCell>{user.username}</TableCell>
                 <TableCell>{user.name}</TableCell>
                 <TableCell>{user.email}</TableCell>
+                <TableCell>{user.numberPhone}</TableCell>
                 <TableCell>{user.level}</TableCell>
                 <TableCell>{user.field}</TableCell>
                 <TableCell>{user.startDate}</TableCell>

@@ -50,6 +50,7 @@ export function Users() {
               <TableCell>Username</TableCell>
               <TableCell>Name</TableCell>
               <TableCell>Email</TableCell>
+              <TableCell>Phone</TableCell>
               <TableCell>Role</TableCell>
               <TableCell>Level</TableCell>
               <TableCell>Start Date</TableCell>
@@ -65,6 +66,7 @@ export function Users() {
                 <TableCell>{user.username}</TableCell>
                 <TableCell>{user.name}</TableCell>
                 <TableCell>{user.email}</TableCell>
+                <TableCell>{user.numberPhone}</TableCell>
                 <TableCell>{user.role}</TableCell>
                 <TableCell>{user.level}</TableCell>
                 <TableCell>{user.startDate}</TableCell>

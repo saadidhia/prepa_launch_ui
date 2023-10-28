@@ -23,7 +23,8 @@ export function SignUp() {
   const [level, setLevel] = useState("PREMIERE");
   const [field, setField] = useState("MP")
   const [startDate, setStartDate] = useState(new Date()); // Initialize with the current date
-  const [months, setMonths] = useState(0); 
+  const [months, setMonths] = useState(0);
+  const [numberPhone, setNumberPhone] = useState(0);
 
 
   const [successmessage, setSuccessMessage] = useState("")
@@ -36,13 +37,13 @@ export function SignUp() {
   const handleSubmit = async (e) => {
     e.preventDefault()
 
-    if (!(username && password && name && email && level && field  && startDate && months)) {
+    if (!(username && password && name && email && level && field && startDate && months && numberPhone)) {
 
       return
     }
 
 
-    const user = { username, password, name, email, level, field, startDate, months }
+    const user = { username, password, name, email, level, field, startDate, months, numberPhone  }
     console.log("user", user)
 
     try {
@@ -114,6 +115,15 @@ export function SignUp() {
                 type="email"
                 className="form-control mt-1"
                 placeholder="Mot de passe"
+              />
+            </div>
+            <div className="form-group mt-3">
+              <label>Téléphone</label>
+              <input
+                onChange={(e) => setNumberPhone(e.target.value)}
+                type="tel"
+                className="form-control mt-1"
+                placeholder="Téléphone"
               />
             </div>
             <div className="form-group mt-3">
