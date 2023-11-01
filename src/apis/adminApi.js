@@ -7,6 +7,7 @@ export const adminApi = {
   getUsers,
   deleteUser,
   getNotifiedUsers,
+  extendUser
 }
 
 export const instance = axios.create({
@@ -21,6 +22,16 @@ function getUsers(admin) {
     }
   })
 }
+
+function extendUser(admin, username, months) {
+  return instance.post(`/api/admin/${username}/${months}`, null, {
+    headers: {
+      'Authorization': bearerAuth(admin),
+      'Content-Type': 'application/json'
+    }
+  });
+}
+
 
 
 function deleteUser(admin, username) {
