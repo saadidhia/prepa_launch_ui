@@ -61,7 +61,11 @@ export function Connexion() {
 
    
   if (isLoggedIn) {
-    return <Navigate to={'/dashboard/premiere'} />
+    if (Auth.getUser().data.rol[0]=='ADMIN') {
+    return <Navigate to={'/dashboard/users'} />
+    }else {
+      return <Navigate to={'/dashboard/premiere'} />
+    }
   } else {
 
     return (
@@ -70,7 +74,7 @@ export function Connexion() {
               <form className="Auth-form" onSubmit={handleSubmit} >
                 <div className="Auth-form-content">
                   <h3 className="Auth-form-title">
-                    <img /*src={logo}*/ height="350" weight="400" alt="Prepa Launch Logo" />
+                    <img /*src={logo}*/ height="250" weight="300" alt="Prepa Launch Logo" />
                   </h3>
       
                   <div className="form-group mt-3">
