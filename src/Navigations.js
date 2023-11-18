@@ -1,4 +1,8 @@
-import {Premiere} from './components/user/premiere'
+import {Cours} from './components/user/cours'
+import {Exams} from './components/user/exams'
+import {Series} from  './components/user/series'
+import {Notes} from './components/user/notes'
+import {Motivation} from './components/user/motivation'
 import {Users} from './components/admin/users'
 import { SignUp } from './components/admin/signUp';
 import { NotifCandidates } from './components/admin/notifCandidates';
@@ -7,9 +11,33 @@ import { NotifCandidates } from './components/admin/notifCandidates';
 
 const navigations = [
     {
-        text: "Premiere",
-        link: "premiere",
-        component: Premiere,
+        text: "Cours",
+        link: "cours",
+        component: Cours,
+        role: "user"
+    },
+    {
+        text: "Series",
+        link: "series",
+        component: Series,
+        role: "user"
+    },
+    {
+        text: "Exams",
+        link: "exams",
+        component: Exams,
+        role: "user"
+    },
+    {
+        text: "Notes",
+        link: "notes",
+        component: Notes,
+        role: "user"
+    },
+    {
+        text: "Motivation",
+        link: "motivation",
+        component: Motivation,
         role: "user"
     },
    

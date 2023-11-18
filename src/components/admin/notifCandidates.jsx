@@ -107,9 +107,10 @@ export function NotifCandidates() {
       </TableContainer>
     
 
-   
+    {selectedUser !==null &&
     <Dialog open={isDialogOpen} onClose={closeDialog}>
-      <DialogTitle>Extend Months for Username {selectedUser.username}</DialogTitle>
+      
+      <DialogTitle>Extend Months for Username {selectedUser.username} </DialogTitle>
       <DialogContent>
         <TextField
           label="New Months"
@@ -126,6 +127,7 @@ export function NotifCandidates() {
         </Button>
       </DialogActions>
     </Dialog>
+}
     </div>
   );
 }

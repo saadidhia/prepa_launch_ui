@@ -51,11 +51,7 @@ export function SignUp() {
       await authApi.signup(user, admin)
       setSuccessMessage('User Is Created')
 
-      setUsername("")
-      setPassword("")
-      setName("")
-      setEmail("")
-      setLevel("Premiere")
+
     } catch (error) {
       handleLogError(error)
       /*if (error.response && error.response.data) {
