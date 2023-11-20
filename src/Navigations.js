@@ -6,6 +6,7 @@ import {Motivation} from './components/user/motivation'
 import {Users} from './components/admin/users'
 import { SignUp } from './components/admin/signUp';
 import { NotifCandidates } from './components/admin/notifCandidates';
+import { Resume } from './components/user/Resume'
 
 
 
@@ -27,6 +28,12 @@ const navigations = [
         link: "exams",
         component: Exams,
         role: "user"
+    },
+    {
+        text: "Resumes",
+        link: "Resumes",
+        component: Resume,
+        role:"user"
     },
     {
         text: "Notes",

@@ -1,4 +1,4 @@
-const courses = [
+const subjects = [
     {
         name: "Math 1",
         section: ["MP"]
@@ -61,4 +61,4 @@ const courses = [
 
 ];
 
-export default courses
+export default subjects

@@ -172,6 +172,8 @@ export default function Dashboard() {
               fontWeight: 'bold',
             }}
           >
+            {user.data.level}
+            {user.data.field}
             {user.data.rol[0]} {/* Corrected user data key */}
           </Typography>
           <Divider />

@@ -64,7 +64,7 @@ export function Connexion() {
     if (Auth.getUser().data.rol[0]=='ADMIN') {
     return <Navigate to={'/dashboard/users'} />
     }else {
-      return <Navigate to={'/dashboard/course'} />
+      return <Navigate to={'/dashboard/cours'} />
     }
   } else {
 
