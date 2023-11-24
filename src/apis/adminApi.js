@@ -8,7 +8,8 @@ export const adminApi = {
   deleteUser,
   getNotifiedUsers,
   extendUser,
-  createMotivation
+  createMotivation,
+  deleteMotivation
 }
 
 export const instance = axios.create({
@@ -64,5 +65,16 @@ function createMotivation(admin, motivation){
       'Content-type': 'application/json'
     }
   })
+
+  
+
+}
+
+function deleteMotivation(admin,motivationId){
+  console.log("Motiva ",motivationId)
+  instance.delete(`/api/motivations/${motivationId}`,{headers: {
+    'Authorization': bearerAuth(admin),
+    'Content-type': 'application/json'
+  }})
 
 }

@@ -16,6 +16,7 @@ import { Connexion } from './components/connexion';
 import Dashboard from "./components/dashboard";
 import PrivateRoute from './PrivateRoute';
 import navigations from "./Navigations";
+import subjects from "./subjects"
 
 import "./App.css";
 
@@ -34,34 +35,42 @@ const App = () => {
 
   return (
     <AuthProvider>
-      <Router>
-        <Routes>
-          <Route
-            path="/"
-            element={
-              <div>
-                <Navigation />
-                <Header data={landingPageData.Header} />
-                <Features data={landingPageData.Features} />
-                <About data={landingPageData.About} />
-                <Services data={landingPageData.Services} />
-                <Gallery data={landingPageData.Gallery} />
-                <Testimonials data={landingPageData.Testimonials} />
-                <Team data={landingPageData.Team} />
-                <Contact data={landingPageData.Contact} />
-              </div>
-            }
-          />
-          <Route path="/connexion" element={<Connexion />} />
-          <Route path="/dashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} >
-            {navigations.map((navElement, index) => (
+    <Router>
+      <Routes>
+        <Route
+          path="/"
+          element={
+            <div>
+              <Navigation />
+              <Header data={landingPageData.Header} />
+              <Features data={landingPageData.Features} />
+              <About data={landingPageData.About} />
+              <Services data={landingPageData.Services} />
+              <Gallery data={landingPageData.Gallery} />
+              <Testimonials data={landingPageData.Testimonials} />
+              <Team data={landingPageData.Team} />
+              <Contact data={landingPageData.Contact} />
+            </div>
+          }
+        />
+        <Route path="/connexion" element={<Connexion />} />
+        <Route path="/dashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} >
+          {navigations.map((navElement, index) => (
 
-              <Route key={index} exact path={navElement.link} element={<navElement.component />} />
+            <Route key={index} exact path={navElement.link} element={<navElement.component />} />
+          ))}
+          {subjects.map((subject, index) => (
+              <Route
+                key={index}
+                exact
+                path={`/dashboard/cours/${subject.links}`}
+                element={subject.components}
+              />
             ))}
-          </Route>
-        </Routes>
-      </Router>
-    </AuthProvider>
+        </Route>
+      </Routes>
+    </Router>
+  </AuthProvider>
   );
 };
 

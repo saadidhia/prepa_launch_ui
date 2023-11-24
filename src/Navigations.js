@@ -2,7 +2,6 @@ import {Cours} from './components/user/cours'
 import {Exams} from './components/user/exams'
 import {Series} from  './components/user/series'
 import {Notes} from './components/user/notes'
-import {Motivation} from './components/user/motivation'
 import {Users} from './components/admin/users'
 import { SignUp } from './components/admin/signUp';
 import { NotifCandidates } from './components/admin/notifCandidates';
@@ -75,6 +74,12 @@ const navigations = [
         component: CreateMotivation,
         role: "admin"
 
+    },
+    {
+        text: "Motivation",
+        link: "motivation",
+        component: Motivations,
+        role: "admin"
     }
 
    
