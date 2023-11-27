@@ -3,14 +3,14 @@ import { Mp1 } from './components/user/subjects/mp1'
 const subjects = [
     { 
         links: "math1",
-        name: "Math 1",
+        name: "Math1",
         section: ["MP"],
         components: <Mp1 name="Math 1"/>
         
     },
     {
         links: "math2",
-       name: "Math 2",
+       name: "Math2",
        section: ["MP"],
        components: <Mp1 name="MAth2"/>
     },

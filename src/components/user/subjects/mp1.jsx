@@ -10,14 +10,15 @@ export function Mp1(props) {
     const [pdfFiles, setPdfFiles] = useState([]);
     const Auth = useAuth()
     const user = Auth.getUser() 
+    
     useEffect(() => {
         const fetchPdfs = async () => {
           try {
-            if (name===subjects[2].name){
+
             const response = await premiereApi.getPdfs(user);
             console.log(response.data);
             setPdfFiles(response.data);
-            }
+            
           } catch (error) {
             console.error("Error fetching PDFs:", error);
           }

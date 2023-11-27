@@ -1,0 +1,10 @@
+/* CSS - This should be in your stylesheet */
+.trello-board {
+    display: flex;
+    justify-content: space-between; /* Distribute space between the boards */
+  }
+  
+  .board-column {
+    flex: 1; /* Allow boards to grow and take available space */
+    margin: 0 10px; /* Adjust margins for spacing between boards */
+  }

@@ -2,7 +2,8 @@ import { instance } from './adminApi'
 import { bearerAuth } from './AuthApi'
 
 export const candidatsApi = {
-    getMotivations
+    getMotivations,
+    createNote
 }
 
 function getMotivations(user) {
@@ -13,4 +14,14 @@ function getMotivations(user) {
         }
       });
 
+}
+
+function createNote(user, card){
+  console.log("card ", card)
+  return instance.post(`/api/cards`,card, {
+    headers: {
+      'Authorization': bearerAuth(user),
+      'Content-type': 'application/json'
+    }
+  })
 }
