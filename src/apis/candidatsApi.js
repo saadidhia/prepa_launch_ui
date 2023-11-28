@@ -3,7 +3,8 @@ import { bearerAuth } from './AuthApi'
 
 export const candidatsApi = {
     getMotivations,
-    createNote
+    createNote,
+    getCards
 }
 
 function getMotivations(user) {
@@ -24,4 +25,14 @@ function createNote(user, card){
       'Content-type': 'application/json'
     }
   })
+}
+
+function getCards(user) {
+  return instance.get('/api/cards',{
+      headers: {
+        'Authorization': bearerAuth(user),
+        'Content-type': 'application/json'
+      }
+    });
+
 }

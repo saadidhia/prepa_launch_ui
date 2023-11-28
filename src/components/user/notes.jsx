@@ -1,4 +1,4 @@
-import React, { useState, useRef, useMemo } from 'react';
+import React, { useState, useRef, useMemo, useEffect } from 'react';
 import ReactDOMServer from 'react-dom/server';
 import ReactMarkdown from 'react-markdown';
 
@@ -17,24 +17,24 @@ import { useAuth } from '../context/AuthContext'
 import subjects from '../../subjects';
 import contexts from '../../context'
 import { candidatsApi } from '../../apis/candidatsApi';
+
 import Board from './Board';
-import   '../../assets/css/board.css'
+import '../../assets/css/board.css'
 export function Notes() {
     const [open, setOpen] = useState(false);
     const [title, setTitle] = useState('');
     const [note, setNote] = useState('');
     const [subject, setSubject] = useState('');
     const [context, setContext] = useState('');
+    const [createdCards, setCreatedCards] = useState([]);
+    const [inProgressCards, setInProgressCards] = useState([]);
+    const [finishedCards, setFinishedCards] = useState([]);
 
-    const cards = [
-        { title: 'Card 1', content: 'Content of Card 1' },
-        { title: 'Card 2', content: 'Content of Card 2' },
-        { title: 'Card 3', content: 'Content of Card 3' },
-      ];
+
 
     const autofocusNoSpellcheckerOptions = useMemo(() => {
         return {
-            previewRender: function(plainText) {
+            previewRender: function (plainText) {
                 return ReactDOMServer.renderToString(React.createElement(ReactMarkdown, { children: plainText }));
             }
         };
@@ -44,6 +44,31 @@ export function Notes() {
     const Auth = useAuth();
     const user = Auth.getUser();
     const userSubjects = subjects.filter(subject => subject.section.includes(user.data.field));
+
+
+    const fetchCards = async () => {
+
+        try {
+            console.log("fetch " + user);
+            const response = await candidatsApi.getCards(user)
+            const data = response.data;
+
+            const created = data.filter(card => card.status === 'CREATED');
+            const inProgress = data.filter(card => card.status === 'INPROGRESS');
+            const finished = data.filter(card => card.status === 'FINISHED');
+
+            setCreatedCards(created);
+            setInProgressCards(inProgress);
+            setFinishedCards(finished);
+
+        } catch (error) {
+            console.error('Error fetching Cards:', error);
+        }
+    };
+    useEffect(() => {
+        fetchCards()
+
+    }, [])
 
     const handleClose = () => {
         resetInputs();
@@ -72,12 +97,12 @@ export function Notes() {
         if (!(title && note && subject && context)) {
             return;
         }
-        const card ={note, title, context, subject }
-        console.log("My card ",card)
+        const card = { note, title, context, subject }
+        console.log("My card ", card)
         try {
-        await candidatsApi.createNote(user,card);
-        }catch(error){
-         console.log(error)
+            await candidatsApi.createNote(user, card);
+        } catch (error) {
+            console.log(error)
         }
         resetInputs();
         handleClose();
@@ -114,7 +139,7 @@ export function Notes() {
                         options={autofocusNoSpellcheckerOptions}
                         getMdeInstance={(instance) => (simpleMDE.current = instance)}
                     />
-                    <InputLabel id="subject-label">Subject</InputLabel> 
+                    <InputLabel id="subject-label">Subject</InputLabel>
                     <Select
                         value={subject}
                         onChange={(e) => setSubject(e.target.value)}
@@ -162,16 +187,19 @@ export function Notes() {
 
             <div style={{ display: 'flex' }}>
                 <div style={{ flex: 1 }}>
-                    <Board cards={cards} />
+                    <h1>CREATED</h1>
+                    <Board cards={createdCards} />
                 </div>
                 <div style={{ flex: 1 }}>
-                    <Board cards={cards} />
+                    <h1>IN PROGRESS</h1>
+                    <Board cards={inProgressCards} />
                 </div>
                 <div style={{ flex: 1 }}>
-                    <Board cards={cards} />
+                    <h1>FINISHED</h1>
+                    <Board cards={finishedCards} />
                 </div>
             </div>
-           
+
         </>
     );
 }
