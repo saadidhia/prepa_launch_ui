@@ -21,8 +21,8 @@ jobs:
     - name: Install dependencies
       run: npm install
     
-    - name: unset ci env
-      run: unset CI
+    - name: Set CI environment variable
+      run: export CI=false
 
     - name: Build
       run: npm run build
