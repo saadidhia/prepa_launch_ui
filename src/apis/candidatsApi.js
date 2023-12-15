@@ -4,7 +4,10 @@ import { bearerAuth } from './AuthApi'
 export const candidatsApi = {
     getMotivations,
     createNote,
-    getCards
+    getCards,
+    deleteCard,
+    getCardById,
+    updateCardById
 }
 
 function getMotivations(user) {
@@ -35,4 +38,31 @@ function getCards(user) {
       }
     });
 
+}
+
+function deleteCard(user,id){
+  return instance.delete(`api/cards/${id}`,{
+  headers: {
+        'Authorization': bearerAuth(user),
+        'Content-type': 'application/json'
+      }
+  })
+}
+
+function getCardById (user, id){
+return instance.get(`api/cards/${id}`, {
+  headers: {
+        'Authorization': bearerAuth(user),
+        'Content-type': 'application/json'
+      }
+  } )
+}
+
+function updateCardById (user,id ){
+  return instance.put(`api/cards/${id}`,{
+    headers: {
+          'Authorization': bearerAuth(user),
+          'Content-type': 'application/json'
+        }
+    })
 }

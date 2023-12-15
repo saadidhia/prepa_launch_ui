@@ -1,7 +1,7 @@
 import React from 'react';
 import Card from './Card'; 
 
-const Board = ({  cards }) => {
+const Board = ({  cards,handleDelete }) => {
     return (
         <div className="board">
           {console.log("cards cards",cards)}
@@ -9,6 +9,7 @@ const Board = ({  cards }) => {
           <Card
             key={index} 
             content={card}
+            onDelete={handleDelete}
           />
         ))}
       </div>

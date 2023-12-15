@@ -101,6 +101,7 @@ export function Notes() {
         console.log("My card ", card)
         try {
             await candidatsApi.createNote(user, card);
+            fetchCards()
         } catch (error) {
             console.log(error)
         }
@@ -113,6 +114,9 @@ export function Notes() {
             simpleMDE.current.togglePreview();
         }
     };
+    const handleDelete = () => {
+        fetchCards(); // Fetch cards again after deletion to update the state
+      };
 
     return (
         <>
@@ -188,15 +192,15 @@ export function Notes() {
             <div style={{ display: 'flex' }}>
                 <div style={{ flex: 1 }}>
                     <h1>CREATED</h1>
-                    <Board cards={createdCards} />
+                    <Board handleDelete={handleDelete}  cards={createdCards} />
                 </div>
                 <div style={{ flex: 1 }}>
                     <h1>IN PROGRESS</h1>
-                    <Board cards={inProgressCards} />
+                    <Board handleDelete={handleDelete} cards={inProgressCards} />
                 </div>
                 <div style={{ flex: 1 }}>
                     <h1>FINISHED</h1>
-                    <Board cards={finishedCards} />
+                    <Board handleDelete={handleDelete} cards={finishedCards} />
                 </div>
             </div>
 
