@@ -13,7 +13,7 @@ export const adminApi = {
 }
 
 export const instance = axios.create({
-  baseURL: config.url.API_BASE_URL
+  baseURL: process.env.PRAPA_LAUNCH_BACK_URL
 })
 
 function getUsers(admin) {

@@ -28,7 +28,7 @@ function signup(user, admin) {
 // -- Axios
 
 const instance = axios.create({
-  baseURL: config.url.API_BASE_URL
+  baseURL: process.env.REACT_APP_API
 })
 
 instance.interceptors.request.use(function (config) {
