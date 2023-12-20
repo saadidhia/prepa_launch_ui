@@ -28,7 +28,7 @@
     "start-prod": "env-cmd -e prod react-scripts start",
     "build-dev": "env-cmd -e dev react-scripts build",
     "build-qa": "env-cmd -e qa react-scripts build",
-    "build-prod": "env-cmd prod react-scripts build", 
+    "build-prod": "env-cmd -e prod react-scripts build", 
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
