@@ -7,7 +7,8 @@ export const candidatsApi = {
     getCards,
     deleteCard,
     getCardById,
-    updateCardById
+    updateCardById,
+    getMyProfile
 }
 
 function getMotivations(user) {
@@ -60,6 +61,15 @@ return instance.get(`api/cards/${id}`, {
 
 function updateCardById (user,id ){
   return instance.put(`api/cards/${id}`,{
+    headers: {
+          'Authorization': bearerAuth(user),
+          'Content-type': 'application/json'
+        }
+    })
+}
+
+function getMyProfile (user){
+  return instance.get('api/v1/profile',{
     headers: {
           'Authorization': bearerAuth(user),
           'Content-type': 'application/json'
