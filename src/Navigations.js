@@ -8,6 +8,7 @@ import { NotifCandidates } from './components/admin/notifCandidates';
 import { Resume } from './components/user/Resume'
 import { CreateMotivation } from './components/admin/createMotivation'
 import { Motivations } from './components/user/motivations'
+import { Concours } from './components/user/Concours'
 
 
 
@@ -35,6 +36,13 @@ const navigations = [
         link: "Resumes",
         component: Resume,
         role:"user"
+    },
+    {
+        text: "Concours",
+        link: "Concours",
+        component: Concours,
+        role:"user"
+
     },
     {
         text: "Notes",
