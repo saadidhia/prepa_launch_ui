@@ -25,6 +25,7 @@ export function SignUp() {
   const [startDate, setStartDate] = useState(new Date()); // Initialize with the current date
   const [months, setMonths] = useState(0);
   const [numberPhone, setNumberPhone] = useState(0);
+  const [gender, setGender] = useState("MALE")
 
 
   const [successmessage, setSuccessMessage] = useState("")
@@ -37,13 +38,13 @@ export function SignUp() {
   const handleSubmit = async (e) => {
     e.preventDefault()
 
-    if (!(username && password && name && email && level && field && startDate && months && numberPhone)) {
+    if (!(username && password && name && email && level && field && startDate && months && numberPhone && gender)) {
 
       return
     }
 
 
-    const user = { username, password, name, email, level, field, startDate, months, numberPhone  }
+    const user = { username, password, name, email, level, field, startDate, months, numberPhone, gender  }
     console.log("user", user)
 
     try {
@@ -83,7 +84,7 @@ export function SignUp() {
                 onChange={(e) => setUsername(e.target.value)}
                 type="text"
                 className="form-control mt-1"
-                placeholder="Nom"
+                placeholder="User Name"
               />
             </div>
             <div className="form-group mt-3">
@@ -101,7 +102,7 @@ export function SignUp() {
                 onChange={(e) => setName(e.target.value)}
                 type="text"
                 className="form-control mt-1"
-                placeholder="Mot de passe"
+                placeholder="Nom"
               />
             </div>
             <div className="form-group mt-3">
@@ -110,8 +111,19 @@ export function SignUp() {
                 onChange={(e) => setEmail(e.target.value)}
                 type="email"
                 className="form-control mt-1"
-                placeholder="Mot de passe"
+                placeholder="Email"
               />
+            </div>
+            <div className="form-group mt-3">
+              <label >Gender</label>
+              <select className="form-control mt-1"
+                name="gender"
+                id="gender"
+                onChange={(e) => setGender(e.target.value)}
+                value={gender}>
+                <option value="MALE">Male</option>
+                <option value="FEMALE">Female</option>
+              </select>
             </div>
             <div className="form-group mt-3">
               <label>Téléphone</label>

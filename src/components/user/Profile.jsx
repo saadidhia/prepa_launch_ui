@@ -2,7 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { candidatsApi } from '../../apis/candidatsApi';
 import { useAuth } from '../context/AuthContext'
 import { Typography, Paper, Grid } from '@mui/material';
-import { SentimentSatisfiedAlt } from '@mui/icons-material';
+import femaleImage from '../../assets/statics/female.jpg';
+import maleImage from '../../assets/statics/male.jpg';
 
 export function Profile() {
 
@@ -16,11 +17,29 @@ export function Profile() {
     const [isNotified, setIsNotified] = useState('');
     const [numberPhone, setNumberPhone] = useState('');
     const [field, setField] = useState('')
+    const [gender, setGender] = useState('')
 
 
 
     const Auth = useAuth();
     const user = Auth.getUser();
+
+    const containerStyle = {
+        position: 'relative',
+        display: 'flex',
+        justifyContent: 'flex-end',
+        alignItems: 'flex-start',
+    };
+
+    const imageStyle = {
+        width: '100px',
+        height: '100px',
+        borderRadius: '50%',
+        objectFit: 'cover',
+        position: 'absolute',
+        top: '0',
+        right: '0',
+    };
 
 
     useEffect(() => {
@@ -28,7 +47,7 @@ export function Profile() {
 
             try {
                 const response = await candidatsApi.getMyProfile(user)
-                console.log("Profile",response)
+                console.log("Profile", response)
                 setEmail(response.data.email)
                 setField(response.data.field)
                 setName(response.data.name)
@@ -40,6 +59,7 @@ export function Profile() {
                 setLevel(response.data.level)
                 setNumberPhone(response.data.numberPhone)
                 setField(response.data.field)
+                setGender(response.data.gender);
             } catch (error) {
                 console.error('Error fetching Profile:', error);
 
@@ -48,19 +68,29 @@ export function Profile() {
         fetchCards()
     }, [])
 
-   function setNotified (notif){
-    if (notif===true){
-        return 'YES'
-    }else {
-        return 'NO'
+    function setNotified(notif) {
+        if (notif === true) {
+            return 'YES'
+        } else {
+            return 'NO'
+        }
     }
-   }
 
     return (
         <Paper sx={{ p: 3, maxWidth: 600, margin: 'auto' }}>
             <Typography variant="h4" gutterBottom>
-                User Information
+                User Informations
             </Typography>
+            <div style={containerStyle}>
+
+                {gender === 'FEMALE' ? (
+                    <img src={femaleImage} alt="Female" style={imageStyle} />
+                ) : (
+                    <img src={maleImage} alt="Male" style={imageStyle} />
+                )}
+            </div>
+
+
             <Grid container spacing={2}>
                 <Grid item xs={12}>
                     <Typography variant="subtitle1">
