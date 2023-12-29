@@ -15,7 +15,7 @@ export function Series() {
   <div style={{ display: 'flex', justifyContent: 'center', flexWrap: 'wrap' }}>
       { points.map((point,index)=> (
          <Card key={index} sx={{ width: 400, margin: '10px' }}>
-         <CardMedia component="img" height="200" image={`https://via.placeholder.com/300?text=${point}`} alt={point} />
+         <CardMedia component="img" height="200" image={point.image} alt={point.name} />
       {filteredCourses.map((course, index) => (
 
           <CardContent key={index}>

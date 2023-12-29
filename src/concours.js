@@ -1,17 +1,18 @@
-
-
+import french from './assets/statics/french.png'
+import tunisia from './assets/statics/tunisia.png'
+import morocco from './assets/statics/morocco.png'
 const concours = [
     {
         name: "TUNISIE",
-        icon: "tunisie"
+        image: tunisia
     },
     {
         text: "FRANCE",
-        icon: "france"
+        image: french
     },
     {
         text: "MAROC",
-        icon: "maroc"
+        image: morocco
     }
 ]
 export default concours;

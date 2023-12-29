@@ -14,7 +14,7 @@ export function Resume() {
   <div style={{ display: 'flex', justifyContent: 'center', flexWrap: 'wrap' }}>
       {filteredCourses.map((course, index) => (
         <Card key={index} sx={{ width: 400, margin: '10px' }}>
-          <CardMedia component="img" height="200" image={`https://via.placeholder.com/300?text=${course.name}`} alt={course.name} />
+          <CardMedia component="img" height="200" image={course.image} alt={course.name} />
           <CardContent>
            
         

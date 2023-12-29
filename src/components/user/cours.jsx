@@ -25,7 +25,7 @@ export function Cours() {
           // Navigate to the specific course URL on card click
           navigate(`/dashboard/cours/${course.links}`);
         }}>
-          <CardMedia component="img" height="200" image={`https://via.placeholder.com/300?text=${course.name}`} alt={course.name} />
+          <CardMedia component="img" height="200" image={course.image} alt={course.name} />
           <CardContent>
             <Typography gutterBottom variant="h5" component="div">
               {course.name}
