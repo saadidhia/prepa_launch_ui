@@ -5,11 +5,14 @@ import { useAuth } from '../context/AuthContext'
 import { Card, CardContent, CardMedia, Typography } from '@mui/material';
 import courses from '../../subjects';
 import points from '../../points';
+import { useNavigate } from 'react-router-dom'; // Import useHistory
+
 
 
 export function Series() {
   const Auth = useAuth()
     const user = Auth.getUser()
+    const navigate = useNavigate(); 
     const filteredCourses = courses.filter(course => course.section.includes(user.data.field));
     return (
   <div style={{ display: 'flex', justifyContent: 'center', flexWrap: 'wrap' }}>
@@ -20,7 +23,15 @@ export function Series() {
 
           <CardContent key={index}>
             <Typography gutterBottom variant="h5" component="div">
-              {course.name}
+              <button onClick={
+                () => {
+                  // Navigate to the specific course URL on card click
+                  navigate(`/dashboard/series/${point.link}/${course.links}`);
+                }
+              }>
+                    {course.name}
+              </button>
+              
             </Typography>
             <Typography variant="body2" color="text.secondary">
               {course.name}

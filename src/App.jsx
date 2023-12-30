@@ -18,6 +18,7 @@ import Dashboard from "./components/dashboard";
 import PrivateRoute from './PrivateRoute';
 import navigations from "./Navigations";
 import subjects from "./subjects"
+import points from "./points"
 
 import "./App.css";
 
@@ -69,6 +70,18 @@ const App = () => {
                 element={subject.components}
               />
             ))}
+            {points.map((point) =>
+  subjects.map((subject, index) => (
+    <Route
+      key={`${point.links}-${index}`}
+      exact
+      path={`/dashboard/series/${point.link}/${subject.links}`}
+      element={subject.components}
+    />
+  ))
+)
+            }
+
         </Route>
       </Routes>
     </Router>

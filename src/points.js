@@ -7,25 +7,32 @@ import sousse from "./assets/statics/sousse.png"
 import kairaouen from "./assets/statics/kairaouen.jpg"
 
 const points = [
-    {
+    { 
+        link: "ipeit",
         name: "TUNIS" ,
         image: tunis
     }, {
+        link: "ipeimo",
         name: "MONASTIR",
         image: monastir
     }, {
+        link: "ipeim",
         name: "MANAR",
         image: manar
     },
+
     {
+        link: "ipeis",
         name: "SFAX",
         image: sfax
     },
     {
+        link: "enisso",
         name: "SOUSSE",
         image: sousse
     },
     {
+        link: "ipeik",
         name: "KAIROUEN",
         image: kairaouen
     }
