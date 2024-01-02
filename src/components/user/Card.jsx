@@ -29,7 +29,7 @@ import { ContentCutRounded } from '@mui/icons-material';
 
 
 
-const CustomCard = ({ content, onDelete }) => {
+const CustomCard = ({ content, onDelete, onUpdate}) => {
 
   const Auth = useAuth();
   const user = Auth.getUser();
@@ -97,10 +97,18 @@ const handleOpen = async () => {
 };
 
 const handleUpdate = async () => {
-  console.log("update"+user)
-  console.log("update"+content.id)
-  const response =await candidatsApi.updateCardById(user,content.id)
-  console.log("uuuuuuuu",response.data )
+  const card = { title, note, context, status}
+
+  try {
+    console.log("update????",user)
+    console.log("CArdiB",card)
+    await candidatsApi.updateCardById(user,content.id,card);
+    onUpdate();
+    handleClose()
+   
+  } catch (error) {
+    console.error('Error updating card:', error);
+  }
 }
 
 const handleClose = () => {

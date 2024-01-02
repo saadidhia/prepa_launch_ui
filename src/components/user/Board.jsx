@@ -1,7 +1,7 @@
 import React from 'react';
 import Card from './Card'; 
 
-const Board = ({  cards,handleDelete }) => {
+const Board = ({  cards,handleDelete, handleUpdate }) => {
     return (
         <div className="board">
           {console.log("cards cards",cards)}
@@ -10,6 +10,7 @@ const Board = ({  cards,handleDelete }) => {
             key={index} 
             content={card}
             onDelete={handleDelete}
+            onUpdate={handleUpdate}
           />
         ))}
       </div>

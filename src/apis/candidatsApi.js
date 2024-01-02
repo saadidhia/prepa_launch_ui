@@ -59,8 +59,8 @@ return instance.get(`api/cards/${id}`, {
   } )
 }
 
-function updateCardById (user,id ){
-  return instance.put(`api/cards/${id}`,{
+function updateCardById (user,id,card ){
+  return instance.put(`api/cards/${id}`,card,{
     headers: {
           'Authorization': bearerAuth(user),
           'Content-type': 'application/json'

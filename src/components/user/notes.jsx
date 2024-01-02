@@ -192,15 +192,15 @@ export function Notes() {
             <div style={{ display: 'flex' }}>
                 <div style={{ flex: 1 }}>
                     <h1>CREATED</h1>
-                    <Board handleDelete={handleDelete}  cards={createdCards} />
+                    <Board handleDelete={handleDelete} handleUpdate={fetchCards}  cards={createdCards} />
                 </div>
                 <div style={{ flex: 1 }}>
                     <h1>IN PROGRESS</h1>
-                    <Board handleDelete={handleDelete} cards={inProgressCards} />
+                    <Board handleDelete={handleDelete} handleUpdate={fetchCards} cards={inProgressCards} />
                 </div>
                 <div style={{ flex: 1 }}>
                     <h1>FINISHED</h1>
-                    <Board handleDelete={handleDelete} cards={finishedCards} />
+                    <Board handleDelete={handleDelete} handleUpdate={fetchCards} cards={finishedCards} />
                 </div>
             </div>
 
