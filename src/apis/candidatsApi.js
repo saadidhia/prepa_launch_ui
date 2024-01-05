@@ -51,6 +51,7 @@ function deleteCard(user,id){
 }
 
 function getCardById (user, id){
+  console.log("ffffffffff",id)
 return instance.get(`api/cards/${id}`, {
   headers: {
         'Authorization': bearerAuth(user),
