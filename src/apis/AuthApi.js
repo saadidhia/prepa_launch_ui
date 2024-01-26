@@ -1,6 +1,8 @@
 import axios from 'axios'
 import { config } from '../constants'
 import { parseJwt } from '../misc/Helpers'
+import { Fingerprint } from 'fingerprintjs'; // Import Fingerprint from fingerprintjs library
+
 
 export const authApi = {
   authenticate,
@@ -8,11 +10,29 @@ export const authApi = {
 
 }
 
-function authenticate(username, password) {
-  return instance.post('/auth/authenticate', { username, password }, {
-    headers: { 'Content-type': 'application/json' }
-  })
-}
+
+const getIPAddress = async () => {
+  try {
+    const response = await axios.get('http://ip-api.com/json');
+    console.log("IPPPPPPPPPP", response.data.query)
+    const ipAddress = response.data.query; // IP address is available in the 'query' field
+    return ipAddress;
+  } catch (error) {
+    console.error('Error fetching IP address:', error);
+    return 'Unknown';
+  }
+};
+
+
+
+async function authenticate (username, password) {
+  
+    const ipAddress = await getIPAddress(); // Get client's IP address
+    return instance.post('/auth/authenticate', { username, password }, {
+      headers: { 'Content-type': 'application/json',
+       'deviceId': ipAddress }
+    })
+};
 
 function signup(user, admin) {
   console.log("user2", user)

@@ -1,6 +1,4 @@
-import React, { useEffect, useState } from 'react';
-import { premiereApi } from '../../apis/premiereApi';
-import { PdfViewer} from '../small/PdfViewer' 
+import React, { useEffect} from 'react';
 import { useAuth } from '../context/AuthContext'
 import { useNavigate } from 'react-router-dom'; // Import useHistory
 
@@ -14,7 +12,7 @@ export function Cours() {
     const navigate = useNavigate(); 
     const filteredCourses = subjects.filter(course => course.section.includes(user.data.field));
    
-    useEffect(()=>{console.log("tri")})
+    useEffect(()=>{console.log("tri")},[])
    
     return (
   <div style={{ display: 'flex', justifyContent: 'center', flexWrap: 'wrap' }}>

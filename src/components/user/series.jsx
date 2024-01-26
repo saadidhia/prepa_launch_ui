@@ -16,6 +16,7 @@ export function Series() {
     const filteredCourses = courses.filter(course => course.section.includes(user.data.field));
     return (
   <div style={{ display: 'flex', justifyContent: 'center', flexWrap: 'wrap' }}>
+    {console.log("Points", points)}
       { points.map((point,index)=> (
          <Card key={index} sx={{ width: 400, margin: '10px' }}>
          <CardMedia component="img" height="200" image={point.image} alt={point.name} />
