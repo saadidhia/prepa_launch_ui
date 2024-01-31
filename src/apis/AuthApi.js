@@ -6,7 +6,8 @@ import { Fingerprint } from 'fingerprintjs'; // Import Fingerprint from fingerpr
 
 export const authApi = {
   authenticate,
-  signup
+  signup,
+  logout
 
 }
 
@@ -39,6 +40,15 @@ function signup(user, admin) {
   return instance.post('/auth/signup', user, {
     headers: {
       'Authorization': bearerAuth(admin),
+      'Content-type': 'application/json'
+    }
+  })
+}
+
+function logout (user){
+  return instance.post('/auth/logout',null,{
+    headers: {
+      'Authorization': bearerAuth(user),
       'Content-type': 'application/json'
     }
   })

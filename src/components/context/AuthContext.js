@@ -1,4 +1,5 @@
 import React, { Component, useContext } from 'react'
+import { authApi } from '../../apis/AuthApi'
 
 const AuthContext = React.createContext()
 
@@ -37,6 +38,10 @@ class AuthProvider extends Component {
   }
 
   userLogout = () => {
+    let user = localStorage.getItem('user')
+    user = JSON.parse(user)
+    authApi.logout(user)
+    
     localStorage.removeItem('user')
     this.setState({ user: null })
   }
