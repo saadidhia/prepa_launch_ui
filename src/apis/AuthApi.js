@@ -14,8 +14,8 @@ export const authApi = {
 
 const getIPAddress = async () => {
   try {
-    const response = await axios.get('http://ip-api.com/json');
-    console.log("IPPPPPPPPPP", response.data.query)
+    const response = await axios.get('https://ip-api.com/json');
+    console.log("IPPPPPPPPPP", response.data.query);
     const ipAddress = response.data.query; // IP address is available in the 'query' field
     return ipAddress;
   } catch (error) {
