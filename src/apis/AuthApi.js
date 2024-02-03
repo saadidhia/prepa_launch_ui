@@ -11,28 +11,13 @@ export const authApi = {
 
 }
 
+async function authenticate(username, password) {
 
-const getIPAddress = async () => {
-  try {
-    const response = await axios.get('https://ip-api.com/json');
-    console.log("IPPPPPPPPPP", response.data.query);
-    const ipAddress = response.data.query; // IP address is available in the 'query' field
-    return ipAddress;
-  } catch (error) {
-    console.error('Error fetching IP address:', error);
-    return 'Unknown';
-  }
-};
-
-
-
-async function authenticate (username, password) {
-  
-    const ipAddress = await getIPAddress(); // Get client's IP address
-    return instance.post('/auth/authenticate', { username, password }, {
-      headers: { 'Content-type': 'application/json',
-       'deviceId': ipAddress }
-    })
+  return instance.post('/auth/authenticate', { username, password }, {
+    headers: {
+      'Content-type': 'application/json'
+    }
+  })
 };
 
 function signup(user, admin) {
@@ -45,8 +30,8 @@ function signup(user, admin) {
   })
 }
 
-function logout (user){
-  return instance.post('/auth/logout',null,{
+function logout(user) {
+  return instance.post('/auth/logout', null, {
     headers: {
       'Authorization': bearerAuth(user),
       'Content-type': 'application/json'
