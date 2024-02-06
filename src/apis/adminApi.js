@@ -9,7 +9,9 @@ export const adminApi = {
   getNotifiedUsers,
   extendUser,
   createMotivation,
-  deleteMotivation
+  deleteMotivation,
+  getArchiveCards,
+  deleteArchiveCard
 }
 
 export const instance = axios.create({
@@ -77,4 +79,22 @@ function deleteMotivation(admin,motivationId){
     'Content-type': 'application/json'
   }})
 
+}
+
+function getArchiveCards(admin) {
+  return instance.get('/api/v1/archive_cards', {
+    headers: {
+      'Authorization': bearerAuth(admin),
+      'Content-type': 'application/json'
+    }
+  })
+}
+
+function deleteArchiveCard(admin,id){
+  return instance.delete(`/api/v1/archive_cards/${id}`,{
+  headers: {
+        'Authorization': bearerAuth(admin),
+        'Content-type': 'application/json'
+      }
+  })
 }

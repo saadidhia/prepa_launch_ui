@@ -9,6 +9,7 @@ import { Resume } from './components/user/Resume'
 import { CreateMotivation } from './components/admin/createMotivation'
 import { Motivations } from './components/user/motivations'
 import { Concours } from './components/user/Concours'
+import { ArchiveCards } from './components/admin/ArchiveCards'
 
 
 
@@ -87,6 +88,12 @@ const navigations = [
         text: "Motivation",
         link: "motivation",
         component: Motivations,
+        role: "admin"
+    },
+    {
+        text: "Archive Cards",
+        link: "archive_cards",
+        component: ArchiveCards,
         role: "admin"
     }
 

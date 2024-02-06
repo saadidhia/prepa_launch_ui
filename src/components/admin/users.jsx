@@ -25,7 +25,7 @@ export function Users() {
             }
         };
         fetchUsers();
-    }, [deletedUser, Auth]);
+    }, [deletedUser]);
 
     const handleDeleteUser = async (username) => {
         console.log("username!", username);
