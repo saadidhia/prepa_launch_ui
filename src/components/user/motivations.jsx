@@ -17,7 +17,7 @@ export function Motivations() {
   useEffect(() => {
 
     fetchMotivation()
-  }, [])
+  }, [successMessage])
   const fetchMotivation = async () => {
 
     try {
