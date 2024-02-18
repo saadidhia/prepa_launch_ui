@@ -19,12 +19,12 @@ jobs:
         node-version: 18  
     
     - name: Install dependencies
-      run: npm install
+      run: |
+        npm install
+        npm install -g env-cmd
     
     - name: Set CI environment variable
       run: export CI=false
 
     - name: Build
-      run: npm run build
-
-    
+      run: npm run build-dev
