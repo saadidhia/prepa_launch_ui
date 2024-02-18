@@ -25,6 +25,6 @@ jobs:
       run: export CI=false
 
     - name: Build
-      run: npm run build
+      run: npm run build-dev
 
     
