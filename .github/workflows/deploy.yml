@@ -27,4 +27,6 @@ jobs:
       run: export CI=false
 
     - name: Build
-      run: npm run build-dev
+      run: |
+        npm config set ignore-scripts true
+        npm run build-dev
