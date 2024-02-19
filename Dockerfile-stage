@@ -17,10 +17,10 @@ RUN npm install -g env-cmd
 COPY . .
 
 # Build the React app
-RUN npm run build
+RUN npm run build-qa
 
 # Expose the port the app runs on
 EXPOSE 3001
 
 # Command to run the application
-CMD ["npm", "run", "start-stage"]
+CMD ["npm", "run", "start-qa"]
