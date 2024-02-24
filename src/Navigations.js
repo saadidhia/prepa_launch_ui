@@ -10,6 +10,7 @@ import { CreateMotivation } from './components/admin/createMotivation'
 import { Motivations } from './components/user/motivations'
 import { Concours } from './components/user/Concours'
 import { ArchiveCards } from './components/admin/ArchiveCards'
+import { CreateBook } from './components/admin/createBook'
 
 
 
@@ -94,6 +95,12 @@ const navigations = [
         text: "Archive Cards",
         link: "archive_cards",
         component: ArchiveCards,
+        role: "admin"
+    },
+    {
+        text: "Book",
+        link: "book",
+        component: CreateBook,
         role: "admin"
     }
 

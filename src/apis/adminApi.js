@@ -11,7 +11,9 @@ export const adminApi = {
   createMotivation,
   deleteMotivation,
   getArchiveCards,
-  deleteArchiveCard
+  deleteArchiveCard,
+  updateArchiveCardById,
+  createBook
 }
 
 export const instance = axios.create({
@@ -20,6 +22,16 @@ export const instance = axios.create({
 
 function getUsers(admin) {
   return instance.get('/api/admin', {
+    headers: {
+      'Authorization': bearerAuth(admin),
+      'Content-type': 'application/json'
+    }
+  })
+}
+
+function createBook(book, admin) {
+  console.log("book2", book)
+  return instance.post('/api/books', book, {
     headers: {
       'Authorization': bearerAuth(admin),
       'Content-type': 'application/json'
@@ -97,4 +109,13 @@ function deleteArchiveCard(admin,id){
         'Content-type': 'application/json'
       }
   })
+}
+
+function updateArchiveCardById (admin,id,card ){
+  return instance.put(`/api/v1/archive_cards/${id}`,card,{
+    headers: {
+          'Authorization': bearerAuth(admin),
+          'Content-type': 'application/json'
+        }
+    })
 }
