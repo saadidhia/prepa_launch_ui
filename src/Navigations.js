@@ -12,7 +12,7 @@ import { Concours } from './components/user/Concours'
 import { ArchiveCards } from './components/admin/ArchiveCards'
 import { CreateBook } from './components/admin/createBook'
 import { Books } from './components/admin/Books'
-
+import Timer  from './components/user/timer'
 
 
 const navigations = [
@@ -109,6 +109,12 @@ const navigations = [
         link: "books",
         component: Books,
         role: "admin"
+    },
+    {
+        text: "Timer",
+        link: "timer",
+        component:  Timer,
+        role: "user"
     }
 
 
