@@ -8,6 +8,7 @@ export function Users() {
     const admin = Auth.getUser();
     const [users, setUsers] = useState([]);
     const [deletedUser, setDeletedUser] = useState();
+    const [activateUser, setActivateUser] = useState();
     const [filter, setFilter] = useState(''); // State to store the filter input
 
     useEffect(() => {
@@ -32,6 +33,18 @@ export function Users() {
         await adminApi.deleteUser(admin, username).then(
             (response) => setDeletedUser(response.data)
         );
+    }
+
+ const handleActivateUser = async (id) => {
+        try {
+            await adminApi.activateUser(admin, id);
+            // Re-fetch users after activation
+            const response = await adminApi.getUsers(admin);
+            setUsers(response.data);
+            console.log("User activated and list updated", response.data);
+        } catch (error) {
+            console.error('Error activating user:', error);
+        }
     }
 
     // Function to filter the users based on the filter text
@@ -62,7 +75,8 @@ export function Users() {
                             <TableCell>Start Date</TableCell>
                             <TableCell>Months</TableCell>
                             <TableCell>End Date</TableCell>
-                            <TableCell>Action</TableCell>
+                            <TableCell>Status</TableCell>
+                            <TableCell colSpan={2} align="center">Action</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
@@ -79,6 +93,7 @@ export function Users() {
                                 <TableCell>{user.startDate}</TableCell>
                                 <TableCell>{user.months}</TableCell>
                                 <TableCell>{user.expireDate}</TableCell>
+                                <TableCell>{(!user.isAccountLocked || user.isAccountLocked == null) ? "Active" : "Inactive"}</TableCell>
                                 <TableCell>
                                     <Button
                                         variant="outlined"
@@ -87,6 +102,16 @@ export function Users() {
                                         onClick={() => handleDeleteUser(user.username)}
                                     >
                                         Delete
+                                    </Button>
+                                </TableCell>
+                                 <TableCell>
+                                    <Button
+                                        variant="outlined"
+                                        color="secondary"
+                                        disabled={user.role === 'ADMIN' || (user.isAccountLocked == null || !user.isAccountLocked)}
+                                        onClick={() => handleActivateUser(user.id)}
+                                    >
+                                        Activate
                                     </Button>
                                 </TableCell>
                             </TableRow>
