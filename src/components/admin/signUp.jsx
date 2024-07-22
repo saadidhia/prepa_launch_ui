@@ -26,6 +26,7 @@ export function SignUp() {
   const [months, setMonths] = useState(0);
   const [numberPhone, setNumberPhone] = useState(0);
   const [gender, setGender] = useState("MALE")
+  const [role, setRole] = useState("USER")
 
 
   const [successmessage, setSuccessMessage] = useState("")
@@ -38,13 +39,13 @@ export function SignUp() {
   const handleSubmit = async (e) => {
     e.preventDefault()
 
-    if (!(username && password && name && email && level && field && startDate && months && numberPhone && gender)) {
+    if (!(username && password && name && email && level && field && startDate && months && numberPhone && gender && role)) {
 
       return
     }
 
 
-    const user = { username, password, name, email, level, field, startDate, months, numberPhone, gender  }
+    const user = { username, password, name, email, level, field, startDate, months, numberPhone, gender, role  }
     console.log("user", user)
 
     try {
@@ -78,6 +79,17 @@ export function SignUp() {
               <img /*src={logo}*/ height="350" weight="400" alt="Prepa Launch Logo" />
             </h3>
 
+            <div className="form-group mt-3">
+              <label >Role</label>
+              <select className="form-control mt-1"
+                name="role"
+                id="role"
+                onChange={(e) => setRole(e.target.value)}
+                value={role}>
+                <option value="USER">User</option>
+                <option value="ADMIN">admin</option>
+              </select>
+            </div>
             <div className="form-group mt-3">
               <label >User name</label>
               <input
