@@ -6,6 +6,7 @@ export const adminApi = {
 
   getUsers,
   deleteUser,
+  activateUser,
   getNotifiedUsers,
   extendUser,
   createMotivation,
@@ -75,6 +76,15 @@ function extendUser(admin, username, months) {
 
 function deleteUser(admin, username) {
   return instance.delete(`/api/admin/delete/${username}`, {
+    headers: {
+      'Authorization': bearerAuth(admin),
+      'Content-type': 'application/json'
+    }
+  })
+}
+
+function activateUser(admin, id) {
+  return instance.put(`/api/admin/mark-user-active/${id}`,null, {
     headers: {
       'Authorization': bearerAuth(admin),
       'Content-type': 'application/json'

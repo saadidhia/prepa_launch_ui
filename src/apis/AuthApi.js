@@ -22,12 +22,12 @@ async function authenticate(username, password) {
 
 function signup(user, admin) {
   console.log("user2", user)
-  return instance.post('/auth/signup', user, {
+  return instance.post("/auth/signup", user, {
     headers: {
-      'Authorization': bearerAuth(admin),
-      'Content-type': 'application/json'
-    }
-  })
+      Authorization: bearerAuth(admin),
+      "Content-type": "application/json",
+    },
+  });
 }
 
 function logout(user) {

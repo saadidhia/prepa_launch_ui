@@ -11,7 +11,7 @@ export function ArchiveCards() {
     const admin = Auth.getUser();
    const [archiveCards, setArchiveCards] = useState([]);
 
-  const fetchArchiveCards = async () => {
+  const fetchArchiveCards = async () => { 
     try {
         const response = await adminApi.getArchiveCards(admin);
         console.log("response", response);

@@ -4,12 +4,10 @@ import { authApi } from '../apis/AuthApi'
 import { parseJwt, handleLogError } from '../misc/Helpers'
 import { errors } from '../constants'
 import { Navigate } from "react-router-dom"
-
-
-
-
-
 import '../assets/css/login.css'
+import { Typography } from "@mui/material"
+
+
 export function Connexion() {
     const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
@@ -26,40 +24,40 @@ export function Connexion() {
 
 
 
-  const handleSubmit = event => {
-    event.preventDefault();
-    const user = { username: username, password: password };
-    if (!(username && password)) {
-      setIsError(true)
-      return
+  const handleSubmit = async event => {
+      event.preventDefault();
+      const user = { username: username, password: password };
+      if (!(username && password)) {
+        setIsError('Username and password are required')
+        return
+      }
+      try {
+        const response = await authApi.authenticate(user.username, user.password);
+        const { accessToken } = response.data;
+
+        if (accessToken) {
+          // SUCCESS CASE: ACCESS TOKEN IS PRESENT
+          const data = parseJwt(accessToken);
+          const user = { data, accessToken };
+
+          Auth.userLogin(user);
+
+          setUsername('');
+          setPassword('');
+          setIsLoggedIn(true);
+          setIsError(null); // Clear any previous error
+        } else {
+          // ERROR CASE: ACCESS TOKEN IS NULL
+          setIsLoggedIn(false);
+          setIsError(response.data.error || 'Authentication failed');
+        }
+      } catch (error) {
+        // GENERAL ERROR CASE: HANDLE UNEXPECTED ERRORS
+        setIsLoggedIn(false);
+        setIsError(error.response.data.error);
+      }
     }
 
-    authApi.authenticate(user.username, user.password)
-      .then(response => {
-        const { accessToken } = response.data
-        const data = parseJwt(accessToken)
-        const user = { data, accessToken }
-
-
-        Auth.userLogin(user)
-
-        setUsername('')
-        setPassword('')
-        setIsLoggedIn(true)
-        setIsError(false)
-
-      })
-      .catch(error => {
-        handleLogError(error)
-        setIsError(true)
-      })
-  }
-
-
-
-
-
-   
   if (isLoggedIn) {
     if (Auth.getUser().data.rol[0]=='ADMIN') {
     return <Navigate to={'/dashboard/users'} />
@@ -99,8 +97,8 @@ export function Connexion() {
                     <button type="submit" className="btn btn-primary" >
                       Login
                     </button>
-                    <div className="d-grid gap-2 mt-3">
-                      {isError && <h5>{errors.LOGIN_ERROR}</h5>} 
+                    <div className="d-grid gap-2 mt-3" style={{marginTop:'1rem'}}>
+                      {isError && <Typography sx={{fontWeight:700, fontSize:"13px", fontFamily:"Arial", fontStyle:'italic'}} variant="h6">{isError}</Typography>}
                     </div>
       
                   </div>
