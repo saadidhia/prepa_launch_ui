@@ -58,11 +58,6 @@ export function Connexion() {
       }
     }
 
-
-
-
-
-
   if (isLoggedIn) {
     if (Auth.getUser().data.rol[0]=='ADMIN') {
     return <Navigate to={'/dashboard/users'} />

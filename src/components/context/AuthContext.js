@@ -97,10 +97,15 @@ class AuthProvider extends Component {
     return false;
   };
 
+  userHasRole = (role) => {
+    const user = this.getUser();
+    return user && user.data.rol.includes(role);
+  };
+
   render() {
     const { children } = this.props;
     const { user } = this.state;
-    const { getUser, userIsAuthenticated, userIsAdmin, userLogin, userLogout } =
+    const { getUser, userIsAuthenticated, userIsAdmin, userLogin, userLogout, userHasRole } =
       this;
 
     return (
@@ -112,6 +117,7 @@ class AuthProvider extends Component {
           userIsAdmin,
           userLogin,
           userLogout,
+          userHasRole
         }}
       >
         {children}

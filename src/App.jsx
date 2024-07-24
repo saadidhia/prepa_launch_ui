@@ -59,15 +59,22 @@ const App = () => {
         <Route path="/dashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} >
         <Route path="/dashboard/profile" exact element={<Profile/>} />
           {navigations.map((navElement, index) => (
-
-            <Route key={index} exact path={navElement.link} element={<navElement.component />} />
+            <Route
+            key={index}
+            exact
+            path={navElement.link}
+            element={
+             <PrivateRoute requiredRole={navElement.role.toUpperCase()}>
+                <navElement.component />
+              </PrivateRoute>
+                              } />
           ))}
           {subjects.map((subject, index) => (
               <Route
                 key={index}
                 exact
                 path={`/dashboard/cours/${subject.links}`}
-                element={subject.components}
+                element={<PrivateRoute requiredRole="USER">{subject.components}</PrivateRoute>}
               />
             ))}
             {points.map((point) =>
@@ -76,7 +83,7 @@ const App = () => {
       key={`${point.links}-${index}`}
       exact
       path={`/dashboard/series/${point.link}/${subject.links}`}
-      element={subject.components}
+                  element={<PrivateRoute requiredRole="USER">{subject.components}</PrivateRoute>}
     />
   ))
 )
