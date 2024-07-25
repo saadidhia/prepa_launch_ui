@@ -75,9 +75,7 @@ export function SignUp() {
       <div className="Auth-form-container">
         <form className="Auth-form" onSubmit={handleSubmit}>
           <div className="Auth-form-content">
-            <h3 className="Auth-form-title">
-              <img /*src={logo}*/ height="350" weight="400" alt="Prepa Launch Logo" />
-            </h3>
+          
 
             <div className="form-group mt-3">
               <label >Role</label>
