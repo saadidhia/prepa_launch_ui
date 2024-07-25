@@ -41,7 +41,7 @@ export function Connexion() {
           const user = { data, accessToken };
 
           Auth.userLogin(user);
-
+          
           setUsername('');
           setPassword('');
           setIsLoggedIn(true);

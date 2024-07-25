@@ -75,6 +75,7 @@ export function Users() {
                             <TableCell>Start Date</TableCell>
                             <TableCell>Months</TableCell>
                             <TableCell>End Date</TableCell>
+                            <TableCell>Number Subscription</TableCell>
                             <TableCell>Status</TableCell>
                             <TableCell colSpan={2} align="center">Action</TableCell>
                         </TableRow>
@@ -93,6 +94,7 @@ export function Users() {
                                 <TableCell>{user.startDate}</TableCell>
                                 <TableCell>{user.months}</TableCell>
                                 <TableCell>{user.expireDate}</TableCell>
+                                <TableCell>{user.numberOfSubscription}</TableCell>
                                 <TableCell>{(!user.isAccountLocked || user.isAccountLocked == null) ? "Active" : "Inactive"}</TableCell>
                                 <TableCell>
                                     <Button

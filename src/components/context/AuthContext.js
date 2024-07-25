@@ -47,6 +47,20 @@ class AuthProvider extends Component {
     return JSON.parse(localStorage.getItem("user"));
   };
 
+  isUserAlertedToRenewSubscription = ()=> {
+    let user = localStorage.getItem("user");
+    if (!user) {
+      return;
+    }
+    user = JSON.parse(user);
+    const expiration = new Date(user.data.lock_date);
+    const now = new Date();
+    const threeDaysFromNow = new Date(now.getTime() + 3 * 24 * 60 * 60 * 1000);
+
+    return expiration <= threeDaysFromNow;
+    
+  }
+
   userIsAuthenticated = () => {
     let user = localStorage.getItem("user");
     if (!user) {
@@ -105,7 +119,7 @@ class AuthProvider extends Component {
   render() {
     const { children } = this.props;
     const { user } = this.state;
-    const { getUser, userIsAuthenticated, userIsAdmin, userLogin, userLogout, userHasRole } =
+    const { getUser, userIsAuthenticated, userIsAdmin, userLogin, userLogout, userHasRole, isUserAlertedToRenewSubscription } =
       this;
 
     return (
@@ -117,7 +131,8 @@ class AuthProvider extends Component {
           userIsAdmin,
           userLogin,
           userLogout,
-          userHasRole
+          userHasRole,
+          isUserAlertedToRenewSubscription
         }}
       >
         {children}

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { styled, useTheme } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import Drawer from '@mui/material/Drawer';
@@ -19,6 +19,7 @@ import ListItemText from '@mui/material/ListItemText';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import navigations from '../Navigations';
 import AccountCircleRoundedIcon from '@mui/icons-material/AccountCircleRounded';
+import Alert from './small/Alert'
 
 import { Outlet, useNavigate } from 'react-router-dom';
 import { useAuth } from './context/AuthContext';
@@ -108,6 +109,8 @@ export default function Dashboard() {
 
   const theme = useTheme();
   const [open, setOpen] = useState(false);
+  const [alertOpen, setAlertOpen] = useState(false); // State for the alert
+  const [alertMessage, setAlertMessage] = useState('');
 
   const handleDrawerOpen = () => {
     setOpen(true);
@@ -124,6 +127,16 @@ export default function Dashboard() {
 
     navigate('/dashboard/profile');
   };
+
+  // Example condition to show alert
+ // const condition = Auth.isUserAlertedToRenewSubscription(); // Replace with your actual condition
+
+  useEffect(() => {
+    if (Auth.isUserAlertedToRenewSubscription()) {
+      setAlertMessage('Votre compte va expirer à '+ user.data.lock_date+ ". Contactez l'administrateur SVP!");
+      setAlertOpen(true);
+    }
+  }, []);
 
   return (
     <>
@@ -213,6 +226,11 @@ export default function Dashboard() {
           <Outlet />
         </Main>
       </Box>
+      <Alert
+        open={alertOpen}
+        message={alertMessage}
+        onClose={() => setAlertOpen(false)}
+      />
     </>
   );
 }
