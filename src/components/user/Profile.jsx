@@ -14,7 +14,6 @@ export function Profile() {
     const [startDate, setStartDate] = useState('');
     const [months, setMonths] = useState('');
     const [expireDate, setExpireDate] = useState('');
-    const [isNotified, setIsNotified] = useState('');
     const [numberPhone, setNumberPhone] = useState('');
     const [field, setField] = useState('')
     const [gender, setGender] = useState('')
@@ -55,7 +54,6 @@ export function Profile() {
                 setStartDate(response.data.startDate)
                 setMonths(response.data.months)
                 setExpireDate(response.data.expireDate)
-                setIsNotified(setNotified(response.data.isNotified))
                 setLevel(response.data.level)
                 setNumberPhone(response.data.numberPhone)
                 setField(response.data.field)
@@ -68,13 +66,6 @@ export function Profile() {
         fetchCards()
     }, [])
 
-    function setNotified(notif) {
-        if (notif === true) {
-            return 'YES'
-        } else {
-            return 'NO'
-        }
-    }
 
     return (
         <Paper sx={{ p: 3, maxWidth: 600, margin: 'auto' }}>
@@ -130,11 +121,6 @@ export function Profile() {
                 <Grid item xs={12}>
                     <Typography variant="subtitle1">
                         Expire Date: {expireDate}
-                    </Typography>
-                </Grid>
-                <Grid item xs={12}>
-                    <Typography variant="subtitle1">
-                        Is Notified: {isNotified}
                     </Typography>
                 </Grid>
                 <Grid item xs={12}>

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, TextField } from '@mui/material';
+import { Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, TextField, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
 import { adminApi } from '../../apis/adminApi';
 import { useAuth } from '../context/AuthContext';
 
@@ -8,11 +8,12 @@ export function Users() {
     const admin = Auth.getUser();
     const [users, setUsers] = useState([]);
     const [deletedUser, setDeletedUser] = useState();
-    const [activateUser, setActivateUser] = useState();
-    const [filter, setFilter] = useState(''); // State to store the filter input
+    const [filter, setFilter] = useState('');
+    const [openDialog, setOpenDialog] = useState(false);
+    const [selectedUser, setSelectedUser] = useState(null);
+    const [months, setMonths] = useState(0);
 
     useEffect(() => {
-        // Fetch user data when the component mounts
         const fetchUsers = async () => {
             const currentAdmin = Auth.getUser();
             try {
@@ -35,10 +36,9 @@ export function Users() {
         );
     }
 
- const handleActivateUser = async (id) => {
+    const handleActivateUser = async (username, months, numberOfSub) => {
         try {
-            await adminApi.activateUser(admin, id);
-            // Re-fetch users after activation
+            await adminApi.activateAndExtendUser(admin, username, months, numberOfSub);
             const response = await adminApi.getUsers(admin);
             setUsers(response.data);
             console.log("User activated and list updated", response.data);
@@ -47,7 +47,24 @@ export function Users() {
         }
     }
 
-    // Function to filter the users based on the filter text
+    const handleOpenDialog = (user) => {
+        setSelectedUser(user);
+        setOpenDialog(true);
+    };
+
+    const handleCloseDialog = () => {
+        setOpenDialog(false);
+        setSelectedUser(null);
+        setMonths(0);
+    };
+
+    const handleSubmitActivate = () => {
+        if (selectedUser) {
+            handleActivateUser(selectedUser.username, months, selectedUser.numberOfSubscription);
+            handleCloseDialog();
+        }
+    };
+
     const filteredUsers = users.filter(user => {
         return user.email.toLowerCase().includes(filter.toLowerCase());
     });
@@ -106,12 +123,12 @@ export function Users() {
                                         Delete
                                     </Button>
                                 </TableCell>
-                                 <TableCell>
+                                <TableCell>
                                     <Button
                                         variant="outlined"
                                         color="secondary"
                                         disabled={user.role === 'ADMIN' || (user.isAccountLocked == null || !user.isAccountLocked)}
-                                        onClick={() => handleActivateUser(user.id)}
+                                        onClick={() => handleOpenDialog(user)}
                                     >
                                         Activate
                                     </Button>
@@ -121,6 +138,33 @@ export function Users() {
                     </TableBody>
                 </Table>
             </TableContainer>
+
+            <Dialog open={openDialog} onClose={handleCloseDialog}>
+                <DialogTitle>Activer le candidat</DialogTitle>
+                <DialogContent>
+                    <DialogContentText>
+
+                        Entrez le nombre de mois pour prolonger l'abonnement de l'utilisateur.
+                    </DialogContentText>
+                    <TextField
+                        autoFocus
+                        margin="dense"
+                        label="Months"
+                        type="number"
+                        fullWidth
+                        value={months}
+                        onChange={(e) => setMonths(Number(e.target.value))}
+                    />
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleCloseDialog} color="primary">
+                        Cancel
+                    </Button>
+                    <Button onClick={handleSubmitActivate} color="primary">
+                        Submit
+                    </Button>
+                </DialogActions>
+            </Dialog>
         </div>
     );
 }
