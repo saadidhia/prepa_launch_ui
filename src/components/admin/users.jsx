@@ -89,6 +89,7 @@ export function Users() {
                             <TableCell>Phone</TableCell>
                             <TableCell>Role</TableCell>
                             <TableCell>Level</TableCell>
+                            <TableCell>Field</TableCell>
                             <TableCell>Start Date</TableCell>
                             <TableCell>Months</TableCell>
                             <TableCell>End Date</TableCell>
@@ -108,6 +109,7 @@ export function Users() {
                                 <TableCell>{user.numberPhone}</TableCell>
                                 <TableCell>{user.role}</TableCell>
                                 <TableCell>{user.level}</TableCell>
+                                <TableCell>{user.field}</TableCell>
                                 <TableCell>{user.startDate}</TableCell>
                                 <TableCell>{user.months}</TableCell>
                                 <TableCell>{user.expireDate}</TableCell>

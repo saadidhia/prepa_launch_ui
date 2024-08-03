@@ -16,7 +16,8 @@ export const adminApi = {
   updateArchiveCardById,
   createBook,
   getBooks,
-  deleteBook
+  deleteBook,
+  getStatics
 }
 
 export const instance = axios.create({
@@ -151,4 +152,13 @@ function updateArchiveCardById (admin,id,card ){
           'Content-type': 'application/json'
         }
     })
+}
+
+function getStatics(admin){
+  return instance.get('/api/admin/total/stat', {
+    headers: {
+      'Authorization': bearerAuth(admin),
+      'Content-type': 'application/json'
+    }
+  })
 }

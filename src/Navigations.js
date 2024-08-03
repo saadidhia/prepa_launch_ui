@@ -13,6 +13,7 @@ import { ArchiveCards } from './components/admin/ArchiveCards'
 import { CreateBook } from './components/admin/createBook'
 import { Books } from './components/admin/Books'
 import Timer  from './components/user/timer'
+import { UsersStat } from './components/admin/UsersStat'
 
 
 const navigations = [
@@ -115,6 +116,13 @@ const navigations = [
         link: "timer",
         component:  Timer,
         role: "user"
+    },
+    {
+        text: "Statics",
+        link: "statics",
+        component:  UsersStat,
+        role: "admin"
+        
     }
 
 
