@@ -17,6 +17,7 @@ const Timer = () => {
   const Auth = useAuth();
   const user = Auth.getUser();
   const [timers, setTimers] = useState([]);
+  const [actualResponse, setActualResponse] = useState([]);
 
   const fetchTimers = async () => {
     try {
@@ -48,10 +49,15 @@ const Timer = () => {
       });
 
       setTimers(processedData);
+      setActualResponse(data)
     } catch (error) {
       console.error('Error fetching Timers:', error);
     }
   };
+
+  const updateTimers = () => {
+      fetchTimers();
+    };
 
   useEffect(() => {
     fetchTimers();
@@ -60,8 +66,12 @@ const Timer = () => {
   return (
     <div style={{ padding: 20 }}>
       <h1>Timer</h1>
-      <TimerForm />
-      <PaginatedTable columns={columns} rows={timers} />
+      <TimerForm onTimerUpdate={updateTimers}/>
+      <PaginatedTable
+       columns={columns}
+       rows={timers}
+       actualResponse={actualResponse}
+       />
     </div>
   );
 };

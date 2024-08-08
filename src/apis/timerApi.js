@@ -29,7 +29,7 @@ function startTimer(user, timer){
 
   function stopTimer(user, id){
   
-    return instance.post(`/api/v1/timer/stop/${id}`, {
+    return instance.put(`/api/v1/timer/stop/${id}`,{}, {
       headers: {
         'Authorization': bearerAuth(user),
         'Content-type': 'application/json'
