@@ -12,14 +12,22 @@ import {
   Dialog,
   DialogTitle,
   DialogContent,
-  DialogActions
+  DialogActions,
+  TextField
 } from '@mui/material';
+import { useAuth } from '../context/AuthContext';
+import { timersApi } from '../../apis/timerApi';
 
-const PaginatedTable = ({ rows, columns, onPauseTimer, onResumeTimer, actualResponse }) => {
+const PaginatedTable = ({ rows, columns, onPauseTimer, onResumeTimer, actualResponse,fetchTimers  }) => {
+  const Auth = useAuth();
+  const user = Auth.getUser();
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
-  const [open, setOpen] = useState(false);
+  const [viewDialogOpen, setViewDialogOpen] = useState(false);
   const [selectedDescription, setSelectedDescription] = useState('');
+  const [editRowId, setEditRowId] = useState(null);
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [description, setDescription] = useState('');
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -32,45 +40,55 @@ const PaginatedTable = ({ rows, columns, onPauseTimer, onResumeTimer, actualResp
 
   const handleOpenModal = (description) => {
     setSelectedDescription(description);
-    setOpen(true);
+    setViewDialogOpen(true);
   };
 
   const handleCloseModal = () => {
-    setOpen(false);
+    setViewDialogOpen(false);
     setSelectedDescription('');
   };
-
-  const handlePause = (id) => {
-    onPauseTimer(id);
+  const handleCloseEditDialog = () => {
+    setEditDialogOpen(false);
+    setDescription('');
+    setEditRowId(null);
   };
 
-  const handleResume = (id) => {
-    onResumeTimer(id);
+  const handleUpdate = async () => {
+    try {
+      const response = await timersApi.updateTimerDescription(user, editRowId, { description });
+      handleCloseEditDialog();
+      fetchTimers();
+    } catch (error) {
+      console.error('Failed to edit timer description:', error);
+    }
+  };
+  const handleOpenEditDialog = (row) => {
+    setEditRowId(row.id);
+    setDescription(row.description);
+    setEditDialogOpen(true);
   };
 
   const emptyRows = rowsPerPage - Math.min(rowsPerPage, rows.length - page * rowsPerPage);
 
-    const isWithin48Hours = (dateTimeString) => {
-     const currentTime = new Date();
-     const eventTime = new Date(dateTimeString);
-     const timeDifference = currentTime - eventTime;
-     const hoursDifference = timeDifference / (1000 * 60 * 60);
-     console.log(hoursDifference)
-     return hoursDifference <= 48;
-   };
+  const isWithin48Hours = (dateTimeString) => {
+    const currentTime = new Date();
+    const eventTime = new Date(dateTimeString);
+    const timeDifference = currentTime - eventTime;
+    const hoursDifference = timeDifference / (1000 * 60 * 60);
+    return hoursDifference <= 48;
+  };
 
-const renderActionButtons = (row) => {
-  // Check if there's at least one response within the 48-hour window
-  const shouldShowEditButton = actualResponse.some(response => isWithin48Hours(response.start));
+  const renderActionButtons = (row) => {
+    const shouldShowEditButton = actualResponse.some(response =>
+      response.id === row.id && isWithin48Hours(response.start)
+    );
 
-  // Return a single button if the condition is met, otherwise return null
-  return shouldShowEditButton ? (
-    <Button variant="contained" color="primary">
-      Edit
-    </Button>
-  ) : null;
-};
-
+    return shouldShowEditButton ? (
+      <Button variant="contained" color="primary" onClick={() => handleOpenEditDialog(row)}>
+        Edit
+      </Button>
+    ) : null;
+  };
 
   return (
     <Paper>
@@ -103,9 +121,9 @@ const renderActionButtons = (row) => {
                     )}
                   </TableCell>
                 ))}
-                 <TableCell>
-                                  {renderActionButtons(actualResponse)}
-                                </TableCell>
+                <TableCell>
+                  {renderActionButtons(row)}
+                </TableCell>
               </TableRow>
             ))}
             {emptyRows > 0 && (
@@ -126,7 +144,7 @@ const renderActionButtons = (row) => {
         onPageChange={handleChangePage}
         onRowsPerPageChange={handleChangeRowsPerPage}
       />
-      <Dialog open={open} onClose={handleCloseModal}>
+      <Dialog open={viewDialogOpen} onClose={handleCloseModal}>
         <DialogTitle>Description</DialogTitle>
         <DialogContent>
           <p>{selectedDescription}</p>
@@ -134,6 +152,30 @@ const renderActionButtons = (row) => {
         <DialogActions>
           <Button onClick={handleCloseModal} color="primary">
             Close
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      <Dialog open={editDialogOpen} onClose={handleCloseEditDialog}>
+        <DialogTitle>Edit Description</DialogTitle>
+        <DialogContent>
+          <TextField
+            autoFocus
+            margin="dense"
+            label="Description"
+            type="text"
+            fullWidth
+            variant="outlined"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseEditDialog} color="primary">
+            Cancel
+          </Button>
+          <Button onClick={handleUpdate} color="primary" variant="contained">
+            Update
           </Button>
         </DialogActions>
       </Dialog>

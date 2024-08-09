@@ -71,6 +71,7 @@ const Timer = () => {
        columns={columns}
        rows={timers}
        actualResponse={actualResponse}
+       fetchTimers={fetchTimers}
        />
     </div>
   );

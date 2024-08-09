@@ -99,7 +99,7 @@ const handleStart = async () => {
         </Select>
       </FormControl>
       <Box sx={{ marginLeft: 2 }}>
-        <Stopwatch isRunning={isRunning} onStart={handleStart} onStop={handleStop} />
+        <Stopwatch textInput={textInput} subject={subject} isRunning={isRunning} onStart={handleStart} onStop={handleStop} />
       </Box>
     </Box>
   );
