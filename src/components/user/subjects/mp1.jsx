@@ -3,6 +3,7 @@ import { premiereApi } from '../../../apis/premiereApi';
 import { PdfViewer} from '../../small/PdfViewer' 
 import { useAuth } from '../../context/AuthContext'
 import subjects from "../../../subjects";
+import { useLocation } from "react-router-dom";
 
 export function Mp1(props) {
 
@@ -10,12 +11,15 @@ export function Mp1(props) {
     const [pdfFiles, setPdfFiles] = useState([]);
     const Auth = useAuth()
     const user = Auth.getUser() 
-    
+      const location = useLocation();
+
+  const subFolderName = location.state?.subFolderName || "Cours";
+
     useEffect(() => {
         const fetchPdfs = async () => {
           try {
 
-            const response = await premiereApi.getPdfs(user);
+            const response = await premiereApi.getPdfs(user,subFolderName);
             console.log(response.data);
             setPdfFiles(response.data);
             
