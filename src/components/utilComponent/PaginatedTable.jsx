@@ -28,6 +28,8 @@ const PaginatedTable = ({ rows, columns, onPauseTimer, onResumeTimer, actualResp
   const [editRowId, setEditRowId] = useState(null);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [description, setDescription] = useState('');
+  const [deleteRowId, setDeleteRowId] = useState(null);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -68,7 +70,35 @@ const PaginatedTable = ({ rows, columns, onPauseTimer, onResumeTimer, actualResp
     setEditDialogOpen(true);
   };
 
+  const handleOpenDeleteDialog = (rowId) => {
+    setDeleteRowId(rowId);
+    setDeleteDialogOpen(true);
+  };
+
+    const handleCloseDeleteDialog = () => {
+      setDeleteDialogOpen(false);
+      setDeleteRowId(null);
+    };
+
+ const handleDelete = async () => {
+    try {
+      await timersApi.deleteTimer(user, deleteRowId);
+      handleCloseDeleteDialog();
+      fetchTimers();
+    } catch (error) {
+      console.error('Failed to delete timer:', error);
+    }
+  };
+
   const emptyRows = rowsPerPage - Math.min(rowsPerPage, rows.length - page * rowsPerPage);
+
+  const isWithin24Hours = (dateTimeString) => {
+    const currentTime = new Date();
+    const eventTime = new Date(dateTimeString);
+    const timeDifference = currentTime - eventTime;
+    const hoursDifference = timeDifference / (1000 * 60 * 60);
+    return hoursDifference <= 24;
+  };
 
   const isWithin48Hours = (dateTimeString) => {
     const currentTime = new Date();
@@ -78,16 +108,45 @@ const PaginatedTable = ({ rows, columns, onPauseTimer, onResumeTimer, actualResp
     return hoursDifference <= 48;
   };
 
-  const renderActionButtons = (row) => {
+//   const renderActionButtons = (row) => {
+//     const shouldShowEditButton = actualResponse.some(response =>
+//       response.id === row.id && isWithin48Hours(response.start)
+//     );
+//
+//     return shouldShowEditButton ? (
+//       <Button variant="contained" color="primary" onClick={() => handleOpenEditDialog(row)}>
+//         Edit
+//       </Button>
+//     ) : null;
+//   };
+ const renderActionButtons = (row) => {
     const shouldShowEditButton = actualResponse.some(response =>
       response.id === row.id && isWithin48Hours(response.start)
     );
 
-    return shouldShowEditButton ? (
-      <Button variant="contained" color="primary" onClick={() => handleOpenEditDialog(row)}>
-        Edit
-      </Button>
-    ) : null;
+    const shouldShowDeleteButton = actualResponse.some(response =>
+      response.id === row.id && isWithin24Hours(response.start)
+    );
+
+    return (
+      <>
+        {shouldShowEditButton && (
+          <Button variant="contained" color="primary" onClick={() => handleOpenEditDialog(row)}>
+            Edit
+          </Button>
+        )}
+        {shouldShowDeleteButton && (
+          <Button
+            variant="contained"
+            color="error"
+            onClick={() => handleOpenDeleteDialog(row.id)}
+            style={{ marginLeft: '8px' }}
+          >
+            Delete
+          </Button>
+        )}
+      </>
+    );
   };
 
   return (
@@ -179,6 +238,22 @@ const PaginatedTable = ({ rows, columns, onPauseTimer, onResumeTimer, actualResp
           </Button>
         </DialogActions>
       </Dialog>
+
+       <Dialog open={deleteDialogOpen} onClose={handleCloseDeleteDialog}>
+              <DialogTitle>Confirm Delete</DialogTitle>
+              <DialogContent>
+                Are you sure you want to delete this timer?
+              </DialogContent>
+              <DialogActions>
+                <Button onClick={handleCloseDeleteDialog} color="primary">
+                  Cancel
+                </Button>
+                <Button onClick={handleDelete} color="error" variant="contained">
+                  Delete
+                </Button>
+              </DialogActions>
+            </Dialog>
+
     </Paper>
   );
 };

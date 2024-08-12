@@ -1,4 +1,5 @@
 import React from "react";
+import "../css/style.css"
 
 export const Features = (props) => {
   return (

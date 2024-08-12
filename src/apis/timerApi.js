@@ -5,7 +5,8 @@ export const timersApi = {
     getTimers,
     startTimer,
     stopTimer,
-    updateTimerDescription
+    updateTimerDescription,
+    deleteTimer
 }
 
 function getTimers(user) {
@@ -47,3 +48,14 @@ function startTimer(user, timer){
         }
       })
     }
+
+    function deleteTimer(user,deleteRowId){
+
+          return instance.delete(`/api/v1/timer/delete/${deleteRowId}`, {
+            headers: {
+              'Authorization': bearerAuth(user),
+              'Content-type': 'application/json'
+            }
+          })
+        }
+

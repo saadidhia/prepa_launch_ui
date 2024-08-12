@@ -1,13 +1,13 @@
-body,
-html {
+body, html {
   font-family: "Open Sans", sans-serif;
-  text-rendering: optimizeLegibility !important;
-  -webkit-font-smoothing: antialiased !important;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
   color: #777;
   font-weight: 400;
-  width: 100% !important;
-  height: 100% !important;
+  width: 100%;
+  height: 100%;
 }
+
 h2,
 h3,
 h4 {
@@ -208,7 +208,7 @@ a:focus,
   display: table;
   width: 100%;
   padding: 0;
-  background: url(../public/img/intro-bg.jpg) center center no-repeat;
+  background: url(./intro-bg.jpg) center center no-repeat;
   background-color: #e5e5e5;
   -webkit-background-size: cover;
   -moz-background-size: cover;
@@ -602,25 +602,5 @@ label {
 @media (max-width: 768px) {
   #about img {
     margin: 50px 0;
-  }
-}
-
-
-@media screen and (max-width: 400px) {
-  #features {
-    padding: 20px;
-    width: 111%;
-  }
-  #about,
-  #services,
-  #testimonials,
-  #team,
-  #contact,
-  #footer {
-    width: 111%;
-  }
-
-  #livres {
-    width: 110%;
   }
 }
