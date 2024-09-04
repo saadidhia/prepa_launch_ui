@@ -3,15 +3,18 @@ import { instance } from './adminApi'
 
 
 export const premiereApi = {
-    getPdfs
+  getPdfs
 }
 
 
-function getPdfs(user) {
-    return instance.get('/api/v1/drive/premiere',{
-        headers: {
-          'Authorization': bearerAuth(user),
-          'Content-type': 'application/json'
-        }
-      });
+function getPdfs(user,subFolderName) {
+  return instance.get(`/api/v1/drive/premiere`, {
+    headers: {
+      'Authorization': bearerAuth(user),
+      'Content-type': 'application/json'
+    },
+    params: {
+      subFolderName
+    }
+  });
 }

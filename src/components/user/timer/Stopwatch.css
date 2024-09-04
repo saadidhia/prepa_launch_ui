@@ -1,0 +1,16 @@
+.stopwatch-container {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  flex-direction: column;
+}
+
+.button-container {
+  display: flex;
+  gap: 1rem;
+}
+
+.time-display {
+  display: flex;
+  font-size: 1rem;
+}

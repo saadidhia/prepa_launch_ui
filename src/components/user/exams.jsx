@@ -2,9 +2,11 @@ import React, { useEffect, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { Card, CardContent, CardMedia, Typography, CardActions, Button } from '@mui/material';
 import courses from '../../subjects';
+import { useNavigate } from 'react-router-dom';
 
 export function Exams() {
   const Auth = useAuth();
+      const navigate = useNavigate();
   const user = Auth.getUser();
   const filteredCourses = courses.filter(course => course.section.includes(user.data.field));
 
@@ -17,8 +19,9 @@ export function Exams() {
             
          
           <CardActions display="flex" justifyContent="space-between">
-            <Button size="small" onClick={() => { /* Handle DS Button click */ }}>DS</Button>
-            <Button size="small" onClick={() => { /* Handle EXAMS Button click */ }}>EXAMS</Button>
+              <Button size="small" onClick={() => navigate(`/dashboard/exams/${course.links}`, { state: { subFolderName: 'DS' } })}>DS</Button>
+              <Button size="small" onClick={() => navigate(`/dashboard/exams/${course.links}`, { state: { subFolderName: 'Exams' } })}>EXAMS</Button>
+
           </CardActions>
           </CardContent>
         </Card>

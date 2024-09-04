@@ -4,7 +4,9 @@ import { bearerAuth } from './AuthApi'
 export const timersApi = {
     getTimers,
     startTimer,
-    stopTimer
+    stopTimer,
+    updateTimerDescription,
+    deleteTimer
 }
 
 function getTimers(user) {
@@ -29,10 +31,31 @@ function startTimer(user, timer){
 
   function stopTimer(user, id){
   
-    return instance.post(`/api/v1/timer/stop/${id}`, {
+    return instance.put(`/api/v1/timer/stop/${id}`,{}, {
       headers: {
         'Authorization': bearerAuth(user),
         'Content-type': 'application/json'
       }
     })
   }
+
+  function updateTimerDescription(user,id, timer){
+
+      return instance.put(`/api/v1/timer/update-timer-description/${id}`,timer, {
+        headers: {
+          'Authorization': bearerAuth(user),
+          'Content-type': 'application/json'
+        }
+      })
+    }
+
+    function deleteTimer(user,deleteRowId){
+
+          return instance.delete(`/api/v1/timer/delete/${deleteRowId}`, {
+            headers: {
+              'Authorization': bearerAuth(user),
+              'Content-type': 'application/json'
+            }
+          })
+        }
+
