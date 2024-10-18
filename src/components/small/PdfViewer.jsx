@@ -4,10 +4,10 @@ export function PdfViewer({ pdf }) {
   return (
     <div className="pdf-item">
       <iframe
-        src={`${config.google_drive_url}/file/d/${pdf.id}/preview`}
+        src={`${config.s3_storage_url}/${pdf}`}
         title="PDF Viewer"
         width="100%"
-        height="300"
+        height="700"
       />
       <p style={{
         fontWeight: 'bold', 
@@ -16,7 +16,7 @@ export function PdfViewer({ pdf }) {
         flexDirection: 'column',
         justifyContent: 'center', // Center the content vertically
         textAlign: 'center',
-      }}>{pdf.name}</p>
+      }}>pdf</p>
     </div>
   );
 }

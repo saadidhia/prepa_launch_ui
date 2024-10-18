@@ -6,15 +6,17 @@ export const premiereApi = {
   getPdfs
 }
 
-
-function getPdfs(user,subFolderName) {
-  return instance.get(`/api/v1/drive/premiere`, {
-    headers: {
-      'Authorization': bearerAuth(user),
-      'Content-type': 'application/json'
-    },
-    params: {
-      subFolderName
-    }
+function getPdfs(user, subFolderName) {
+  console.log("level"+ user.data.level);
+  console.log("field"+ user.data.field);
+  console.log("sub"+ subFolderName);
+  return instance.get(`/api/files?folderPrefix=${user.data.level}/${user.data.field}/${subFolderName}`, {
+   // headers: {
+     // 'Authorization': bearerAuth(user),
+     // 'Content-Type': 'application/json'
+   // },
+  //  params: {
+    //  subFolderName
+   // }
   });
 }

@@ -7,19 +7,20 @@ import { useLocation } from "react-router-dom";
 
 export function Mp1(props) {
 
-    const {name}=props
+   // const {name}=props
     const [pdfFiles, setPdfFiles] = useState([]);
     const Auth = useAuth()
     const user = Auth.getUser() 
       const location = useLocation();
 
-  const subFolderName = location.state?.subFolderName || "Cours";
+  const subFolderName = location.state?.subFolderName;
 
     useEffect(() => {
         const fetchPdfs = async () => {
           try {
 
             const response = await premiereApi.getPdfs(user,subFolderName);
+            console.log(subFolderName);
             console.log(response.data);
             setPdfFiles(response.data);
             
@@ -37,7 +38,7 @@ export function Mp1(props) {
             pdfFiles.map((pdf) => (
               <div style={{ width: '30%', margin: '10px 0' }}>
   
-                <PdfViewer key={pdf.id} pdf={pdf} />
+                <PdfViewer  pdf={pdf} />
               </div>
             ))
           ) : (

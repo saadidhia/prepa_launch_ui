@@ -2,11 +2,19 @@ import React from "react";
 import "./Stopwatch.css";
 
 const StopwatchDisplay = ({ value }) => {
+  const totalSeconds = Math.floor(value / 1000);
+  const hours = Math.floor(totalSeconds / 3600);
+  const minutes = Math.floor((totalSeconds % 3600) / 60);
+  const seconds = totalSeconds % 60;
+  
+  // Formatting to ensure two digits with leading zeros
+  const formatNumber = (num) => String(num).padStart(2, '0');
+
   return (
-    <div className="time-display" >
-      <div>{("0" + Math.floor((value / 60_000) % 60)).slice(-2)}</div>:
-      <div>{("0" + Math.floor((value / 1_000) % 60)).slice(-2)}</div>:
-      <div>{("0" + ((value / 10) % 1_000)).slice(-2)}</div>
+    <div className="time-display">
+      <div>{formatNumber(hours)}</div>:
+      <div>{formatNumber(minutes)}</div>:
+      <div>{formatNumber(seconds)}</div>
     </div>
   );
 };

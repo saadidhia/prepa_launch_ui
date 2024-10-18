@@ -14,27 +14,56 @@ function TimerForm({ onTimerUpdate }) {
   const [elapsedTime, setElapsedTime] = useState(0);
   const [timerId, setTimerId] = useState(null);
 
- useEffect(() => {
+  // Restore timer state from localStorage when component mounts
+  useEffect(() => {
     const savedIsRunning = localStorage.getItem('isRunning') === 'true';
     const savedTimerId = localStorage.getItem('timerId');
+    const savedStartTime = localStorage.getItem('startTime');
+    const savedElapsedTime = parseInt(localStorage.getItem('elapsedTime'), 10) || 0;
 
-    if (savedIsRunning) {
+    if (savedIsRunning && savedStartTime) {
+      const currentTime = Date.now();
+      const timeElapsedSinceStart = currentTime - parseInt(savedStartTime, 10);
+      setElapsedTime(savedElapsedTime + timeElapsedSinceStart); // Update elapsed time
       setIsRunning(true);
       setTimerId(savedTimerId);
     }
   }, []);
 
+  // Update localStorage when timer state changes
+  useEffect(() => {
+    localStorage.setItem('elapsedTime', elapsedTime);
+    localStorage.setItem('isRunning', isRunning.toString());
+    if (!isRunning) {
+      localStorage.removeItem('startTime');
+      localStorage.removeItem('timerId');
+    }
+  }, [elapsedTime, isRunning]);
+
+  // Timer interval to update elapsed time
+  useEffect(() => {
+    let intervalId;
+    if (isRunning) {
+      const startTime = Date.now();
+      intervalId = setInterval(() => {
+        const newElapsedTime = elapsedTime + (Date.now() - startTime);
+        setElapsedTime(newElapsedTime);
+      }, 1000);
+    }
+    return () => clearInterval(intervalId); // Cleanup interval on unmount or when isRunning changes
+  }, [isRunning]);
+
   const handleInputChange = (event) => {
     setTextInput(event.target.value);
   };
 
-
-const handleStart = async () => {
+  const handleStart = async () => {
     if (textInput === '' || subject === '') return;
 
     const startTime = Date.now();
     localStorage.setItem('startTime', startTime);
     localStorage.setItem('isRunning', 'true');
+    setElapsedTime(0); // Reset elapsed time when starting a new timer
 
     try {
       const response = await timersApi.startTimer(user, { description: textInput, subject, startTime });
@@ -52,8 +81,6 @@ const handleStart = async () => {
     try {
       await timersApi.stopTimer(user, timerId);
       localStorage.setItem('isRunning', 'false');
-      localStorage.removeItem('startTime');
-      localStorage.removeItem('timerId');
       setIsRunning(false);
       setTextInput('');
       setSubject('');
@@ -62,7 +89,6 @@ const handleStart = async () => {
       console.error('Failed to stop timer:', error);
     }
   };
-
 
   const formatElapsedTime = (milliseconds) => {
     const totalSeconds = Math.floor(milliseconds / 1000);
@@ -86,20 +112,28 @@ const handleStart = async () => {
         disabled={isRunning}
       />
       <FormControl variant="outlined" sx={{ minWidth: 150 }} disabled={isRunning}>
-        <InputLabel id="subject-label">Matiere</InputLabel>
+        <InputLabel id="subject-label">Matière</InputLabel>
         <Select
           labelId="subject-label"
           id="subject"
           value={subject}
           onChange={(e) => setSubject(e.target.value)}
-          label="Matiere"
+          label="Matière"
         >
           <MenuItem value="MATH1">Math</MenuItem>
           <MenuItem value="PHYSIQUE">Physique</MenuItem>
         </Select>
       </FormControl>
       <Box sx={{ marginLeft: 2 }}>
-        <Stopwatch textInput={textInput} subject={subject} isRunning={isRunning} onStart={handleStart} onStop={handleStop} />
+        <Stopwatch
+          textInput={textInput}
+          subject={subject}
+          isRunning={isRunning}
+          elapsedTime={elapsedTime}
+          formattedElapsedTime={formatElapsedTime(elapsedTime)} // Pass the formatted time
+          onStart={handleStart}
+          onStop={handleStop}
+        />
       </Box>
     </Box>
   );

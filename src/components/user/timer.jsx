@@ -23,7 +23,7 @@ const Timer = () => {
     try {
       const response = await timersApi.getTimers(user);
       const data = response.data;
-
+      console.log("timers", data);
       // Process the data to split the start and stop fields into day and time parts
       const processedData = data.map(timer => {
         const startDate = new Date(timer.start);

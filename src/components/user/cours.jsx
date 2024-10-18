@@ -21,7 +21,7 @@ export function Cours() {
         <Card key={index} sx={{ width: 400, margin: '10px' }}
         onClick={() => {
           // Navigate to the specific course URL on card click
-          navigate(`/dashboard/cours/${course.links}`, { state: { subFolderName: 'Cours' } });
+          navigate(`/dashboard/cours/${course.links}`, { state: { subFolderName: `Cours/${course.links}` } });
         }}>
           <CardMedia component="img" height="200" image={course.image} alt={course.name} />
           <CardContent>

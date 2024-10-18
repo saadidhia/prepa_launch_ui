@@ -12,8 +12,9 @@ export default function Logout() {
   const navigate = useNavigate();
 
   function logout() {
-    Auth.userLogout();
+    if (Auth.userLogout()==true){
     navigate("/")
+    }
   }
 
   return (

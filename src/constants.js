@@ -1,5 +1,5 @@
 export const config = {
-    google_drive_url: 'https://docs.google.com'
+    s3_storage_url: 'https://prepa-launch.s3.eu-north-1.amazonaws.com'
   }
 
   export const errors = {
