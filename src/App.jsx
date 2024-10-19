@@ -19,6 +19,7 @@ import PrivateRoute from './PrivateRoute';
 import navigations from "./Navigations";
 import subjects from "./subjects"
 import points from "./points"
+import concours from "./concours"
 
 import "./App.css";
 
@@ -88,7 +89,43 @@ const App = () => {
   ))
 )
             }
+ {subjects.map((subject, index) => (
+              <Route
+                key={index}
+                exact
+                path={`/dashboard/exams/ds/${subject.links}`}
+                element={<PrivateRoute requiredRole="USER">{subject.components}</PrivateRoute>}
+              />
+            ))}
 
+{subjects.map((subject, index) => (
+              <Route
+                key={index}
+                exact
+                path={`/dashboard/exams/exam/${subject.links}`}
+                element={<PrivateRoute requiredRole="USER">{subject.components}</PrivateRoute>}
+              />
+            ))}
+
+{subjects.map((subject, index) => (
+              <Route
+                key={index}
+                exact
+                path={`/dashboard/resumes/${subject.links}`}
+                element={<PrivateRoute requiredRole="USER">{subject.components}</PrivateRoute>}
+              />
+            ))}
+                      {concours.map((concour) =>
+  subjects.map((subject, index) => (
+    <Route
+      key={`${concour.link}-${index}`}
+      exact
+      path={`/dashboard/concours/${concour.link}/${subject.links}`}
+                  element={<PrivateRoute requiredRole="USER">{subject.components}</PrivateRoute>}
+    />
+  ))
+)
+            }
         </Route>
       </Routes>
     </Router>

@@ -4,14 +4,17 @@ import morocco from './assets/statics/morocco.png'
 const concours = [
     {
         name: "TUNISIE",
+        link: "tunisie",
         image: tunisia
     },
     {
         text: "FRANCE",
+        link: "france",
         image: french
     },
     {
         text: "MAROC",
+        link: "maroc",
         image: morocco
     }
 ]
