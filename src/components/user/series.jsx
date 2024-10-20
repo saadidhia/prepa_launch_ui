@@ -19,26 +19,26 @@ export function Series() {
           <CardMedia component="img" height="200" image={point.image} alt={point.name} />
           {filteredCourses.map((course, index) => (
             <CardContent key={index}>
-              <Typography gutterBottom variant="h5" component="div">
+              <Typography gutterBottom variant="h4" component="div"  style={{ fontWeight: 'bold' }} >
                 <button 
                   onClick={() => {
                     // Navigate to the specific course URL on button click
                     navigate(`/dashboard/series/${point.link}/${course.links}`, { state: { subFolderName: `series/${point.link}/${course.links}` } });
                   }}
                   style={{
-                    width: '100%', // Make button full width
-                    backgroundColor: '#2196F3', // Set your desired button color here
-                    color: 'white', // Text color
-                    border: 'none', // Remove default border
-                    padding: '10px', // Padding inside the button
-                    borderRadius: '4px', // Rounded corners
-                    cursor: 'pointer', // Change cursor to pointer on hover
-                    fontSize: '16px', // Button text size
-                    textAlign: 'center', // Center the text
-                    transition: 'background-color 0.3s' // Smooth background color transition
+                    width: '100%', 
+                    backgroundColor: '#2196F3', 
+                    color: 'white', 
+                    border: 'none', 
+                    padding: '10px', 
+                    borderRadius: '4px', 
+                    cursor: 'pointer',
+                    fontSize: '16px', 
+                    textAlign: 'center', 
+                    transition: 'background-color 0.3s' 
                   }}
-                  onMouseOver={(e) => e.currentTarget.style.backgroundColor = '#2196F0'} // Darker green on hover
-                  onMouseOut={(e) => e.currentTarget.style.backgroundColor = '#2196F3'} // Reset to original color
+                  onMouseOver={(e) => e.currentTarget.style.backgroundColor = '#2196F0'} 
+                  onMouseOut={(e) => e.currentTarget.style.backgroundColor = '#2196F3'} 
                 >
                   {course.name}
                 </button>

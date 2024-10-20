@@ -37,7 +37,7 @@ const navigations = [
     },
     {
         text: "Resumes",
-        link: "Resumes",
+        link: "resumes",
         component: Resume,
         role: "user"
     },

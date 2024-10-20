@@ -13,7 +13,7 @@ import JsonData from "./data/data.json";
 import SmoothScroll from "smooth-scroll";
 import { Routes, Route, BrowserRouter as Router } from "react-router-dom";
 import { Connexion } from './components/connexion';
-import {Profile} from './components/user/Profile'
+import { Profile } from './components/user/Profile'
 import Dashboard from "./components/dashboard";
 import PrivateRoute from './PrivateRoute';
 import navigations from "./Navigations";
@@ -38,39 +38,39 @@ const App = () => {
 
   return (
     <AuthProvider>
-    <Router>
-      <Routes>
-        <Route
-          path="/"
-          element={
-            <div>
-              <Navigation />
-              <Header data={landingPageData.Header} />
-              <Features data={landingPageData.Features} />
-              <About data={landingPageData.About} />
-              <Services data={landingPageData.Services} />
-              <Books data={landingPageData.Gallery} />
-              <Testimonials data={landingPageData.Testimonials} />
-              <Team data={landingPageData.Team} />
-              <Contact data={landingPageData.Contact} />
-            </div>
-          }
-        />
-        <Route path="/connexion" element={<Connexion />} />
-        <Route path="/dashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} >
-        <Route path="/dashboard/profile" exact element={<Profile/>} />
-          {navigations.map((navElement, index) => (
-            <Route
-            key={index}
-            exact
-            path={navElement.link}
+      <Router>
+        <Routes>
+          <Route
+            path="/"
             element={
-             <PrivateRoute requiredRole={navElement.role.toUpperCase()}>
-                <navElement.component />
-              </PrivateRoute>
-                              } />
-          ))}
-          {subjects.map((subject, index) => (
+              <div>
+                <Navigation />
+                <Header data={landingPageData.Header} />
+                <Features data={landingPageData.Features} />
+                <About data={landingPageData.About} />
+                <Services data={landingPageData.Services} />
+                <Books data={landingPageData.Gallery} />
+                <Testimonials data={landingPageData.Testimonials} />
+                <Team data={landingPageData.Team} />
+                <Contact data={landingPageData.Contact} />
+              </div>
+            }
+          />
+          <Route path="/connexion" element={<Connexion />} />
+          <Route path="/dashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} >
+            <Route path="/dashboard/profile" exact element={<Profile />} />
+            {navigations.map((navElement, index) => (
+              <Route
+                key={index}
+                exact
+                path={navElement.link}
+                element={
+                  <PrivateRoute requiredRole={navElement.role.toUpperCase()}>
+                    <navElement.component />
+                  </PrivateRoute>
+                } />
+            ))}
+            {subjects.map((subject, index) => (
               <Route
                 key={index}
                 exact
@@ -79,17 +79,17 @@ const App = () => {
               />
             ))}
             {points.map((point) =>
-  subjects.map((subject, index) => (
-    <Route
-      key={`${point.links}-${index}`}
-      exact
-      path={`/dashboard/series/${point.link}/${subject.links}`}
+              subjects.map((subject, index) => (
+                <Route
+                  key={`${point.links}-${index}`}
+                  exact
+                  path={`/dashboard/series/${point.link}/${subject.links}`}
                   element={<PrivateRoute requiredRole="USER">{subject.components}</PrivateRoute>}
-    />
-  ))
-)
+                />
+              ))
+            )
             }
- {subjects.map((subject, index) => (
+            {subjects.map((subject, index) => (
               <Route
                 key={index}
                 exact
@@ -98,7 +98,7 @@ const App = () => {
               />
             ))}
 
-{subjects.map((subject, index) => (
+            {subjects.map((subject, index) => (
               <Route
                 key={index}
                 exact
@@ -107,7 +107,7 @@ const App = () => {
               />
             ))}
 
-{subjects.map((subject, index) => (
+            {subjects.map((subject, index) => (
               <Route
                 key={index}
                 exact
@@ -115,21 +115,21 @@ const App = () => {
                 element={<PrivateRoute requiredRole="USER">{subject.components}</PrivateRoute>}
               />
             ))}
-                      {concours.map((concour) =>
-  subjects.map((subject, index) => (
-    <Route
-      key={`${concour.link}-${index}`}
-      exact
-      path={`/dashboard/concours/${concour.link}/${subject.links}`}
+            {concours.map((concour) =>
+              subjects.map((subject, index) => (
+                <Route
+                  key={`${concour.link}-${index}`}
+                  exact
+                  path={`/dashboard/concours/${concour.link}/${subject.links}`}
                   element={<PrivateRoute requiredRole="USER">{subject.components}</PrivateRoute>}
-    />
-  ))
-)
+                />
+              ))
+            )
             }
-        </Route>
-      </Routes>
-    </Router>
-  </AuthProvider>
+          </Route>
+        </Routes>
+      </Router>
+    </AuthProvider>
   );
 };
 

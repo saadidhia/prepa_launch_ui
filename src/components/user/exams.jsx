@@ -16,7 +16,10 @@ export function Exams() {
         <Card key={index} sx={{ width: 400, margin: '10px' }}>
           <CardMedia component="img" height="200" image={course.image} alt={course.name} />
           <CardContent>
-            <Typography variant="h5" component="div">
+            <Typography
+              variant="h3"
+              align="center"
+              component="div">
               {course.name}
             </Typography>
           </CardContent>
