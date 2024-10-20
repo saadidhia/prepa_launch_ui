@@ -10,11 +10,11 @@ export function Cours() {
   const navigate = useNavigate();
   const filteredCourses = subjects.filter(course => course.section.includes(user.data.field));
 
-  useEffect(() => { console.log("tri"); }, []);
+  useEffect(() => { console.log(""); }, []);
 
   return (
     <div style={{ display: 'flex', justifyContent: 'center', flexWrap: 'wrap' }}>
-      {console.log("filtered ", filteredCourses)}
+      {/*console.log("filtered ", filteredCourses)*/}
       {filteredCourses.map((course, index) => (
         <Card
           key={index}

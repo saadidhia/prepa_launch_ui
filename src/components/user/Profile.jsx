@@ -46,7 +46,6 @@ export function Profile() {
 
             try {
                 const response = await candidatsApi.getMyProfile(user)
-                console.log("Profile", response)
                 setEmail(response.data.email)
                 setField(response.data.field)
                 setName(response.data.name)
