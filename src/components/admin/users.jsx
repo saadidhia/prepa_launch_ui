@@ -12,6 +12,7 @@ export function Users() {
     const [openDialog, setOpenDialog] = useState(false);
     const [selectedUser, setSelectedUser] = useState(null);
     const [months, setMonths] = useState(0);
+    const [openDialogSession, setOpenDialogSession]=useState(false)
 
     useEffect(() => {
         const fetchUsers = async () => {
@@ -52,6 +53,18 @@ export function Users() {
         setOpenDialog(true);
     };
 
+    const handleOpenDialogSession = (user) => {
+        setSelectedUser(user);
+        setOpenDialogSession(true);
+    };
+
+    const handleCloseDialogSession = () => {
+        setOpenDialogSession(false);
+        setSelectedUser(null);
+    
+    };
+    
+
     const handleCloseDialog = () => {
         setOpenDialog(false);
         setSelectedUser(null);
@@ -64,6 +77,13 @@ export function Users() {
             handleCloseDialog();
         }
     };
+
+    const handleSubmitResetSession = () => {
+        if (selectedUser) {
+           // handleActivateUser(selectedUser.username, months, selectedUser.numberOfSubscription);
+            handleCloseDialogSession();
+        }
+    }
 
     const filteredUsers = users.filter(user => {
         return user.email.toLowerCase().includes(filter.toLowerCase());
@@ -96,6 +116,7 @@ export function Users() {
                             <TableCell>Number Subscription</TableCell>
                             <TableCell>Status</TableCell>
                             <TableCell colSpan={2} align="center">Action</TableCell>
+                            <TableCell>Session</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
@@ -135,11 +156,37 @@ export function Users() {
                                         Activate
                                     </Button>
                                 </TableCell>
+                                <TableCell>
+                                <Button
+                                variant="outlined"
+                                color="secondary"
+                                onClick={() => handleOpenDialogSession(user)}
+                                >
+                                    Reset
+                                </Button>
+                                </TableCell>
                             </TableRow>
                         ))}
                     </TableBody>
                 </Table>
             </TableContainer>
+            <Dialog open={openDialogSession} onClose={handleCloseDialogSession}>
+                <DialogTitle>Reset the session</DialogTitle>
+                <DialogContent>
+                    <DialogContentText>
+
+                        pppppppppppppppppppppppp
+                    </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleCloseDialogSession} color="primary">
+                        Cancel
+                    </Button>
+                    <Button onClick={handleSubmitResetSession} color="primary">
+                        Submit
+                    </Button>
+                </DialogActions>
+            </Dialog>
 
             <Dialog open={openDialog} onClose={handleCloseDialog}>
                 <DialogTitle>Activer le candidat</DialogTitle>

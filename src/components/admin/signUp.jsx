@@ -191,7 +191,7 @@ export function SignUp() {
 
             <div className="d-grid gap-2 mt-3">
               <button type="submit" className="btn btn-primary" >
-                Sign up
+                Creation
               </button>
               <div className="d-grid gap-2 mt-3">
                 {// isError && <h5>{errors.LOGIN_ERROR}</h5>
