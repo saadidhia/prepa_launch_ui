@@ -12,7 +12,7 @@ export function Users() {
     const [openDialog, setOpenDialog] = useState(false);
     const [selectedUser, setSelectedUser] = useState(null);
     const [months, setMonths] = useState(0);
-    const [openDialogSession, setOpenDialogSession]=useState(false)
+    const [openDialogSession, setOpenDialogSession] = useState(false)
 
     useEffect(() => {
         const fetchUsers = async () => {
@@ -47,6 +47,14 @@ export function Users() {
             console.error('Error activating user:', error);
         }
     }
+    const handleResetSessionUser = async (username) => {
+        try {
+            await adminApi.resetSession(admin, username);
+            console.log("Reset Session success");
+        } catch (error) {
+            console.error('Error while reset session:', error);
+        }
+    }
 
     const handleOpenDialog = (user) => {
         setSelectedUser(user);
@@ -61,9 +69,9 @@ export function Users() {
     const handleCloseDialogSession = () => {
         setOpenDialogSession(false);
         setSelectedUser(null);
-    
+
     };
-    
+
 
     const handleCloseDialog = () => {
         setOpenDialog(false);
@@ -80,7 +88,7 @@ export function Users() {
 
     const handleSubmitResetSession = () => {
         if (selectedUser) {
-           // handleActivateUser(selectedUser.username, months, selectedUser.numberOfSubscription);
+            handleResetSessionUser(selectedUser.username);
             handleCloseDialogSession();
         }
     }
@@ -143,7 +151,7 @@ export function Users() {
                                         disabled={user.role === 'ADMIN'}
                                         onClick={() => handleDeleteUser(user.username)}
                                     >
-                                        Delete
+                                        Supprimer
                                     </Button>
                                 </TableCell>
                                 <TableCell>
@@ -157,13 +165,13 @@ export function Users() {
                                     </Button>
                                 </TableCell>
                                 <TableCell>
-                                <Button
-                                variant="outlined"
-                                color="secondary"
-                                onClick={() => handleOpenDialogSession(user)}
-                                >
-                                    Reset
-                                </Button>
+                                    <Button
+                                        variant="outlined"
+                                        color="secondary"
+                                        onClick={() => handleOpenDialogSession(user)}
+                                    >
+                                        Réinitialiser
+                                    </Button>
                                 </TableCell>
                             </TableRow>
                         ))}
@@ -171,29 +179,31 @@ export function Users() {
                 </Table>
             </TableContainer>
             <Dialog open={openDialogSession} onClose={handleCloseDialogSession}>
-                <DialogTitle>Reset the session</DialogTitle>
+                <DialogTitle style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                    Réinitialiser la session
+                </DialogTitle>
                 <DialogContent>
                     <DialogContentText>
-
-                        pppppppppppppppppppppppp
+                        Êtes-vous sûr de vouloir réinitialiser la session de l'utilisateur <strong>{selectedUser?.username}</strong> ?
                     </DialogContentText>
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handleCloseDialogSession} color="primary">
-                        Cancel
+                        Annuler
                     </Button>
                     <Button onClick={handleSubmitResetSession} color="primary">
-                        Submit
+                        Soumettre
                     </Button>
                 </DialogActions>
             </Dialog>
+
 
             <Dialog open={openDialog} onClose={handleCloseDialog}>
                 <DialogTitle>Activer le candidat</DialogTitle>
                 <DialogContent>
                     <DialogContentText>
 
-                        Entrez le nombre de mois pour prolonger l'abonnement de l'utilisateur.
+                        Êtes-vous sûr de vouloir réinitialiser la session de l'utilisateur ?
                     </DialogContentText>
                     <TextField
                         autoFocus
@@ -207,10 +217,10 @@ export function Users() {
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handleCloseDialog} color="primary">
-                        Cancel
+                        Annuler
                     </Button>
                     <Button onClick={handleSubmitActivate} color="primary">
-                        Submit
+                        Soumettre
                     </Button>
                 </DialogActions>
             </Dialog>

@@ -20,7 +20,7 @@ export default function Logout() {
   return (
 
     <Button color="inherit" onClick={logout} startIcon={<LogoutIcon />} sx={{ fontSize: '18px', color: 'white' }}>
-      Logout
+      Déconnexion
     </Button>
   )
 }

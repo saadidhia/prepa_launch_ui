@@ -17,7 +17,8 @@ export const adminApi = {
   createBook,
   getBooks,
   deleteBook,
-  getStatics
+  getStatics,
+  resetSession
 }
 
 export const instance = axios.create({
@@ -161,4 +162,13 @@ function getStatics(admin){
       'Content-type': 'application/json'
     }
   })
+}
+
+function resetSession(admin, username){
+  return instance.delete(`/api/v1/sessions/remove?username=${username}`,{
+    headers: {
+          'Authorization': bearerAuth(admin),
+          'Content-type': 'application/json'
+        }
+    })
 }
