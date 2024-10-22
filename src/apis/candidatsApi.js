@@ -8,7 +8,8 @@ export const candidatsApi = {
     deleteCard,
     getCardById,
     updateCardById,
-    getMyProfile
+    getMyProfile,
+    updateNumberPhone
 }
 
 function getMotivations(user) {
@@ -22,7 +23,6 @@ function getMotivations(user) {
 }
 
 function createNote(user, card){
-  console.log("card ", card)
   return instance.post(`/api/cards`,card, {
     headers: {
       'Authorization': bearerAuth(user),
@@ -51,7 +51,6 @@ function deleteCard(user,id){
 }
 
 function getCardById (user, id){
-  console.log("ffffffffff",id)
 return instance.get(`api/cards/${id}`, {
   headers: {
         'Authorization': bearerAuth(user),
@@ -76,4 +75,13 @@ function getMyProfile (user){
           'Content-type': 'application/json'
         }
     })
+}
+
+function updateNumberPhone(user, numberPhone) {
+  return instance.patch(`api/v1/profile/change?numberPhone=${numberPhone}`, null, {
+    headers: {
+      'Authorization': bearerAuth(user),
+      'Content-type': 'application/json',
+    },
+  });
 }

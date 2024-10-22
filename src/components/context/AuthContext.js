@@ -88,11 +88,7 @@ class AuthProvider extends Component {
       
     }else {
       authApi.logout(user);
-
       localStorage.removeItem("user");
-      
-      
-  
       localStorage.removeItem("isRunning");
       this.setState({ user: null }, () => {
         clearInterval(this.state.tokenCheckInterval);
