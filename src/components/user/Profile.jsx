@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { candidatsApi } from '../../apis/candidatsApi';
 import { useAuth } from '../context/AuthContext';
-import { Typography, Paper, Grid, TextField, IconButton } from '@mui/material';
+import { Typography, Paper, Grid, TextField, IconButton, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import CheckIcon from '@mui/icons-material/Check';
 import femaleImage from '../../assets/statics/female.jpg';
@@ -18,10 +18,11 @@ export function Profile() {
     const [numberPhone, setNumberPhone] = useState('');
     const [newNumberPhone, setNewNumberPhone] = useState(''); // Temporary state for editing
     const [isEditingPhone, setIsEditingPhone] = useState(false); // To track if we're in edit mode
-    const [field, setField] = useState(''); // Add this line to define 'field' state
+    const [field, setField] = useState('');
     const [gender, setGender] = useState('');
     const [errorMessage, setErrorMessage] = useState(''); // State for error message
     const [successMessage, setSuccessMessage] = useState(''); // State for success message
+    const [subscriptions, setSubscriptions] = useState([]); // State for subscription data
 
     const Auth = useAuth();
     const user = Auth.getUser();
@@ -48,7 +49,7 @@ export function Profile() {
             try {
                 const response = await candidatsApi.getMyProfile(user);
                 setEmail(response.data.email);
-                setField(response.data.field); // Set the field value from the response
+                setField(response.data.field);
                 setName(response.data.name);
                 setUsername(response.data.username);
                 setStartDate(response.data.startDate);
@@ -56,31 +57,33 @@ export function Profile() {
                 setExpireDate(response.data.expireDate);
                 setLevel(response.data.level);
                 setNumberPhone(response.data.numberPhone);
-                setNewNumberPhone(response.data.numberPhone); // Initialize with current phone
+                setNewNumberPhone(response.data.numberPhone);
                 setGender(response.data.gender);
+
+                // Fetch subscriptions
+           //     const subscriptionsResponse = await candidatsApi.getUserSubscriptions(user);
+             //   setSubscriptions(subscriptionsResponse.data); // Assuming the response contains the subscription data
             } catch (error) {
-                console.error('Error fetching Profile:', error);
+                console.error('Error fetching profile or subscriptions:', error);
             }
         };
         fetchProfile();
     }, []);
 
-    // Function to handle updating the phone number
     const handleUpdatePhone = async () => {
         try {
-            setErrorMessage(''); // Clear any previous error
+            setErrorMessage('');
 
             if (!/^\d{8}$/.test(newNumberPhone)) {
                 setErrorMessage("Le numéro de téléphone doit contenir exactement 8 chiffres.");
                 return;
             }
 
-            const response = await candidatsApi.updateNumberPhone(user, newNumberPhone); // Send the new numberPhone as a requestParam
-            setNumberPhone(newNumberPhone); // Update the UI with the new number
-            setIsEditingPhone(false); // Exit edit mode
+            const response = await candidatsApi.updateNumberPhone(user, newNumberPhone);
+            setNumberPhone(newNumberPhone);
+            setIsEditingPhone(false);
             setSuccessMessage("Le numéro de téléphone a été mis à jour avec succès !");
 
-            // Hide the success message after 3 seconds
             setTimeout(() => {
                 setSuccessMessage('');
             }, 3000);
@@ -90,7 +93,6 @@ export function Profile() {
         }
     };
 
-    // Function to handle input validation
     const handlePhoneInputChange = (e) => {
         const value = e.target.value;
         if (/^\d*$/.test(value) && value.length <= 8) {
@@ -99,9 +101,10 @@ export function Profile() {
     };
 
     return (
+        <>
         <Paper sx={{ p: 3, maxWidth: 600, margin: 'auto' }}>
-            <Typography variant="h4" gutterBottom>
-                User Information
+            <Typography variant="h4" gutterBottom align="center" sx={{ marginBottom: '20px' }}>
+                Mon profil
             </Typography>
             <div style={containerStyle}>
                 {gender === 'FEMALE' ? (
@@ -112,32 +115,32 @@ export function Profile() {
             </div>
             <Grid container spacing={2}>
                 <Grid item xs={12}>
-                    <Typography variant="subtitle1">Username: {username}</Typography>
+                    <Typography variant="subtitle1">Surnom: {username}</Typography>
                 </Grid>
                 <Grid item xs={12}>
-                    <Typography variant="subtitle1">Name: {name}</Typography>
+                    <Typography variant="subtitle1">Nom: {name}</Typography>
                 </Grid>
                 <Grid item xs={12}>
                     <Typography variant="subtitle1">Email: {email}</Typography>
                 </Grid>
                 <Grid item xs={12}>
-                    <Typography variant="subtitle1">Level: {level}</Typography>
+                    <Typography variant="subtitle1">Niveau: {level}</Typography>
                 </Grid>
                 <Grid item xs={12}>
-                    <Typography variant="subtitle1">Field: {field}</Typography>
+                    <Typography variant="subtitle1">Branche: {field}</Typography>
                 </Grid>
                 <Grid item xs={12}>
-                    <Typography variant="subtitle1">Start Date: {startDate}</Typography>
+                    <Typography variant="subtitle1">Date de début: {startDate}</Typography>
                 </Grid>
                 <Grid item xs={12}>
-                    <Typography variant="subtitle1">Months: {months}</Typography>
+                    <Typography variant="subtitle1">Mois: {months}</Typography>
                 </Grid>
                 <Grid item xs={12}>
-                    <Typography variant="subtitle1">Expire Date: {expireDate}</Typography>
+                    <Typography variant="subtitle1">Date d'expiration: {expireDate}</Typography>
                 </Grid>
                 <Grid item xs={12} style={{ display: 'flex', alignItems: 'center' }}>
                     <Typography variant="subtitle1">
-                        Number Phone:{' '}
+                        Numéro de téléphone:{' '}
                         {isEditingPhone ? (
                             <TextField
                                 value={newNumberPhone}
@@ -170,5 +173,34 @@ export function Profile() {
                 </Typography>
             )}
         </Paper>
+         {/* Subscription Table */}
+         <Typography variant="h6" gutterBottom align="center" sx={{ marginTop: '20px' }}>
+         Mes Abonnements
+     </Typography>
+     <TableContainer component={Paper}>
+         <Table>
+             <TableHead>
+                 <TableRow>
+                     <TableCell>Numéro d'abonnement</TableCell>
+                     <TableCell>Mois</TableCell>
+                     <TableCell>Date de début</TableCell>
+                     <TableCell>Date d'expiration</TableCell>
+                     <TableCell>Prix</TableCell>
+                 </TableRow>
+             </TableHead>
+             <TableBody>
+                 {subscriptions.map((sub, index) => (
+                     <TableRow key={index}>
+                         <TableCell>{sub.subscriptionCount}</TableCell>
+                         <TableCell>{sub.months}</TableCell>
+                         <TableCell>{sub.startDate}</TableCell>
+                         <TableCell>{sub.expireDate}</TableCell>
+                         <TableCell>{sub.price} €</TableCell>
+                     </TableRow>
+                 ))}
+             </TableBody>
+         </Table>
+     </TableContainer>
+     </>
     );
 }
