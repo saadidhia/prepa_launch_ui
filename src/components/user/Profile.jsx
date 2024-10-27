@@ -195,7 +195,7 @@ export function Profile() {
                          <TableCell>{sub.months}</TableCell>
                          <TableCell>{sub.startDate}</TableCell>
                          <TableCell>{sub.expireDate}</TableCell>
-                         <TableCell>{sub.price} €</TableCell>
+                         <TableCell>{sub.price} Dt</TableCell>
                      </TableRow>
                  ))}
              </TableBody>

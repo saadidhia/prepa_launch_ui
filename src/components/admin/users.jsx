@@ -121,7 +121,7 @@ export function Users() {
                             <TableCell>Start Date</TableCell>
                             <TableCell>Months</TableCell>
                             <TableCell>End Date</TableCell>
-                            <TableCell>Number Subscription</TableCell>
+                            <TableCell>Prix</TableCell>
                             <TableCell>Status</TableCell>
                             <TableCell colSpan={2} align="center">Action</TableCell>
                             <TableCell>Session</TableCell>
@@ -139,10 +139,10 @@ export function Users() {
                                 <TableCell>{user.role}</TableCell>
                                 <TableCell>{user.level}</TableCell>
                                 <TableCell>{user.field}</TableCell>
-                                <TableCell>{user.startDate}</TableCell>
-                                <TableCell>{user.months}</TableCell>
-                                <TableCell>{user.expireDate}</TableCell>
-                                <TableCell>{user.numberOfSubscription}</TableCell>
+                                <TableCell>{user.subscriptions.startDate}</TableCell>
+                                <TableCell>{user.subscriptions.duration}</TableCell>
+                                <TableCell>{user.subscriptions.expireDate}</TableCell>
+                                <TableCell>{user.subscriptions.price}</TableCell>
                                 <TableCell>{(!user.isAccountLocked || user.isAccountLocked == null) ? "Active" : "Inactive"}</TableCell>
                                 <TableCell>
                                     <Button
