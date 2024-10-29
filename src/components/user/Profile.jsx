@@ -12,9 +12,6 @@ export function Profile() {
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [level, setLevel] = useState('');
-    const [startDate, setStartDate] = useState('');
-    const [months, setMonths] = useState('');
-    const [expireDate, setExpireDate] = useState('');
     const [numberPhone, setNumberPhone] = useState('');
     const [newNumberPhone, setNewNumberPhone] = useState(''); // Temporary state for editing
     const [isEditingPhone, setIsEditingPhone] = useState(false); // To track if we're in edit mode
@@ -44,30 +41,44 @@ export function Profile() {
         right: '0',
     };
 
-    useEffect(() => {
-        const fetchProfile = async () => {
-            try {
-                const response = await candidatsApi.getMyProfile(user);
-                setEmail(response.data.email);
-                setField(response.data.field);
-                setName(response.data.name);
-                setUsername(response.data.username);
-                setStartDate(response.data.startDate);
-                setMonths(response.data.months);
-                setExpireDate(response.data.expireDate);
-                setLevel(response.data.level);
-                setNumberPhone(response.data.numberPhone);
-                setNewNumberPhone(response.data.numberPhone);
-                setGender(response.data.gender);
 
-                // Fetch subscriptions
-           //     const subscriptionsResponse = await candidatsApi.getUserSubscriptions(user);
-             //   setSubscriptions(subscriptionsResponse.data); // Assuming the response contains the subscription data
-            } catch (error) {
-                console.error('Error fetching profile or subscriptions:', error);
-            }
-        };
-        fetchProfile();
+    const fetchProfileData = async () => {
+        try {
+            const response = await candidatsApi.getMyProfile(user);
+            const profileData = response.data;
+    
+            // Set profile details
+            setEmail(profileData.email);
+            setField(profileData.field);
+            setName(profileData.name);
+            setUsername(profileData.username);
+            setLevel(profileData.level);
+            setNumberPhone(profileData.numberPhone);
+            setNewNumberPhone(profileData.numberPhone);
+            setGender(profileData.gender === "FEMALE" ? "Femme" : "Homme");
+    
+            // Fetch subscriptions if needed
+            await fetchSubscriptions();
+        } catch (error) {
+            console.error('Error fetching profile data:', error);
+        }
+    };
+    
+    const fetchSubscriptions = async () => {
+        try {
+            const subscriptionsResponse = await candidatsApi.getSubscriptions(user);
+            setSubscriptions(subscriptionsResponse.data);
+        } catch (error) {
+            console.error('Error fetching subscriptions:', error);
+        }
+    };
+    
+    // Example usage:
+    // Call these functions when needed
+    // fetchProfileData();
+    
+    useEffect(() => {
+     fetchProfileData()
     }, []);
 
     const handleUpdatePhone = async () => {
@@ -121,6 +132,9 @@ export function Profile() {
                     <Typography variant="subtitle1">Nom: {name}</Typography>
                 </Grid>
                 <Grid item xs={12}>
+                    <Typography variant="subtitle1">Genre: {gender}</Typography>
+                </Grid>
+                <Grid item xs={12}>
                     <Typography variant="subtitle1">Email: {email}</Typography>
                 </Grid>
                 <Grid item xs={12}>
@@ -128,15 +142,6 @@ export function Profile() {
                 </Grid>
                 <Grid item xs={12}>
                     <Typography variant="subtitle1">Branche: {field}</Typography>
-                </Grid>
-                <Grid item xs={12}>
-                    <Typography variant="subtitle1">Date de début: {startDate}</Typography>
-                </Grid>
-                <Grid item xs={12}>
-                    <Typography variant="subtitle1">Mois: {months}</Typography>
-                </Grid>
-                <Grid item xs={12}>
-                    <Typography variant="subtitle1">Date d'expiration: {expireDate}</Typography>
                 </Grid>
                 <Grid item xs={12} style={{ display: 'flex', alignItems: 'center' }}>
                     <Typography variant="subtitle1">
@@ -181,7 +186,6 @@ export function Profile() {
          <Table>
              <TableHead>
                  <TableRow>
-                     <TableCell>Numéro d'abonnement</TableCell>
                      <TableCell>Mois</TableCell>
                      <TableCell>Date de début</TableCell>
                      <TableCell>Date d'expiration</TableCell>
@@ -191,8 +195,7 @@ export function Profile() {
              <TableBody>
                  {subscriptions.map((sub, index) => (
                      <TableRow key={index}>
-                         <TableCell>{sub.subscriptionCount}</TableCell>
-                         <TableCell>{sub.months}</TableCell>
+                         <TableCell>{sub.duration}</TableCell>
                          <TableCell>{sub.startDate}</TableCell>
                          <TableCell>{sub.expireDate}</TableCell>
                          <TableCell>{sub.price} Dt</TableCell>

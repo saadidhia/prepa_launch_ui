@@ -9,7 +9,8 @@ export const candidatsApi = {
     getCardById,
     updateCardById,
     getMyProfile,
-    updateNumberPhone
+    updateNumberPhone,
+    getSubscriptions
 }
 
 function getMotivations(user) {
@@ -84,4 +85,16 @@ function updateNumberPhone(user, numberPhone) {
       'Content-type': 'application/json',
     },
   });
+}
+
+
+function getSubscriptions(user){
+
+  return instance.get('/api/v1/subscriptions',{
+    headers: {
+      'Authorization': bearerAuth(user),
+      'Content-type': 'application/json'
+    }
+  })
+
 }
