@@ -85,8 +85,8 @@ function deleteUser(admin, username) {
   })
 }
 
-function activateAndExtendUser(admin, username,months, numberOfSub) {
-  return instance.put(`/api/admin/${username}/${months}/${numberOfSub}`,null, {
+function activateAndExtendUser(admin, userId, subscription) {
+  return instance.post(`/api/admin/subscriptions/extend/${userId}`,subscription, {
     headers: {
       'Authorization': bearerAuth(admin),
       'Content-type': 'application/json'

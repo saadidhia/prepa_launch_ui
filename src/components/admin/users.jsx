@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import {
   Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, TextField,
-  Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Collapse, IconButton
+  Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Collapse, IconButton, Select, MenuItem, FormControl, InputLabel
 } from '@mui/material';
 import { adminApi } from '../../apis/adminApi';
 import { useAuth } from '../context/AuthContext';
@@ -18,19 +18,43 @@ export function Users() {
   const [months, setMonths] = useState(0);
   const [openDialogSession, setOpenDialogSession] = useState(false);
   const [openRows, setOpenRows] = useState({});
+  const [activateStartDate, setActivateStartDate] = useState("");
+  const [activateDuration, setActivateDuration] = useState("ONE");
+  const [activatePrice, setActivatePrice] = useState("");
+  const [openDeleteDialog, setOpenDeleteDialog] = useState(false); // State for delete dialog
+const [userToDelete, setUserToDelete] = useState(null); // State to hold the user to delete
 
+
+
+  const handleActivateUser = async (userId, subscription) => {
+    try {
+      console.log("hehhehhehe "+ userId)
+      await adminApi.activateAndExtendUser(admin, userId, subscription);
+      fetchUsers();
+    } catch (error) {
+      console.error('Error activating user:', error);
+    }
+  };
+  const fetchUsers = async () => {
+    try {
+      const response = await adminApi.getUsers(admin);
+      console.log("users  "+JSON.stringify(response.data, null, 2));
+      setUsers(response.data);
+    } catch (error) {
+      console.error('Error fetching users:', error);
+    }
+  };
   useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        const response = await adminApi.getUsers(admin);
-        console.log("users"+response);
-        setUsers(response.data);
-      } catch (error) {
-        console.error('Error fetching users:', error);
-      }
-    };
+   
     fetchUsers();
-  }, [deletedUser, admin]);
+  }, [deletedUser]);
+
+  const getLastSubscription = (subscriptions) => {
+    return subscriptions
+      .filter(subscription => subscription.expireDate) // Filter out subscriptions without an expiration date
+      .sort((a, b) => new Date(b.expireDate) - new Date(a.expireDate))[0]; // Sort by expireDate in descending order
+  };
+  
 
   const handleDeleteUser = async (username) => {
     try {
@@ -41,15 +65,25 @@ export function Users() {
     }
   };
 
-  const handleActivateUser = async (username, months, numberOfSub) => {
-    try {
-      await adminApi.activateAndExtendUser(admin, username, months, numberOfSub);
-      const response = await adminApi.getUsers(admin);
-      setUsers(response.data);
-    } catch (error) {
-      console.error('Error activating user:', error);
-    }
-  };
+// Function to open the delete confirmation dialog
+const handleOpenDeleteDialog = (user) => {
+  setUserToDelete(user);
+  setOpenDeleteDialog(true);
+};
+
+// Function to close the delete confirmation dialog
+const handleCloseDeleteDialog = () => {
+  setOpenDeleteDialog(false);
+  setUserToDelete(null);
+};
+
+// Function to handle deletion
+const handleSubmitDelete = async () => {
+  if (userToDelete) {
+    await handleDeleteUser(userToDelete.username);
+    handleCloseDeleteDialog();
+  }
+};
 
   const handleResetSessionUser = async (username) => {
     try {
@@ -82,7 +116,12 @@ export function Users() {
 
   const handleSubmitActivate = () => {
     if (selectedUser) {
-      handleActivateUser(selectedUser.username, months, selectedUser.numberOfSubscription);
+      const subscription = {
+        startDate: activateStartDate,
+        duration: activateDuration,
+        price: activatePrice
+      };
+      handleActivateUser(selectedUser.id, subscription); // Pass userId and subscription entity
       handleCloseDialog();
     }
   };
@@ -97,6 +136,14 @@ export function Users() {
   const toggleRow = (userId) => {
     setOpenRows(prevState => ({ ...prevState, [userId]: !prevState[userId] }));
   };
+
+  const isLastSubscriptionExpired = (subscriptions) => {
+    const lastSubscription = getLastSubscription(subscriptions);
+    if (!lastSubscription) return false; // No valid subscriptions found
+    const now = new Date();
+    return new Date(lastSubscription.expireDate) < now;
+  };
+  
 
   const filteredUsers = users.filter(user =>
     user.email.toLowerCase().includes(filter.toLowerCase())
@@ -144,20 +191,20 @@ export function Users() {
                   <TableCell>{user.numberPhone}</TableCell>
                   <TableCell>{user.role}</TableCell>
                   <TableCell>
-                    <Button
-                      variant="outlined"
-                      color="secondary"
-                      disabled={user.role === 'ADMIN'}
-                      onClick={() => handleDeleteUser(user.username)}
-                    >
-                      Supprimer
-                    </Button>
-                  </TableCell>
+  <Button
+    variant="outlined"
+    color="secondary"
+    disabled={user.role === 'ADMIN'}
+    onClick={() => handleOpenDeleteDialog(user)} // Open delete confirmation dialog
+  >
+    Supprimer
+  </Button>
+</TableCell>
                   <TableCell>
                                     <Button
                                         variant="outlined"
                                         color="secondary"
-                                        disabled={user.role === 'ADMIN' || (user.isAccountLocked == null || !user.isAccountLocked)}
+                                        disabled={user.role === 'ADMIN' || !isLastSubscriptionExpired(user.subscriptions)}
                                         onClick={() => handleOpenDialog(user)}
                                     >
                                         Activate
@@ -191,7 +238,7 @@ export function Users() {
                               <TableCell>{subscription.startDate}</TableCell>
                               <TableCell>{subscription.duration}</TableCell>
                               <TableCell>{subscription.expireDate}</TableCell>
-                              <TableCell>{subscription.price}</TableCell>
+                              <TableCell>{subscription.price} Dt</TableCell>
                             </TableRow>
                           ))}
                         </TableBody>
@@ -221,26 +268,64 @@ export function Users() {
 
       {/* Activate User Dialog */}
       <Dialog open={openDialog} onClose={handleCloseDialog}>
-        <DialogTitle>Activer le candidat</DialogTitle>
-        <DialogContent>
-          <DialogContentText>
-            Êtes-vous sûr de vouloir activer cet utilisateur ?
-          </DialogContentText>
-          <TextField
-            autoFocus
-            margin="dense"
-            label="Months"
-            type="number"
-            fullWidth
-            value={months}
-            onChange={(e) => setMonths(Number(e.target.value))}
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseDialog} color="primary">Annuler</Button>
-          <Button onClick={handleSubmitActivate} color="primary">Soumettre</Button>
-        </DialogActions>
-      </Dialog>
+  <DialogTitle>Activer l'utilisateur</DialogTitle>
+  <DialogContent>
+    <DialogContentText>
+      Êtes-vous sûr de vouloir activer cet utilisateur ?
+    </DialogContentText>
+    
+    {/* Start Date Picker */}
+     <input
+              type="date"
+              className="form-control mt-1"
+              value={activateStartDate}
+              onChange={(e) => setActivateStartDate(e.target.value)}
+      />
+
+    {/* Duration Selector */}
+    <FormControl fullWidth margin="dense">
+      <InputLabel>Duration (Months)</InputLabel>
+      <Select
+        value={activateDuration}
+        onChange={(e) => setActivateDuration(e.target.value)}
+        label="Duration (Months)"
+      >
+        <MenuItem value="ONE">ONE</MenuItem>
+        <MenuItem value="THREE">THREE</MenuItem>
+        <MenuItem value="SIX">SIX</MenuItem>
+        <MenuItem value="TEN">TEN</MenuItem>
+      </Select>
+    </FormControl>
+
+    {/* Price Input */}
+    <TextField
+      margin="dense"
+      label="Price"
+      type="number"
+      fullWidth
+      value={activatePrice}
+      onChange={(e) => setActivatePrice(Number(e.target.value))}
+    />
+  </DialogContent>
+  
+  <DialogActions>
+    <Button onClick={handleCloseDialog} color="primary">Annuler</Button>
+    <Button onClick={handleSubmitActivate} color="primary">Soumettre</Button>
+  </DialogActions>
+</Dialog>
+
+<Dialog open={openDeleteDialog} onClose={handleCloseDeleteDialog}>
+  <DialogTitle>Supprimer l'utilisateur</DialogTitle>
+  <DialogContent>
+    <DialogContentText>
+      Êtes-vous sûr de vouloir supprimer l'utilisateur <strong>{userToDelete?.username}</strong> ?
+    </DialogContentText>
+  </DialogContent>
+  <DialogActions>
+    <Button onClick={handleCloseDeleteDialog} color="primary">Annuler</Button>
+    <Button onClick={handleSubmitDelete} color="primary">Soumettre</Button>
+  </DialogActions>
+</Dialog>
     </div>
   );
 }
