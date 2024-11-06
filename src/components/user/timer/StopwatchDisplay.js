@@ -1,22 +1,41 @@
-import React from "react";
-import "./Stopwatch.css";
+import React, { useEffect, useState } from 'react';
+import { Button } from '@mui/material';
+import StopwatchDisplay from './StopwatchDisplay';
+import { useChronometer } from '../../context/ChronometerContext';
 
-const StopwatchDisplay = ({ value }) => {
-  const totalSeconds = Math.floor(value / 1000);
-  const hours = Math.floor(totalSeconds / 3600);
-  const minutes = Math.floor((totalSeconds % 3600) / 60);
-  const seconds = totalSeconds % 60;
-  
-  // Formatting to ensure two digits with leading zeros
-  const formatNumber = (num) => String(num).padStart(2, '0');
+const Stopwatch = ({ isRunning, onStart, onStop, textInput, subject }) => {
+  const { time, startTimer, stopTimer } = useChronometer();
+  const [startButtonDisabled, setStartButtonDisabled] = useState(true);
+
+  useEffect(() => {
+    setStartButtonDisabled(textInput === '' || subject === '');
+  }, [textInput, subject]);
+
+  const handleStart = () => {
+    onStart();
+  };
+
+  const handleStop = () => {
+    onStop();
+  };
 
   return (
-    <div className="time-display">
-      <div>{formatNumber(hours)}</div>:
-      <div>{formatNumber(minutes)}</div>:
-      <div>{formatNumber(seconds)}</div>
+    <div className="stopwatch-container">
+      <StopwatchDisplay value={time} />
+      <div className="button-container">
+        {isRunning ? (
+          <Button variant="outlined" color="error" onClick={handleStop}>
+            Stop
+          </Button>
+        ) : (
+          <Button variant="outlined" onClick={handleStart} disabled={startButtonDisabled}>
+            Start
+          </Button>
+        )}
+      </div>
     </div>
   );
 };
 
-export default StopwatchDisplay;
+export default Stopwatch;
+

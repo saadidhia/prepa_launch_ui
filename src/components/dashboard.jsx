@@ -25,6 +25,7 @@ import Avatar from '@mui/material/Avatar';
 import { Outlet, useNavigate } from 'react-router-dom';
 import { useAuth } from './context/AuthContext';
 import Logout from './small/logout';
+import NotificationPanelTimer from './user/timer/NotificationPanelTimer';
 
 const drawerWidth = 240;
 
@@ -166,6 +167,7 @@ export default function Dashboard() {
             <div className="right-content">
               <Typography variant="h6" noWrap component="div">
                 <Logout />
+                
                 <IconButton
                   color="inherit"
                   aria-label="open drawer"
@@ -261,6 +263,7 @@ export default function Dashboard() {
         </Drawer>
         <Main open={open}>
           <DrawerHeader />
+          <NotificationPanelTimer />
           <Outlet />
         </Main>
       </Box>

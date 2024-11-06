@@ -82,19 +82,16 @@ class AuthProvider extends Component {
   userLogout = () => {
     let user = localStorage.getItem("user");
     user = JSON.parse(user);
-    if(localStorage.getItem("isRunning")=="true"){
-      console.log("Stop ur timer");
-      return false;
-      
-    }else {
+ 
       authApi.logout(user);
       localStorage.removeItem("user");
-      localStorage.removeItem("isRunning");
+      localStorage.removeItem("chronometerId");
+      
       this.setState({ user: null }, () => {
         clearInterval(this.state.tokenCheckInterval);
       });
       return true;
-    }
+    
     
 
     // Clear the token expiry check interval on logout

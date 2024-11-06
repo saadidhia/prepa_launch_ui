@@ -16,7 +16,7 @@ import {
   TextField
 } from '@mui/material';
 import { useAuth } from '../context/AuthContext';
-import { timersApi } from '../../apis/timerApi';
+import { chronometersApi } from '../../apis/chronometersApi';
 
 const PaginatedTable = ({ rows, columns, onPauseTimer, onResumeTimer, actualResponse,fetchTimers  }) => {
   const Auth = useAuth();
@@ -28,6 +28,7 @@ const PaginatedTable = ({ rows, columns, onPauseTimer, onResumeTimer, actualResp
   const [editRowId, setEditRowId] = useState(null);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [description, setDescription] = useState('');
+  const [elapsedTime, setElapsedTime] = useState('');
   const [deleteRowId, setDeleteRowId] = useState(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
@@ -55,7 +56,7 @@ const PaginatedTable = ({ rows, columns, onPauseTimer, onResumeTimer, actualResp
     setEditRowId(null);
   };
 
-  const handleUpdate = async () => {
+  /*const handleUpdate = async () => {
     try {
       const response = await timersApi.updateTimerDescription(user, editRowId, { description });
       handleCloseEditDialog();
@@ -63,7 +64,7 @@ const PaginatedTable = ({ rows, columns, onPauseTimer, onResumeTimer, actualResp
     } catch (error) {
       console.error('Failed to edit timer description:', error);
     }
-  };
+  };*/
   const handleOpenEditDialog = (row) => {
     setEditRowId(row.id);
     setDescription(row.description);
@@ -80,7 +81,7 @@ const PaginatedTable = ({ rows, columns, onPauseTimer, onResumeTimer, actualResp
       setDeleteRowId(null);
     };
 
- const handleDelete = async () => {
+ /*const handleDelete = async () => {
     try {
       await timersApi.deleteTimer(user, deleteRowId);
       handleCloseDeleteDialog();
@@ -88,7 +89,7 @@ const PaginatedTable = ({ rows, columns, onPauseTimer, onResumeTimer, actualResp
     } catch (error) {
       console.error('Failed to delete timer:', error);
     }
-  };
+  };*/
 
   const emptyRows = rowsPerPage - Math.min(rowsPerPage, rows.length - page * rowsPerPage);
 
@@ -233,9 +234,9 @@ const PaginatedTable = ({ rows, columns, onPauseTimer, onResumeTimer, actualResp
           <Button onClick={handleCloseEditDialog} color="primary">
             Cancel
           </Button>
-          <Button onClick={handleUpdate} color="primary" variant="contained">
+           { /* <Button onClick={handleUpdate}  color="primary" variant="contained">
             Update
-          </Button>
+          </Button> */}
         </DialogActions>
       </Dialog>
 
@@ -248,9 +249,9 @@ const PaginatedTable = ({ rows, columns, onPauseTimer, onResumeTimer, actualResp
                 <Button onClick={handleCloseDeleteDialog} color="primary">
                   Cancel
                 </Button>
-                <Button onClick={handleDelete} color="error" variant="contained">
+             { /*   <Button onClick={handleDelete} color="error" variant="contained">
                   Delete
-                </Button>
+                </Button> */}
               </DialogActions>
             </Dialog>
 
