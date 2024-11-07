@@ -13,7 +13,7 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
-  TextField
+  TextField,InputLabel,Select, MenuItem
 } from '@mui/material';
 import { useAuth } from '../context/AuthContext';
 import { chronometersApi } from '../../apis/chronometersApi';
@@ -28,6 +28,7 @@ const PaginatedTable = ({ rows, columns, onPauseTimer, onResumeTimer, actualResp
   const [editRowId, setEditRowId] = useState(null);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [description, setDescription] = useState('');
+  const [subject, setSubject] = useState('')
   const [elapsedTime, setElapsedTime] = useState('');
   const [deleteRowId, setDeleteRowId] = useState(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -56,15 +57,15 @@ const PaginatedTable = ({ rows, columns, onPauseTimer, onResumeTimer, actualResp
     setEditRowId(null);
   };
 
-  /*const handleUpdate = async () => {
+  const handleUpdate = async () => {
     try {
-      const response = await timersApi.updateTimerDescription(user, editRowId, { description });
+      const response = await chronometersApi.updateChronometer(user, editRowId, { description, subject });
       handleCloseEditDialog();
       fetchTimers();
     } catch (error) {
       console.error('Failed to edit timer description:', error);
     }
-  };*/
+  };
   const handleOpenEditDialog = (row) => {
     setEditRowId(row.id);
     setDescription(row.description);
@@ -81,15 +82,15 @@ const PaginatedTable = ({ rows, columns, onPauseTimer, onResumeTimer, actualResp
       setDeleteRowId(null);
     };
 
- /*const handleDelete = async () => {
+ const handleDelete = async () => {
     try {
-      await timersApi.deleteTimer(user, deleteRowId);
+      await chronometersApi.deleteTimer(user, deleteRowId);
       handleCloseDeleteDialog();
       fetchTimers();
     } catch (error) {
       console.error('Failed to delete timer:', error);
     }
-  };*/
+  };
 
   const emptyRows = rowsPerPage - Math.min(rowsPerPage, rows.length - page * rowsPerPage);
 
@@ -217,7 +218,7 @@ const PaginatedTable = ({ rows, columns, onPauseTimer, onResumeTimer, actualResp
       </Dialog>
 
       <Dialog open={editDialogOpen} onClose={handleCloseEditDialog}>
-        <DialogTitle>Edit Description</DialogTitle>
+        <DialogTitle>Edit Chronometer</DialogTitle>
         <DialogContent>
           <TextField
             autoFocus
@@ -229,14 +230,25 @@ const PaginatedTable = ({ rows, columns, onPauseTimer, onResumeTimer, actualResp
             value={description}
             onChange={(e) => setDescription(e.target.value)}
           />
+           <InputLabel id="subject-label">Matière</InputLabel>
+        <Select
+          labelId="subject-label"
+          id="subject"
+          value={subject}
+          onChange={(e) => setSubject(e.target.value)}
+          label="Matière"
+        >
+          <MenuItem value="MATH1">Math</MenuItem>
+          <MenuItem value="PHYSIQUE">Physique</MenuItem>
+        </Select>
         </DialogContent>
         <DialogActions>
           <Button onClick={handleCloseEditDialog} color="primary">
             Cancel
           </Button>
-           { /* <Button onClick={handleUpdate}  color="primary" variant="contained">
+           <Button onClick={handleUpdate}  color="primary" variant="contained">
             Update
-          </Button> */}
+          </Button> 
         </DialogActions>
       </Dialog>
 
@@ -249,9 +261,9 @@ const PaginatedTable = ({ rows, columns, onPauseTimer, onResumeTimer, actualResp
                 <Button onClick={handleCloseDeleteDialog} color="primary">
                   Cancel
                 </Button>
-             { /*   <Button onClick={handleDelete} color="error" variant="contained">
+               <Button onClick={handleDelete} color="error" variant="contained">
                   Delete
-                </Button> */}
+                </Button> 
               </DialogActions>
             </Dialog>
 

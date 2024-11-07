@@ -25,6 +25,20 @@ const Chronometer = () => {
   const [actualResponse, setActualResponse] = useState([]);
   const { isRunning, startTimer, stopTimer, time } = useChronometer();
 
+  const formatDuration = (duration) => {
+    const match = duration.match(/PT(\d+H)?(\d+M)?(\d+(\.\d+)?S)?/);
+    if (!match) return "00:00:00";
+  
+    const hours = parseInt(match[1]) || 0;
+    const minutes = parseInt(match[2]) || 0;
+    const seconds = parseFloat(match[3]) || 0;
+  
+    const hoursStr = hours.toString().padStart(2, '0');
+    const minutesStr = minutes.toString().padStart(2, '0');
+    const secondsStr = Math.floor(seconds).toString().padStart(2, '0');
+  
+    return `${hoursStr}:${minutesStr}:${secondsStr}`;
+  };
   
   const fetchTimers = async () => {
      try {
@@ -45,6 +59,9 @@ const Chronometer = () => {
            day_fin = stopDate.toISOString().split('T')[0]; // Get date part of stop
            stop = stopDate.toISOString().split('T')[1].split('.')[0]; // Get time part of stop without milliseconds
          }
+
+         const elapsedTime = formatDuration(timer.elapsedTime);
+
  
          return {
            ...timer,
@@ -52,6 +69,7 @@ const Chronometer = () => {
            start,
            day_fin,
            stop,
+           elapsedTime
          };
        });
  
@@ -77,7 +95,7 @@ const Chronometer = () => {
       <h1>Timer</h1>
      <DisplayTimer />
 
-      <TimerForm />
+      <TimerForm fetchTimers={fetchTimers} />
       <Box sx={{ marginLeft: 2 }}>
       </Box>
        <PaginatedTable

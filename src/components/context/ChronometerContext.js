@@ -23,7 +23,7 @@ export const ChronometerProvider = ({ children }) => {
          console.log("IDDDDDDDDDDDDDDDDDD", chronometerId)
         if (!chronometerId || chronometerId=== null) return; // Do nothing if chronometerId is not set
         try {
-            const response = await instance.get(`/api/v1/chronometer/status/${chronometerId}`, { headers: {
+            const response = await instance.get(`/api/v1/chronometers/status/${chronometerId}`, { headers: {
                 'Authorization': bearerAuth(user),
                 'Content-type': 'application/json'
               }});
@@ -76,8 +76,10 @@ export const ChronometerProvider = ({ children }) => {
     const stopTimer = async () => {
       
         let chronometerId=localStorage.getItem("chronometerId")
+        console.log("try to stoppppppppppp", chronometerId)
         if (!chronometerId || chronometerId=== null) return; // Do nothing if chronometerId is not set
         try {
+            console.log("stopiiiiiiiiiiiiiiiiiiiiii", chronometerId)
             await instance.post(`/api/v1/chronometers/stop/${chronometerId}`,null,{
                 headers: {
                   'Authorization': bearerAuth(user),

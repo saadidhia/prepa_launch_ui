@@ -5,8 +5,8 @@ export const chronometersApi = {
     getChronometers,
   //  startTimer,
  //   stopTimer,
-    updateTimerDescription,
-    deleteTimer
+    updateChronometer,
+    deleteChronometer
 }
 
 function getChronometers(user) {
@@ -39,9 +39,9 @@ function getChronometers(user) {
     })
   }*/
 
-  function updateTimerDescription(user,id, timer){
+  function updateChronometer(user,id, timer){
 
-      return instance.put(`/api/v1/timer/update-timer-description/${id}`,timer, {
+      return instance.put(`/api/v1/chronometers/${id}`,timer, {
         headers: {
           'Authorization': bearerAuth(user),
           'Content-type': 'application/json'
@@ -49,9 +49,9 @@ function getChronometers(user) {
       })
     }
 
-    function deleteTimer(user,deleteRowId){
+    function deleteChronometer(user,deleteRowId){
 
-          return instance.delete(`/api/v1/timer/delete/${deleteRowId}`, {
+          return instance.delete(`/api/v1/chronometers/${deleteRowId}`, {
             headers: {
               'Authorization': bearerAuth(user),
               'Content-type': 'application/json'

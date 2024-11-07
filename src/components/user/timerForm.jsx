@@ -3,7 +3,7 @@ import { TextField, Select, MenuItem, Button, FormControl, InputLabel, Box } fro
 import Stopwatch from './timer/Stopwatch';
 import { useChronometer } from '../context/ChronometerContext';
 
-function TimerForm() {
+function TimerForm({fetchTimers}) {
 const { isRunning, startTimer, stopTimer, time } = useChronometer();
   const [textInput, setTextInput] = useState('');
   const [subject, setSubject] = useState('');
@@ -16,6 +16,7 @@ const { isRunning, startTimer, stopTimer, time } = useChronometer();
 
   const handleStop = () => {
     stopTimer();
+    fetchTimers();
   }; 
 
   return (
