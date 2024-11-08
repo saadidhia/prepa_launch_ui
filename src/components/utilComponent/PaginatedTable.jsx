@@ -84,7 +84,7 @@ const PaginatedTable = ({ rows, columns, onPauseTimer, onResumeTimer, actualResp
 
  const handleDelete = async () => {
     try {
-      await chronometersApi.deleteTimer(user, deleteRowId);
+      await chronometersApi.deleteChronometer(user, deleteRowId);
       handleCloseDeleteDialog();
       fetchTimers();
     } catch (error) {
@@ -94,40 +94,29 @@ const PaginatedTable = ({ rows, columns, onPauseTimer, onResumeTimer, actualResp
 
   const emptyRows = rowsPerPage - Math.min(rowsPerPage, rows.length - page * rowsPerPage);
 
-  const isWithin24Hours = (dateTimeString) => {
-    const currentTime = new Date();
-    const eventTime = new Date(dateTimeString);
-    const timeDifference = currentTime - eventTime;
-    const hoursDifference = timeDifference / (1000 * 60 * 60);
-    return hoursDifference <= 24;
-  };
+const isWithin24Hours = (dateTimeString) => {
+  console.log("created at ", dateTimeString )
+  const currentTime = new Date();
+  const eventTime = new Date(dateTimeString);
+  const timeDifference = (currentTime - eventTime) / (1000 * 60 * 60); // Difference in hours
+  return timeDifference >= 0 && timeDifference <= 24;
+};
 
-  const isWithin48Hours = (dateTimeString) => {
-    const currentTime = new Date();
-    const eventTime = new Date(dateTimeString);
-    const timeDifference = currentTime - eventTime;
-    const hoursDifference = timeDifference / (1000 * 60 * 60);
-    return hoursDifference <= 48;
-  };
+const isWithin48Hours = (dateTimeString) => {
+  const currentTime = new Date();
+  const eventTime = new Date(dateTimeString);
+  const timeDifference = (currentTime - eventTime) / (1000 * 60 * 60); // Difference in hours
+  return timeDifference >= 0 && timeDifference <= 48;
+};
 
-//   const renderActionButtons = (row) => {
-//     const shouldShowEditButton = actualResponse.some(response =>
-//       response.id === row.id && isWithin48Hours(response.start)
-//     );
-//
-//     return shouldShowEditButton ? (
-//       <Button variant="contained" color="primary" onClick={() => handleOpenEditDialog(row)}>
-//         Edit
-//       </Button>
-//     ) : null;
-//   };
+
  const renderActionButtons = (row) => {
     const shouldShowEditButton = actualResponse.some(response =>
-      response.id === row.id && isWithin48Hours(response.start)
+      response.id === row.id && isWithin48Hours(response.created_at)
     );
 
     const shouldShowDeleteButton = actualResponse.some(response =>
-      response.id === row.id && isWithin24Hours(response.start)
+      response.id === row.id && isWithin24Hours(response.created_at)
     );
 
     return (
