@@ -6,7 +6,6 @@ const DisplayTimer = () => {
 
   const formatTime = (time) => {
 
-    console.log("lalala", time)
     const totalSeconds = Math.floor(time / 1000);
     const hours = Math.floor(totalSeconds / 3600);
     const minutes = Math.floor((totalSeconds % 3600) / 60);

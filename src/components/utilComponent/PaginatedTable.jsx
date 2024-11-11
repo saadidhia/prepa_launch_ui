@@ -92,10 +92,16 @@ const PaginatedTable = ({ rows, columns, onPauseTimer, onResumeTimer, actualResp
     }
   };
 
+  const CheckItemChrononometerIdInLocalStorage = () => {
+    if (localStorage.getItem("chronometerId")===null){
+      return false
+    }
+    return true;
+  } 
+
   const emptyRows = rowsPerPage - Math.min(rowsPerPage, rows.length - page * rowsPerPage);
 
 const isWithin24Hours = (dateTimeString) => {
-  console.log("created at ", dateTimeString )
   const currentTime = new Date();
   const eventTime = new Date(dateTimeString);
   const timeDifference = (currentTime - eventTime) / (1000 * 60 * 60); // Difference in hours
@@ -132,6 +138,7 @@ const isWithin48Hours = (dateTimeString) => {
             color="error"
             onClick={() => handleOpenDeleteDialog(row.id)}
             style={{ marginLeft: '8px' }}
+            disable={CheckItemChrononometerIdInLocalStorage()}
           >
             Delete
           </Button>
