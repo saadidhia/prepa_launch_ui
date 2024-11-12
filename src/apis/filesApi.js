@@ -19,7 +19,6 @@ function getPdfs(user, subFolderName) {
 instance.interceptors.response.use(function (response) {
   return response;
 }, function (error) {
-  console.log("Response error:", error); // Log the error
   if (error.response && error.response.status === 401) {
     console.log("Unauthorized error detected.");
     localStorage.removeItem('user'); // Adjust key based on how you're storing the token

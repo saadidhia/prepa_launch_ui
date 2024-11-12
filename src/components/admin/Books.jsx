@@ -45,7 +45,7 @@ export function Books() {
                 {books.map((card) => (
                     <Grid item key={card.id} xs={12} sm={6} md={4} lg={3}>
                         <Card>
-                            {console.log("CARDS", card.id)}
+                        
                             <Image
                                 name={card.name}
                                 description={card.description}

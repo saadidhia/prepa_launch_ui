@@ -28,7 +28,6 @@ const [userToDelete, setUserToDelete] = useState(null); // State to hold the use
 
   const handleActivateUser = async (userId, subscription) => {
     try {
-      console.log("hehhehhehe "+ userId)
       await adminApi.activateAndExtendUser(admin, userId, subscription);
       fetchUsers();
     } catch (error) {

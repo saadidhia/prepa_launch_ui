@@ -14,7 +14,6 @@ export function Cours() {
 
   return (
     <div style={{ display: 'flex', justifyContent: 'center', flexWrap: 'wrap' }}>
-      {/*console.log("filtered ", filteredCourses)*/}
       {filteredCourses.map((course, index) => (
         <Card
           key={index}

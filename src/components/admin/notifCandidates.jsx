@@ -12,7 +12,6 @@ export function NotifCandidates() {
   const fetchNotifiedUsers = async () => {
     const currentAdmin = Auth.getUser();
     try {
-      console.log("fetch "+currentAdmin);
       const response = await adminApi.getNotifiedUsers(currentAdmin);
       const data = response.data;
       setNotifUsers(data);

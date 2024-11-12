@@ -19,26 +19,6 @@ function getChronometers(user) {
 
 }
 
-/*function startTimer(user, timer){
-    console.log("card ", timer)
-    return instance.post(`/api/v1/timer`,timer, {
-      headers: {
-        'Authorization': bearerAuth(user),
-        'Content-type': 'application/json'
-      }
-    })
-  }
-
-  function stopTimer(user, id){
-  
-    return instance.put(`/api/v1/timer/stop/${id}`,{}, {
-      headers: {
-        'Authorization': bearerAuth(user),
-        'Content-type': 'application/json'
-      }
-    })
-  }*/
-
   function updateChronometer(user,id, timer){
 
       return instance.put(`/api/v1/chronometers/${id}`,timer, {

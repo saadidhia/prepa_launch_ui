@@ -14,9 +14,7 @@ export function ArchiveCards() {
   const fetchArchiveCards = async () => { 
     try {
         const response = await adminApi.getArchiveCards(admin);
-        console.log("response", response);
         const data = response.data;
-        console.log("data archive Cards", data);
         setArchiveCards(data);
     } catch (error) {
         console.error('Error fetching Archive Cards:', error);
@@ -31,8 +29,6 @@ export function ArchiveCards() {
         try {
           await adminApi.deleteArchiveCard(admin,cardId);
           setArchiveCards(prevArchiveCards => prevArchiveCards.filter(card => card.id !== cardId));
-    
-        console.log("DELETe")
          // onDelete(); // Trigger the parent component to update state or re-fetch data
         } catch (error) {
           console.error('Error deleting Archive card:', error);

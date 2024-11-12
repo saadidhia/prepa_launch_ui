@@ -89,16 +89,10 @@ export function Notes() {
 
     const handleSubmit = async (e) => {
         e.preventDefault()
-        console.log('Title:', title);
-        console.log('Markdown:', note);
-
-        console.log('Subject Option:', subject);
-        console.log('Context Option:', context);
         if (!(title && note && subject && context)) {
             return;
         }
         const card = { note, title, context, subject }
-        console.log("My card ", card)
         try {
             await candidatsApi.createNote(user, card);
             fetchCards()

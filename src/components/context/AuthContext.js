@@ -99,7 +99,6 @@ class AuthProvider extends Component {
 
   userIsAdmin = () => {
     let user = localStorage.getItem("user");
-    console.log(user);
     user = JSON.parse(user);
     console.log(user);
     if (user.data.rol[0] === "ADMIN") {

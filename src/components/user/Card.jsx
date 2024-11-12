@@ -41,7 +41,7 @@ const CustomCard = ({ content, onDelete, onUpdate}) => {
   const [status, setStatus] = useState('');
 
   const getCardColor = (subject) => {
-    console.log('Subject:', subject);
+
     if (subject === 'Chimie'.toUpperCase()) {
       return '33FF33'; // green
     }else if (subject==='Math1'.toUpperCase()){
@@ -86,9 +86,7 @@ const CustomCard = ({ content, onDelete, onUpdate}) => {
 const handleOpen = async () => {
 
   setOpen(true);
- // console.log("update"+content.id)
   const response =await candidatsApi.getCardById(user,content.id)
-  console.log("jjjjjjj",response.data )
   setTitle(response.data.title)
   setNote(response.data.note)
   setContext(response.data.context)
@@ -100,8 +98,6 @@ const handleUpdate = async () => {
   const card = { title, note, context, status}
 
   try {
-    console.log("update????",user)
-    console.log("CArdiB",card)
     await candidatsApi.updateCardById(user,content.id,card);
     onUpdate();
     handleClose()

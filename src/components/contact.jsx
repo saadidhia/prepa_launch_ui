@@ -21,7 +21,6 @@ export const Contact = (props) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log(name, email, phone, message);
     emailjs
       .sendForm(
         props.mail.SERVICE_ID,

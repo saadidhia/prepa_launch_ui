@@ -38,7 +38,6 @@ export function CreateBook() {
 
 
         const book = { name, description, link, price, percentagePromotion, subjects, levels, fields }
-        console.log("book", book)
 
         try {
 

@@ -22,7 +22,6 @@ export function UsersStat() {
         try {
             const response = await adminApi.getStatics(admin);
             const data = response.data;
-            console.log("data", data);
             setUsers(data.USERS);
             setAdmins(data.ADMINS);
             setPc(data.PC);
