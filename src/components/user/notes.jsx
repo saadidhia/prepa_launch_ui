@@ -10,12 +10,14 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import TextField from '@mui/material/TextField';
 import SimpleMDEEditor from 'react-simplemde-editor';
-import 'easymde/dist/easymde.min.css'; 
+import 'easymde/dist/easymde.min.css'; // Import SimpleMDE styles
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
+// import { useAuth } from '../context/AuthContext'; // Commenting out user authentication
 import subjects from '../../subjects';
 import contexts from '../../context';
 import { candidatsApi } from '../../apis/candidatsApi';
+// import Board from './Board'; // Commenting out the Board component import
 import '../../assets/css/board.css';
 
 export function Notes() {
@@ -29,7 +31,7 @@ export function Notes() {
     const [finishedCards, setFinishedCards] = useState([]);
       // **NEW: State for the mathematical symbol dialog**
       const [openSymbolDialog, setOpenSymbolDialog] = useState(false); 
-      const [editingCard, setEditingCard] = useState(null);
+      const [editingCard, setEditingCard] = useState(null); // New state to track edited card
 
 
     const autofocusNoSpellcheckerOptions = useMemo(() => {
@@ -48,7 +50,7 @@ export function Notes() {
         setNote(card.note);
         setSubject(card.subject);
         setContext(card.context);
-        setOpen(true); 
+        setOpen(true);  // Open the dialog
     };
     
     
