@@ -88,8 +88,8 @@ const navigations = [
 
     },
     {
-        text: "Motivation",
-        link: "motivation",
+        text: "Motivation mananegement",
+        link: "motivation-admin",
         component: Motivations,
         role: "admin"
     },

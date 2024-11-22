@@ -17,6 +17,7 @@ import {
 } from '@mui/material';
 import { useAuth } from '../context/AuthContext';
 import { chronometersApi } from '../../apis/chronometersApi';
+import subjects from '../../subjects'
 
 const PaginatedTable = ({ rows, columns, onPauseTimer, onResumeTimer, actualResponse,fetchTimers  }) => {
   const Auth = useAuth();
@@ -32,6 +33,7 @@ const PaginatedTable = ({ rows, columns, onPauseTimer, onResumeTimer, actualResp
   const [elapsedTime, setElapsedTime] = useState('');
   const [deleteRowId, setDeleteRowId] = useState(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const userSubjects = subjects.filter(subject => subject.section.includes(user.data.field));
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -227,16 +229,20 @@ const isWithin48Hours = (dateTimeString) => {
             onChange={(e) => setDescription(e.target.value)}
           />
            <InputLabel id="subject-label">Matière</InputLabel>
-        <Select
-          labelId="subject-label"
-          id="subject"
-          value={subject}
-          onChange={(e) => setSubject(e.target.value)}
-          label="Matière"
-        >
-          <MenuItem value="MATH1">Math</MenuItem>
-          <MenuItem value="PHYSIQUE">Physique</MenuItem>
-        </Select>
+           <Select
+                        labelId="subject-label"
+                        id="subject"
+                        value={subject}
+                        onChange={(e) => setSubject(e.target.value)}
+                        label="Matière"
+                    >
+                        {userSubjects.map((subject, index) => (
+                            <MenuItem key={index} value={subject.name}>
+                                {subject.name}
+                            </MenuItem>
+                        ))}
+                    </Select>
+        
         </DialogContent>
         <DialogActions>
           <Button onClick={handleCloseEditDialog} color="primary">

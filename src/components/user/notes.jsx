@@ -13,15 +13,18 @@ import SimpleMDEEditor from 'react-simplemde-editor';
 import 'easymde/dist/easymde.min.css'; // Import SimpleMDE styles
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
-// import { useAuth } from '../context/AuthContext'; // Commenting out user authentication
+ import { useAuth } from '../context/AuthContext';
 import subjects from '../../subjects';
 import contexts from '../../context';
 import { candidatsApi } from '../../apis/candidatsApi';
-// import Board from './Board'; // Commenting out the Board component import
+ import Board from './Board'; // Commenting out the Board component import
 import '../../assets/css/board.css';
 
 export function Notes() {
-    const [open, setOpen] = useState(false);
+    const Auth = useAuth();
+    const user = Auth.getUser();
+    const [openCreate, setOpenCreate] = useState(false);
+    const [openEdit, setOpenEdit] = useState(false);
     const [title, setTitle] = useState('');
     const [note, setNote] = useState('');
     const [subject, setSubject] = useState('');
@@ -32,6 +35,7 @@ export function Notes() {
       // **NEW: State for the mathematical symbol dialog**
       const [openSymbolDialog, setOpenSymbolDialog] = useState(false); 
       const [editingCard, setEditingCard] = useState(null); // New state to track edited card
+      const [currentCard, setCurrentCard] = useState(null);
 
 
     const autofocusNoSpellcheckerOptions = useMemo(() => {
@@ -45,14 +49,50 @@ export function Notes() {
     }, []);
 
     const handleOpenEdit = (card) => {
+        setOpenEdit(true); 
         setEditingCard(card);
         setTitle(card.title);
         setNote(card.note);
         setSubject(card.subject);
         setContext(card.context);
-        setOpen(true);  // Open the dialog
+       
     };
+    const handleDelete = async (id) => {
+        try {
+          await candidatsApi.deleteCard(user, id);
+         // onDelete(); // Trigger the parent component to update state or re-fetch data
+         setCreatedCards((prev) => prev.filter((card) => card.id !== id));
+        } catch (error) {
+          console.error('Error deleting card:', error);
+        }
+      };
     
+    const handleUpdate = async (id) => {
+        const card = { title, note, context };
+        try {
+         const  response =await candidatsApi.updateCardById(user, id, card);
+         const updatedCard = response.data;
+
+        // Update the state to reflect the changes of the updated card
+       setCreatedCards((prevCards) =>
+            prevCards.map((card) => (card.id === id ? updatedCard : card))
+        ); 
+        setInProgressCards((prevCards) =>
+            prevCards.map((card) => (card.id === id ? updatedCard : card))
+        ); 
+        setFinishedCards((prevCards) =>
+            prevCards.map((card) => (card.id === id ? updatedCard : card))
+        ); 
+       
+
+      
+       //   setCreatedCards((prev) => prev.filter((card) => card.id !== id));
+      //    onUpdate();
+          handleClose();
+        } catch (error) {
+          console.error('Error updating card:', error);
+        }
+      };
     
 
 
@@ -93,14 +133,13 @@ export function Notes() {
     const userSubjects = subjects; // Default subjects, removing dependency on authentication
 
     const fetchCards = async () => {
-        // if (!user || !user.data) { // Commenting out user checks
-        //     console.error('User is not authenticated or missing data');
-        //     return;
-        // }
+     if (!user || !user.data) { 
+             console.error('User is not authenticated or missing data');
+             return;
+         }
 
         try {
-            // const response = await candidatsApi.getCards(user); // Commenting out API call that depends on user
-            const response = await candidatsApi.getCards(); // Remove user authentication from API call
+             const response = await candidatsApi.getCards(user); 
 
             if (!response || !response.data) {
                 console.error('Invalid response from API');
@@ -122,17 +161,18 @@ export function Notes() {
     };
 
     useEffect(() => {
-        fetchCards(); // Removing user dependency for fetching cards
+        fetchCards(); 
     }, []);
 
     const handleClose = () => {
         resetInputs();
-        setOpen(false);
+        setOpenCreate(false);
+        setOpenEdit(false)
         setEditingCard(null);
     };
 
-    const handleOpen = () => {
-        setOpen(true);
+    const handleOpenCreate = () => {
+        setOpenCreate(true);
     };
 
     const resetInputs = () => {
@@ -142,45 +182,40 @@ export function Notes() {
         setContext('');
     };
 
-    const handleSubmit = async (e) => {
+    const handleCreate = async (card) => {
+        try {
+         const response= await candidatsApi.createNote(user, card);
+         // onDelete(); // Trigger the parent component to update state or re-fetch data
+         setCreatedCards((prevCards) => [...prevCards, response.data]);
+        } catch (error) {
+          console.error('Error creating  card:', error);
+        }
+      };
+
+    const handleSubmit = async (e, id) => {
         e.preventDefault();
         if (!(title && note && subject && context)) {
             return;
         }
+   
     
         const updatedCard = {
+            
             note,
             title,
             context,
             subject,
             status: editingCard ? editingCard.status : 'CREATED', 
         };
-    
-        try {
-            if (editingCard) {
-                // Update the card in the appropriate list without changing its status
-                if (editingCard.status === 'CREATED') {
-                    const updatedCards = createdCards.map(card =>
-                        card.title === editingCard.title ? updatedCard : card
-                    );
-                    setCreatedCards(updatedCards);
-                } else if (editingCard.status === 'INPROGRESS') {
-                    const updatedCards = inProgressCards.map(card =>
-                        card.title === editingCard.title ? updatedCard : card
-                    );
-                    setInProgressCards(updatedCards);
-                } else if (editingCard.status === 'FINISHED') {
-                    const updatedCards = finishedCards.map(card =>
-                        card.title === editingCard.title ? updatedCard : card
-                    );
-                    setFinishedCards(updatedCards);
-                }
-            } else {
-                setCreatedCards([...createdCards, updatedCard]); // Add a new card if not editing
-            }
-        } catch (error) {
-            console.error('Error creating/updating note:', error);
-        }
+        if (openCreate){
+            handleCreate(updatedCard);
+            setOpenCreate(false);
+          }
+         if (openEdit){
+            handleUpdate(editingCard.id);
+
+        
+         }
     
         resetInputs();
         handleClose();
@@ -194,7 +229,7 @@ export function Notes() {
         }
     };
 
-    const handleDrop = (event, status) => {
+    const handleDrop = async (event, status) => {
         const cardId = event.dataTransfer.getData('cardId');
         const cardType = event.dataTransfer.getData('cardType');
         let movedCard;
@@ -212,6 +247,27 @@ export function Notes() {
             if (status === 'FINISHED') return; 
             movedCard = finishedCards.find((card) => card.title === cardId);
             setFinishedCards(finishedCards.filter((card) => card.title !== cardId));
+        }
+        
+        if (!movedCard) {
+            console.error('Card not found');
+            return;
+        }
+
+        try {
+            await candidatsApi.updateCardStatusById(user, movedCard.id,  status );
+            console.log('Card status updated successfully');
+        } catch (error) {
+            console.error('Error updating card status:', error);
+            // Optionally revert the card status locally if the API call fails
+            if (cardType === 'created') {
+                setCreatedCards([...createdCards, movedCard]);
+            } else if (cardType === 'inProgress') {
+                setInProgressCards([...inProgressCards, movedCard]);
+            } else if (cardType === 'finished') {
+                setFinishedCards([...finishedCards, movedCard]);
+            }
+            return;
         }
 
         movedCard.status = status;
@@ -238,6 +294,7 @@ export function Notes() {
         } else if (status === 'FINISHED') {
             setFinishedCards((prev) => prev.filter((card) => card.title !== cardTitle));
         }
+
     };
     
     const handleDeleteCard = (cardTitle, status) => {
@@ -278,17 +335,8 @@ export function Notes() {
 
     return (
         <>
-            <div 
-                style={{padding: '10px 30px',
-                backgroundColor: '#3f95db',
-                boxShadow:' 0 2px 5px 0 rgb(82, 82, 82)',
-                textAlign: 'right',
-                fontSize: '16px',
-                }}>
-                    <a href='' style={{  color: 'white',textDecoration: 'none'}}><i className="bi bi-box-arrow-right"></i> DECONNEXION <i className="bi bi-person-circle"></i></a>
-            </div>
 
-            <Button style={{margin:'20px', fontSize:'17px'}} variant="contained" color="primary" onClick={handleOpen}>
+            <Button style={{margin:'20px', fontSize:'17px'}} variant="contained" color="primary" onClick={handleOpenCreate}>
                 Create Card
             </Button>
             
@@ -298,7 +346,7 @@ export function Notes() {
                 onSelectSymbol={handleSelectSymbol}
             />
 
-            <Dialog open={open} onClose={handleClose}>
+            <Dialog open={openCreate || openEdit} onClose={handleClose}>
                 <DialogTitle>Create a Note</DialogTitle>
                 <DialogContent>
                     <TextField
@@ -383,8 +431,7 @@ export function Notes() {
                             <p>Note: {card.note}</p>
                             <p>Subject:{card.subject}</p>
                             <p>Context: {card.context}</p>
-                            <p>Status: {card.status}</p>
-                            <Button onClick={() => handleDeleteCard(card.title, card.status)}  color="secondary">Delete</Button>
+                            <Button onClick={() => handleDelete(card.id)}  color="secondary">Delete</Button>
                             <Button onClick={() => handleOpenEdit(card)} color="primary">Edit</Button>
                         </div>
                     ))}
@@ -408,7 +455,6 @@ export function Notes() {
                             <p>Note: {card.note}</p>
                             <p>Subject:{card.subject}</p>
                             <p>Context: {card.context}</p>
-                            <p>Status: {card.status}</p>
                             <Button onClick={() => handleDeleteCard(card.title, card.status)} color="secondary">Delete</Button>
                             <Button onClick={() => handleOpenEdit(card)} color="primary">Edit</Button>
                         </div>
@@ -433,7 +479,6 @@ export function Notes() {
                             <p>Note: {card.note}</p>
                             <p>Subject:{card.subject}</p>
                             <p>Context: {card.context}</p>
-                            <p>Status: {card.status}</p>
                             <Button  onClick={() => handleDeleteCard(card.title, card.status)}  color="secondary">Delete</Button>
                             <Button onClick={() => handleOpenEdit(card)} color="primary">Edit</Button>
                         </div>
