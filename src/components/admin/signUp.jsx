@@ -40,8 +40,7 @@ export function SignUp() {
       role,
       subscriptionDto: {
         duration,
-        startDate,
-        price
+        startDate
       }
     };
 
@@ -162,16 +161,6 @@ export function SignUp() {
               className="form-control mt-1"
               value={startDate}
               onChange={(e) => setStartDate(e.target.value)}
-            />
-          </div>
-          <div className="form-group mt-3">
-            <label>Subscription Price</label>
-            <input
-              type="number"
-              className="form-control mt-1"
-              placeholder="Price"
-              value={price}
-              onChange={(e) => setPrice(e.target.value)}
             />
           </div>
 
