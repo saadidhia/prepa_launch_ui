@@ -14,7 +14,7 @@ import { CreateBook } from './components/admin/createBook'
 import { Books } from './components/admin/Books'
 import Chronometer  from './components/user/chronometer'
 import { UsersStat } from './components/admin/UsersStat'
-import  Progression  from './components/user/Progression'
+import { Progression }  from './components/user/Progression'
 
 
 const navigations = [
