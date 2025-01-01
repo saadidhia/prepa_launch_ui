@@ -11,7 +11,8 @@ export const candidatsApi = {
     getMyProfile,
     updateNumberPhone,
     getSubscriptions,
-    updateCardStatusById
+    updateCardStatusById,
+    getMyStatisticsBasedOnRangeDate,
 }
 
 function getMotivations(user) {
@@ -106,5 +107,33 @@ function getSubscriptions(user){
       'Content-type': 'application/json'
     }
   })
+
+}
+
+function getMyStatisticsBasedOnRangeDate(user){
+  function getMyStatisticsBasedOnRangeDate(user, subjects, startDate, endDate) {
+    // Create an object to hold query parameters
+    const params = {};
+  
+    if (subjects) {
+      params.subjects = subjects.join(','); // Convert subjects array to a comma-separated string
+    }
+    if (startDate) {
+      params.startDate = startDate; // Expect startDate in 'yyyy-MM-dd' format
+    }
+    if (endDate) {
+      params.endDate = endDate; // Expect endDate in 'yyyy-MM-dd' format
+    }
+  
+    // Make the API call
+    return instance.get('/api/v1/statistics/subjects', {
+      headers: {
+        'Authorization': bearerAuth(user),
+        'Content-Type': 'application/json',
+      },
+      params, // Axios will handle query parameters
+    });
+  }
+  
 
 }
