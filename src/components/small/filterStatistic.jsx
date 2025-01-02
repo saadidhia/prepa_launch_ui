@@ -11,6 +11,7 @@ import {
   Button,
   Paper
 } from '@mui/material';
+import { candidatsApi } from '../../apis/candidatsApi'; // Import your API method
 
 export function FilterStatistic() {
   const Auth = useAuth();
@@ -18,16 +19,37 @@ export function FilterStatistic() {
   const filteredCourses = courses.filter(course => course.section.includes(user.data.field));
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
+  const [selectedSubjects, setSelectedSubjects] = useState([]);
 
-  const handleSubmit = () => {
-    alert("Filter submitted!"); // Replace with your submit logic
+  const handleCheckboxChange = (courseName) => {
+    setSelectedSubjects((prevSelected) =>
+      prevSelected.includes(courseName)
+        ? prevSelected.filter((name) => name !== courseName)
+        : [...prevSelected, courseName]
+    );
+  };
+
+  const handleSubmit = async () => {
+    try {
+      const response = await candidatsApi.getMyStatisticsBasedOnRangeDate(
+        user,
+        selectedSubjects,
+        startDate ? startDate.toISOString().split('T')[0] : null,
+        endDate ? endDate.toISOString().split('T')[0] : null
+      );
+      console.log('API Response:', response.data);
+      alert('Filter applied successfully!');
+    } catch (error) {
+      console.error('Error fetching statistics:', error);
+      alert('Failed to apply filter.');
+    }
   };
 
   return (
     <Paper 
       elevation={3} 
       sx={{ 
-        maxWidth: 1200, // Increased width
+        maxWidth: 1200, 
         margin: "auto", 
         padding: 3, 
         borderRadius: 2, 
@@ -39,8 +61,8 @@ export function FilterStatistic() {
           display: 'flex', 
           flexDirection: 'row', 
           alignItems: 'center', 
-          gap: 5, // Increased gap for spacing
-          justifyContent: 'space-between' // Even spacing between items
+          gap: 5, 
+          justifyContent: 'space-between' 
         }}
       >
         {/* Course Checkboxes */}
@@ -48,7 +70,12 @@ export function FilterStatistic() {
           {filteredCourses.map((course, index) => (
             <FormControlLabel
               key={index}
-              control={<Checkbox value={course} />}
+              control={
+                <Checkbox
+                  checked={selectedSubjects.includes(course.name)}
+                  onChange={() => handleCheckboxChange(course.name)}
+                />
+              }
               label={course.name}
             />
           ))}

@@ -110,7 +110,7 @@ function getSubscriptions(user){
 
 }
 
-function getMyStatisticsBasedOnRangeDate(user){
+
   function getMyStatisticsBasedOnRangeDate(user, subjects, startDate, endDate) {
     // Create an object to hold query parameters
     const params = {};
@@ -136,4 +136,3 @@ function getMyStatisticsBasedOnRangeDate(user){
   }
   
 
-}
