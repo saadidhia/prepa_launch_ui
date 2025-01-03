@@ -124,7 +124,7 @@ function getSubscriptions(user){
     if (endDate) {
       params.endDate = endDate; // Expect endDate in 'yyyy-MM-dd' format
     }
-  
+    console.log("params ", params)
     // Make the API call
     return instance.get('/api/v1/statistics/subjects', {
       headers: {

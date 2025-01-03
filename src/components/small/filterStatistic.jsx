@@ -11,15 +11,16 @@ import {
   Button,
   Paper
 } from '@mui/material';
-import { candidatsApi } from '../../apis/candidatsApi'; // Import your API method
+import { candidatsApi } from '../../apis/candidatsApi';
 
-export function FilterStatistic() {
+export function FilterStatistic({ onDataReceived }) {
   const Auth = useAuth();
   const user = Auth.getUser();
   const filteredCourses = courses.filter(course => course.section.includes(user.data.field));
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const [selectedSubjects, setSelectedSubjects] = useState([]);
+  const [selectAll, setSelectAll] = useState(false);
 
   const handleCheckboxChange = (courseName) => {
     setSelectedSubjects((prevSelected) =>
@@ -27,6 +28,15 @@ export function FilterStatistic() {
         ? prevSelected.filter((name) => name !== courseName)
         : [...prevSelected, courseName]
     );
+  };
+
+  const handleSelectAllChange = () => {
+    if (selectAll) {
+      setSelectedSubjects([]);
+    } else {
+      setSelectedSubjects(filteredCourses.map(course => course.name));
+    }
+    setSelectAll(!selectAll);
   };
 
   const handleSubmit = async () => {
@@ -39,6 +49,7 @@ export function FilterStatistic() {
       );
       console.log('API Response:', response.data);
       alert('Filter applied successfully!');
+      onDataReceived(response.data);
     } catch (error) {
       console.error('Error fetching statistics:', error);
       alert('Failed to apply filter.');
@@ -67,6 +78,15 @@ export function FilterStatistic() {
       >
         {/* Course Checkboxes */}
         <Box sx={{ flex: 2 }}>
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={selectAll}
+                onChange={handleSelectAllChange}
+              />
+            }
+            label="Select All"
+          />
           {filteredCourses.map((course, index) => (
             <FormControlLabel
               key={index}
