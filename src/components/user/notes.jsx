@@ -60,8 +60,10 @@ export function Notes() {
     const handleDelete = async (id) => {
         try {
           await candidatsApi.deleteCard(user, id);
-         // onDelete(); // Trigger the parent component to update state or re-fetch data
-         setCreatedCards((prev) => prev.filter((card) => card.id !== id));
+          // onDelete(); // Trigger the parent component to update state or re-fetch data
+          setCreatedCards((prev) => prev.filter((card) => card.id !== id));
+          setInProgressCards((prev) => prev.filter((card) => card.id !== id));
+          setFinishedCards((prev) => prev.filter((card) => card.id !== id));
         } catch (error) {
           console.error('Error deleting card:', error);
         }
@@ -455,7 +457,7 @@ export function Notes() {
                             <p>Note: {card.note}</p>
                             <p>Subject:{card.subject}</p>
                             <p>Context: {card.context}</p>
-                            <Button onClick={() => handleDeleteCard(card.title, card.status)} color="secondary">Delete</Button>
+                            <Button onClick={() => handleDelete(card.id)} color="secondary">Delete</Button>
                             <Button onClick={() => handleOpenEdit(card)} color="primary">Edit</Button>
                         </div>
                     ))}
@@ -479,7 +481,7 @@ export function Notes() {
                             <p>Note: {card.note}</p>
                             <p>Subject:{card.subject}</p>
                             <p>Context: {card.context}</p>
-                            <Button  onClick={() => handleDeleteCard(card.title, card.status)}  color="secondary">Delete</Button>
+                            <Button  onClick={() => handleDelete(card.id)}  color="secondary">Delete</Button>
                             <Button onClick={() => handleOpenEdit(card)} color="primary">Edit</Button>
                         </div>
                     ))}
