@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { useAuth } from '../context/AuthContext';
@@ -17,42 +17,79 @@ export function FilterStatistic({ onDataReceived }) {
   const Auth = useAuth();
   const user = Auth.getUser();
   const filteredCourses = courses.filter(course => course.section.includes(user.data.field));
-  const [startDate, setStartDate] = useState(null);
-  const [endDate, setEndDate] = useState(null);
-  const [selectedSubjects, setSelectedSubjects] = useState([]);
+  const [filterStat, setFilterStat] = useState({
+    startDate: null,
+    endDate: null,
+    selectedSubjects: [],
+  });
   const [selectAll, setSelectAll] = useState(false);
 
-  const handleCheckboxChange = (courseName) => {
-    setSelectedSubjects((prevSelected) =>
-      prevSelected.includes(courseName)
-        ? prevSelected.filter((name) => name !== courseName)
-        : [...prevSelected, courseName]
+  // Load state from localStorage when the component mounts
+  useEffect(() => {
+    const savedFilterStat = JSON.parse(localStorage.getItem('filter_stat')) || {
+      selectedSubjects: [],
+      startDate: null,
+      endDate: null,
+    };
+    setFilterStat({
+      selectedSubjects: savedFilterStat.selectedSubjects,
+      startDate: savedFilterStat.startDate ? new Date(savedFilterStat.startDate) : null,
+      endDate: savedFilterStat.endDate ? new Date(savedFilterStat.endDate) : null,
+    });
+  }, []);
+
+  // Save state to localStorage whenever it changes
+  useEffect(() => {
+    localStorage.setItem(
+      'filter_stat',
+      JSON.stringify({
+        selectedSubjects: filterStat.selectedSubjects,
+        startDate: filterStat.startDate ? filterStat.startDate.toISOString().split('T')[0] : null,
+        endDate: filterStat.endDate ? filterStat.endDate.toISOString().split('T')[0] : null,
+      })
     );
+  }, [filterStat]);
+
+  const handleCheckboxChange = (courseName) => {
+    setFilterStat((prev) => ({
+      ...prev,
+      selectedSubjects: prev.selectedSubjects.includes(courseName)
+        ? prev.selectedSubjects.filter((name) => name !== courseName)
+        : [...prev.selectedSubjects, courseName],
+    }));
   };
 
   const handleSelectAllChange = () => {
-    if (selectAll) {
-      setSelectedSubjects([]);
-    } else {
-      setSelectedSubjects(filteredCourses.map(course => course.name));
-    }
+    setFilterStat((prev) => ({
+      ...prev,
+      selectedSubjects: selectAll ? [] : filteredCourses.map((course) => course.name),
+    }));
     setSelectAll(!selectAll);
   };
+
+  const handleDateChange = (key, date) => {
+    setFilterStat((prev) => ({ ...prev, [key]: date }));
+  };
+
+  useEffect(() => {
+    // Call handleSubmit only after all required states are set
+    if (filterStat.selectedSubjects.length && filterStat.startDate && filterStat.endDate) {
+      handleSubmit();
+    }
+  }, [filterStat]);
 
   const handleSubmit = async () => {
     try {
       const response = await candidatsApi.getMyStatisticsBasedOnRangeDate(
         user,
-        selectedSubjects,
-        startDate ? startDate.toISOString().split('T')[0] : null,
-        endDate ? endDate.toISOString().split('T')[0] : null
+        filterStat.selectedSubjects,
+        filterStat.startDate ? filterStat.startDate.toISOString().split('T')[0] : null,
+        filterStat.endDate ? filterStat.endDate.toISOString().split('T')[0] : null
       );
       console.log('API Response:', response.data);
-      alert('Filter applied successfully!');
       onDataReceived(response.data);
     } catch (error) {
       console.error('Error fetching statistics:', error);
-      alert('Failed to apply filter.');
     }
   };
 
@@ -92,7 +129,7 @@ export function FilterStatistic({ onDataReceived }) {
               key={index}
               control={
                 <Checkbox
-                  checked={selectedSubjects.includes(course.name)}
+                  checked={filterStat.selectedSubjects.includes(course.name)}
                   onChange={() => handleCheckboxChange(course.name)}
                 />
               }
@@ -106,16 +143,16 @@ export function FilterStatistic({ onDataReceived }) {
           <Box>
             <Typography variant="body1">Start Date:</Typography>
             <DatePicker
-              selected={startDate}
-              onChange={(date) => setStartDate(date)}
+              selected={filterStat.startDate}
+              onChange={(date) => handleDateChange('startDate', date)}
               selectsStart
-              startDate={startDate}
-              endDate={endDate}
+              startDate={filterStat.startDate}
+              endDate={filterStat.endDate}
               dateFormat="yyyy-MM-dd"
               placeholderText="Select start date"
               customInput={
                 <Button variant="outlined" fullWidth>
-                  {startDate ? startDate.toLocaleDateString() : "Start Date"}
+                  {filterStat.startDate ? filterStat.startDate.toLocaleDateString() : "Start Date"}
                 </Button>
               }
             />
@@ -123,17 +160,17 @@ export function FilterStatistic({ onDataReceived }) {
           <Box>
             <Typography variant="body1">End Date:</Typography>
             <DatePicker
-              selected={endDate}
-              onChange={(date) => setEndDate(date)}
+              selected={filterStat.endDate}
+              onChange={(date) => handleDateChange('endDate', date)}
               selectsEnd
-              startDate={startDate}
-              endDate={endDate}
-              minDate={startDate}
+              startDate={filterStat.startDate}
+              endDate={filterStat.endDate}
+              minDate={filterStat.startDate}
               dateFormat="yyyy-MM-dd"
               placeholderText="Select end date"
               customInput={
                 <Button variant="outlined" fullWidth>
-                  {endDate ? endDate.toLocaleDateString() : "End Date"}
+                  {filterStat.endDate ? filterStat.endDate.toLocaleDateString() : "End Date"}
                 </Button>
               }
             />

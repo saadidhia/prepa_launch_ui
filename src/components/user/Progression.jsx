@@ -14,14 +14,6 @@ import {FilterStatistic} from "../small/filterStatistic";
 
 
 
-const data = [
-  { name: "January", value: 30 },
-  { name: "February", value: 45 },
-  { name: "March", value: 60 },
-  { name: "April", value: 75 },
-  { name: "May", value: 90 },
-];
-
 const colors = ["#8884d8", "#83a6ed", "#8dd1e1", "#82ca9d", "#a4de6c"];
 
 export function Progression() {
