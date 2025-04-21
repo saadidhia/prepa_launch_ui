@@ -166,6 +166,7 @@ const handleSubmitDelete = async () => {
               <TableCell>Name</TableCell>
               <TableCell>Email</TableCell>
               <TableCell>Gender</TableCell>
+              <TableCell>Branch</TableCell>
               <TableCell>Phone</TableCell>
               <TableCell>Role</TableCell>
               <TableCell>Action</TableCell>
@@ -187,6 +188,7 @@ const handleSubmitDelete = async () => {
                   <TableCell>{user.name}</TableCell>
                   <TableCell>{user.email}</TableCell>
                   <TableCell>{user.gender}</TableCell>
+                  <TableCell>{user.field}</TableCell>
                   <TableCell>{user.numberPhone}</TableCell>
                   <TableCell>{user.role}</TableCell>
                   <TableCell>

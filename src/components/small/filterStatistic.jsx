@@ -27,9 +27,9 @@ export function FilterStatistic({ onDataReceived }) {
   // Load state from localStorage when the component mounts
   useEffect(() => {
     const savedFilterStat = JSON.parse(localStorage.getItem('filter_stat')) || {
-      selectedSubjects: [],
-      startDate: null,
-      endDate: null,
+      selectedSubjects: filteredCourses.map((course) => course.name),
+      startDate: new Date().toISOString().split('T')[0],
+      endDate: new Date().toISOString().split('T')[0],
     };
     setFilterStat({
       selectedSubjects: savedFilterStat.selectedSubjects,

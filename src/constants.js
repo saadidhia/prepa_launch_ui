@@ -1,5 +1,5 @@
 export const config = {
-    s3_storage_url: 'https://prepa-launch.s3.eu-north-1.amazonaws.com'
+    s3_storage_url: 'https://launch-prepa.s3.eu-north-1.amazonaws.com'
   }
 
   export const errors = {

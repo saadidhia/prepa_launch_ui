@@ -38,19 +38,31 @@ export function Progression() {
       <div
         style={{
           display: "flex",
-          flexWrap: "wrap", // Ensures responsiveness
-          justifyContent: "center", // Centers the charts horizontally
+          flexDirection: "row", // Arrange items in a row
+          justifyContent: "center", // Center the charts horizontally
+          alignItems: "flex-start", // Align charts at the top
+          gap: "20px", // Adds spacing between the charts
+          flexWrap: "wrap", // Ensure responsiveness for smaller screens
         }}
       >
+        {/* Bar Chart Box */}
         <div
           style={{
-            flex: "2 1 700px", // Larger chart with more space allocation
+            flex: "1 1 45%", // Allow the chart to take up 45% of the row
             margin: "10px",
+            padding: "20px", // Adds padding inside the box
+            border: "2px solid #ccc", // Adds a border around the box
+            borderRadius: "10px", // Rounds the corners of the box
+            backgroundColor: "#f9f9f9", // Light background color for the box
+            boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)", // Adds a subtle shadow
           }}
         >
+          <h3 style={{ textAlign: "center", marginBottom: "20px" }}>
+            Time Spent by Subject (Bar Chart)
+          </h3>
           <BarChart
-            width={700}
-            height={400} // Larger height for the BarChart
+            width={500}
+            height={300} // Adjusted height for better row alignment
             data={statisticsData}
             margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
           >
@@ -75,13 +87,23 @@ export function Progression() {
             </Bar>
           </BarChart>
         </div>
+
+        {/* Pie Chart Box */}
         <div
           style={{
-            flex: "1 1 400px", // Smaller chart with less space allocation
+            flex: "1 1 45%", // Allow the chart to take up 45% of the row
             margin: "10px",
+            padding: "20px", // Adds padding inside the box
+            border: "2px solid #ccc", // Adds a border around the box
+            borderRadius: "10px", // Rounds the corners of the box
+            backgroundColor: "#f9f9f9", // Light background color for the box
+            boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)", // Adds a subtle shadow
           }}
         >
-          <PieChart width={400} height={400}>
+          <h3 style={{ textAlign: "center", marginBottom: "20px" }}>
+            Time Distribution by Subject (Pie Chart)
+          </h3>
+          <PieChart width={400} height={300}>
             <Pie
               data={statisticsData}
               dataKey="percentage"
