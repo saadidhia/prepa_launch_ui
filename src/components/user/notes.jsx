@@ -24,13 +24,16 @@ import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 
 export function Notes() {
     const [anchorEl, setAnchorEl] = useState(null);
+    const [menuCardId, setMenuCardId] = useState(null); // Track which card's menu is open
 
-    const handleMenuOpen = (event) => {
+    const handleMenuOpen = (event, cardId) => {
       setAnchorEl(event.currentTarget);
+      setMenuCardId(cardId);
     };
   
     const handleMenuClose = () => {
       setAnchorEl(null);
+      setMenuCardId(null);
     };
     const Auth = useAuth();
     const user = Auth.getUser();
@@ -127,7 +130,7 @@ export function Notes() {
     };
 
     const handleUpdate = async (id) => {
-        const card = { title, note, context };
+        const card = { title, note, context, subject };
         try {
             const response = await candidatsApi.updateCardById(user, id, card);
             const updatedCard = response.data;
@@ -286,16 +289,16 @@ export function Notes() {
         // Check if the card is dropped in the same section
         if (cardType === 'created') {
             if (status === 'CREATED') return;
-            movedCard = createdCards.find((card) => card.title === cardId);
-            setCreatedCards(createdCards.filter((card) => card.title !== cardId));
+            movedCard = createdCards.find((card) => card.id === cardId);
+            setCreatedCards(createdCards.filter((card) => card.id !== cardId));
         } else if (cardType === 'inProgress') {
             if (status === 'INPROGRESS') return;
-            movedCard = inProgressCards.find((card) => card.title === cardId);
-            setInProgressCards(inProgressCards.filter((card) => card.title !== cardId));
+            movedCard = inProgressCards.find((card) => card.id === cardId);
+            setInProgressCards(inProgressCards.filter((card) => card.id !== cardId));
         } else if (cardType === 'finished') {
             if (status === 'FINISHED') return;
-            movedCard = finishedCards.find((card) => card.title === cardId);
-            setFinishedCards(finishedCards.filter((card) => card.title !== cardId));
+            movedCard = finishedCards.find((card) => card.id === cardId);
+            setFinishedCards(finishedCards.filter((card) => card.id !== cardId));
         }
 
         if (!movedCard) {
@@ -330,24 +333,22 @@ export function Notes() {
     };
 
     const handleDragStart = (event, card, type) => {
-        event.dataTransfer.setData('cardId', card.title);
+        event.dataTransfer.setData('cardId', card.id);
         event.dataTransfer.setData('cardType', type);
     };
 
-
-    const deleteCard = (cardTitle, status) => {
+    const deleteCard = (cardId, status) => {
         if (status === 'CREATED') {
-            setCreatedCards((prev) => prev.filter((card) => card.title !== cardTitle));
+            setCreatedCards((prev) => prev.filter((card) => card.id !== cardId));
         } else if (status === 'INPROGRESS') {
-            setInProgressCards((prev) => prev.filter((card) => card.title !== cardTitle));
+            setInProgressCards((prev) => prev.filter((card) => card.id !== cardId));
         } else if (status === 'FINISHED') {
-            setFinishedCards((prev) => prev.filter((card) => card.title !== cardTitle));
+            setFinishedCards((prev) => prev.filter((card) => card.id !== cardId));
         }
-
     };
 
-    const handleDeleteCard = (cardTitle, status) => {
-        deleteCard(cardTitle, status);
+    const handleDeleteCard = (cardId, status) => {
+        deleteCard(cardId, status);
     };
 
 
@@ -428,7 +429,7 @@ export function Notes() {
             />
 
             <Dialog open={openCreate || openEdit} onClose={handleClose}>
-                <DialogTitle>Create a Note</DialogTitle>
+                <DialogTitle></DialogTitle>
                 <DialogContent>
                     <TextField
                         label="Title"
@@ -529,22 +530,21 @@ export function Notes() {
                        >
                          {/* Three-dot menu */}
                          <IconButton
-                           onClick={handleMenuOpen}
+                           onClick={(e) => handleMenuOpen(e, card.id)}
                            style={{
-                             position: "absolute", // Position in the top-right corner
+                             position: "absolute",
                              top: "10px",
                              right: "10px",
                              zIndex: 1,
-                             backgroundColor: "#1875d2", // Set background color
-                             color: "white", // Set icon color to contrast with the background
-                             
+                             backgroundColor: "#1875d2",
+                             color: "white",
                            }}
                          >
                            <MoreHorizIcon />
                          </IconButton>
                          <Menu
                            anchorEl={anchorEl}
-                           open={Boolean(anchorEl)}
+                           open={Boolean(anchorEl) && menuCardId === card.id}
                            onClose={handleMenuClose}
                          >
                            <MenuItem
@@ -618,22 +618,21 @@ export function Notes() {
                        >
                          {/* Three-dot menu */}
                          <IconButton
-                           onClick={handleMenuOpen}
+                           onClick={(e) => handleMenuOpen(e, card.id)}
                            style={{
-                             position: "absolute", // Position in the top-right corner
+                             position: "absolute",
                              top: "10px",
                              right: "10px",
                              zIndex: 1,
-                             backgroundColor: "#1875d2", // Set background color
-                             color: "white", // Set icon color to contrast with the background
-                             
+                             backgroundColor: "#1875d2",
+                             color: "white",
                            }}
                          >
                            <MoreHorizIcon />
                          </IconButton>
                          <Menu
                            anchorEl={anchorEl}
-                           open={Boolean(anchorEl)}
+                           open={Boolean(anchorEl) && menuCardId === card.id}
                            onClose={handleMenuClose}
                          >
                            <MenuItem
@@ -702,7 +701,7 @@ export function Notes() {
                      >
                        {/* Three-dot menu */}
                        <IconButton
-                         onClick={handleMenuOpen}
+                         onClick={(e) => handleMenuOpen(e, card.id)}
                          style={{
                            position: "absolute", // Position in the top-right corner
                            top: "10px",
@@ -717,7 +716,7 @@ export function Notes() {
                        </IconButton>
                        <Menu
                          anchorEl={anchorEl}
-                         open={Boolean(anchorEl)}
+                         open={Boolean(anchorEl) && menuCardId === card.id}
                          onClose={handleMenuClose}
                        >
                          <MenuItem

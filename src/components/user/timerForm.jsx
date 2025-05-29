@@ -19,9 +19,11 @@ const { isRunning, startTimer, stopTimer, time } = useChronometer();
     }
   };
 
-  const handleStop = () => {
-    stopTimer();
-    fetchTimers();
+  const handleStop = async () => {
+    const stoppedChronometer = await stopTimer();
+    if (stoppedChronometer) {
+      fetchTimers();
+    }
   }; 
 
   return (

@@ -45,6 +45,21 @@ export const ChronometerProvider = ({ children }) => {
 
     useEffect(() => {
         fetchStatus();
+
+        const handleVisibilityChange = () => {
+            if (document.visibilityState === 'visible') {
+                fetchStatus();
+            }
+        };
+        const handleFocus = () => {
+            fetchStatus();
+        };
+        document.addEventListener('visibilitychange', handleVisibilityChange);
+        window.addEventListener('focus', handleFocus);
+        return () => {
+            document.removeEventListener('visibilitychange', handleVisibilityChange);
+            window.removeEventListener('focus', handleFocus);
+        };
     }, []);
 
     const startTimer = async (chronometerRequest) => {
@@ -70,10 +85,10 @@ export const ChronometerProvider = ({ children }) => {
 
     const stopTimer = async () => {
         const chronometerId = localStorage.getItem("chronometerId");
-        if (!chronometerId) return;
+        if (!chronometerId) return null;
 
         try {
-            await instance.post(`/api/v1/chronometers/stop/${chronometerId}`, null, {
+            const response = await instance.put(`/api/v1/chronometers/stop/${chronometerId}`, null, {
                 headers: {
                     'Authorization': bearerAuth(user),
                     'Content-type': 'application/json'
@@ -84,8 +99,10 @@ export const ChronometerProvider = ({ children }) => {
             setTime(0);
             localStorage.removeItem("chronometerId");
             localStorage.removeItem("elapsedTime");
+            return response.data; // Return the stopped chronometer
         } catch (error) {
             console.error("Failed to stop timer:", error);
+            return null;
         }
     };
 
