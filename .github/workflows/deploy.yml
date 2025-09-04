@@ -5,6 +5,7 @@ on:
     branches:
       - master
       - qa
+      - prod
 
 jobs:
   build:
@@ -49,3 +50,35 @@ jobs:
       run: |
         docker build -t prepalaunch/prepa_launch:qa_ui_latest .
         docker push prepalaunch/prepa_launch:qa_ui_latest
+
+deploy_prod:
+    runs-on: ubuntu-latest
+    needs: build
+    if: github.ref == 'refs/heads/prod'   # فقط لما تكون على prod
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Start ssh-agent
+      uses: webfactory/ssh-agent@v0.9.0
+      with:
+        ssh-private-key: ${{ secrets.HETZNER_CICD_KEY }}
+
+    - name: Deploy frontend to Hetzner
+      run: |
+        echo "🚀 Deploying frontend to Hetzner..."
+        
+      
+        ssh -o StrictHostKeyChecking=no root@91.98.119.218 "mkdir -p /opt/prepa/frontend"
+        
+        
+        scp -r build/* root@91.98.119.218:/opt/prepa/frontend/
+        
+        
+        ssh root@91.98.119.218 "ls -lh /opt/prepa/frontend"
+
+        # Reload Nginx 
+        ssh root@91.98.119.218 "systemctl reload nginx"
+        
+        echo "✅ Frontend deployed successfully!"
