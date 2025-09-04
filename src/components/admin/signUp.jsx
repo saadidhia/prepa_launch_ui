@@ -21,6 +21,7 @@ export function SignUp() {
   const [startDate, setStartDate] = useState("");
   const [price, setPrice] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -48,6 +49,8 @@ export function SignUp() {
       await authApi.signup(user, admin);
       setSuccessMessage('User is created');
     } catch (error) {
+      console.log("moin ",error);
+      setErrorMessage("An error occurred while creating the user.");
       handleLogError(error);
     }
   };
@@ -171,6 +174,7 @@ export function SignUp() {
           </div>
           {successMessage && <div className="alert alert-success mt-3">{successMessage}</div>}
         </div>
+        {errorMessage && <div className="alert alert-danger mt-3">{errorMessage}</div>}
       </form>
     </div>
   );

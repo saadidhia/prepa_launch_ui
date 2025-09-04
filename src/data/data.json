@@ -87,21 +87,6 @@
       "img": "img/team/01.jpg",
       "name": "Dhia Saadi",
       "job": "Directeur"
-    },
-    {
-      "img": "img/team/02.jpg",
-      "name": "Mike Doe",
-      "job": "Senior Designer"
-    },
-    {
-      "img": "img/team/03.jpg",
-      "name": "Jane Doe",
-      "job": "Senior Designer"
-    },
-    {
-      "img": "img/team/04.jpg",
-      "name": "Karen Doe",
-      "job": "Project Manager"
     }
   ],
   "Contact": {
@@ -114,24 +99,24 @@
   },
   "Features": [
     {
-      "icon": "fa fa-comments-o",
-      "title": "Lorem ipsum",
-      "text": "Lorem ipsum dolor sit amet placerat facilisis felis mi in tempus eleifend pellentesque natoque etiam."
+      "icon": "fa fa-file-text-o",
+      "title": "Documents (CV, examens, DS, concours)",
+      "text": "Notre plateforme met à votre disposition une large bibliothèque de documents essentiels : CV, examens passés, devoirs surveillés (DS) et sujets de concours. Ces ressources vous permettent de vous entraîner efficacement, de comparer vos résultats et de mieux vous préparer pour vos objectifs académiques et professionnels."
     },
     {
-      "icon": "fa fa-bullhorn",
-      "title": "Lorem ipsum",
-      "text": "Lorem ipsum dolor sit amet placerat facilisis felis mi in tempus eleifend pellentesque natoque etiam."
+      "icon": "fa fa-book",
+      "title": "Création de notes",
+      "text": "La plateforme intègre un système de gestion du temps qui vous aide à planifier vos sessions d’étude et à rester concentré sur vos objectifs. Vous pouvez organiser vos journées, définir vos priorités et optimiser vos efforts grâce à une meilleure organisation."
     },
     {
-      "icon": "fa fa-group",
-      "title": "Lorem ipsum",
-      "text": "Lorem ipsum dolor sit amet placerat facilisis felis mi in tempus eleifend pellentesque natoque etiam."
+      "icon": "fa fa-clock-o",
+      "title": "Gestion du temps",
+      "text": "La plateforme intègre un système de gestion du temps qui vous aide à planifier vos sessions d’étude et à rester concentré sur vos objectifs. Vous pouvez organiser vos journées, définir vos priorités et optimiser vos efforts grâce à une meilleure organisation."
     },
     {
-      "icon": "fa fa-magic",
-      "title": "Lorem ipsum",
-      "text": "Lorem ipsum dolor sit amet placerat facilisis felis mi in tempus eleifend pellentesque natoque etiam."
+      "icon": "fa fa-bar-chart",
+      "title": "Statistiques et suivi personnalisé",
+      "text": "Vous avez accès à des statistiques détaillées qui mesurent le temps que vous consacrez à chaque matière ou activité. Grâce à ce suivi précis, vous pouvez analyser vos habitudes de travail, identifier vos points forts et ajuster votre méthode de révision pour plus d’efficacité."
     }
   ],
 

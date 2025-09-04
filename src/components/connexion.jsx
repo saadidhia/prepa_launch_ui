@@ -5,6 +5,7 @@ import { parseJwt, handleLogError } from '../misc/Helpers';
 import { Navigate } from "react-router-dom";
 import '../assets/css/login.css';
 import { Typography, CircularProgress } from "@mui/material";
+import logo from "../assets/logo/logo.png"; 
 
 export function Connexion() {
   const [username, setUsername] = useState("");
@@ -68,7 +69,11 @@ export function Connexion() {
         <form className="Auth-form" onSubmit={handleSubmit}>
           <div className="Auth-form-content">
             <h3 className="Auth-form-title">
-              <img /*src={logo}*/ height="250" weight="300" alt="Prepa Launch Logo" />
+              <img 
+  src={logo} 
+  alt="Prepa Launch Logo" 
+  style={{ width: "325px", height: "auto", marginBottom: "20px" }} 
+/>
             </h3>
 
             <div className="form-group mt-3">
