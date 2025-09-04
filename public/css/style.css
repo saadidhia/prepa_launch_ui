@@ -350,15 +350,15 @@ header .intro-text {
 #services .service-desc {
   margin-bottom: 40px;
 }
-/* Portfolio Section */
-#portfolio {
+/* Livres Section */
+#livres {
   padding: 100px 0;
 }
-.portfolio-item {
+.livres-item {
   margin: 1px -15px 0 -14px;
   padding: 0;
 }
-.portfolio-item .hover-bg {
+.livres-item .hover-bg {
   overflow: hidden;
   position: relative;
   margin: 0;

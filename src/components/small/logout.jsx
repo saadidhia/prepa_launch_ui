@@ -12,14 +12,15 @@ export default function Logout() {
   const navigate = useNavigate();
 
   function logout() {
-    Auth.userLogout();
+    if (Auth.userLogout()==true){
     navigate("/")
+    }
   }
 
   return (
 
     <Button color="inherit" onClick={logout} startIcon={<LogoutIcon />} sx={{ fontSize: '18px', color: 'white' }}>
-      Logout
+      Déconnexion
     </Button>
   )
 }

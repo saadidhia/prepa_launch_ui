@@ -1,24 +1,38 @@
 import axios from 'axios'
 import { config } from '../constants'
 import { parseJwt } from '../misc/Helpers'
+import { Fingerprint } from 'fingerprintjs'; // Import Fingerprint from fingerprintjs library
+
 
 export const authApi = {
   authenticate,
-  signup
+  signup,
+  logout
 
 }
 
-function authenticate(username, password) {
+async function authenticate(username, password) {
+
   return instance.post('/auth/authenticate', { username, password }, {
-    headers: { 'Content-type': 'application/json' }
+    headers: {
+      'Content-type': 'application/json'
+    }
   })
-}
+};
 
 function signup(user, admin) {
-  console.log("user2", user)
-  return instance.post('/auth/signup', user, {
+  return instance.post("/auth/signup", user, {
     headers: {
-      'Authorization': bearerAuth(admin),
+      Authorization: bearerAuth(admin),
+      "Content-type": "application/json",
+    },
+  });
+}
+
+function logout(user) {
+  return instance.post('/auth/logout', null, {
+    headers: {
+      'Authorization': bearerAuth(user),
       'Content-type': 'application/json'
     }
   })
@@ -32,18 +46,22 @@ const instance = axios.create({
 })
 
 instance.interceptors.request.use(function (config) {
-  // If token is expired, redirect user to login
+  // If token exists in the request headers, process it
   if (config.headers.Authorization) {
-    const token = config.headers.Authorization.split(' ')[1]
-    const data = parseJwt(token)
+    const token = config.headers.Authorization.split(' ')[1];
+    const data = parseJwt(token);
+
+    // Check if the token is expired and redirect to login if it is
     if (Date.now() > data.exp * 1000) {
-      window.location.href = "/connexion"
+      window.location.href = "/connexion";
+      return Promise.reject(new Error("Token expired, redirecting to login."));
     }
   }
-  return config
+  return config;
 }, function (error) {
-  return Promise.reject(error)
-})
+  return Promise.reject(error);
+});
+
 
 // -- Helper functions
 

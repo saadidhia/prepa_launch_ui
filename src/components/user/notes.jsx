@@ -1,7 +1,7 @@
 import React, { useState, useRef, useMemo, useEffect } from 'react';
+import 'bootstrap-icons/font/bootstrap-icons.css';
 import ReactDOMServer from 'react-dom/server';
 import ReactMarkdown from 'react-markdown';
-
 import Button from '@mui/material/Button';
 import InputLabel from '@mui/material/InputLabel';
 import Dialog from '@mui/material/Dialog';
@@ -13,15 +13,32 @@ import SimpleMDEEditor from 'react-simplemde-editor';
 import 'easymde/dist/easymde.min.css'; // Import SimpleMDE styles
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
-import { useAuth } from '../context/AuthContext'
+import { useAuth } from '../context/AuthContext';
 import subjects from '../../subjects';
-import contexts from '../../context'
+import contexts from '../../context';
 import { candidatsApi } from '../../apis/candidatsApi';
+import Board from './Board'; // Commenting out the Board component import
+import '../../assets/css/board.css';
+import { Menu, IconButton } from "@mui/material";
+import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 
-import Board from './Board';
-import '../../assets/css/board.css'
 export function Notes() {
-    const [open, setOpen] = useState(false);
+    const [anchorEl, setAnchorEl] = useState(null);
+    const [menuCardId, setMenuCardId] = useState(null); // Track which card's menu is open
+
+    const handleMenuOpen = (event, cardId) => {
+      setAnchorEl(event.currentTarget);
+      setMenuCardId(cardId);
+    };
+  
+    const handleMenuClose = () => {
+      setAnchorEl(null);
+      setMenuCardId(null);
+    };
+    const Auth = useAuth();
+    const user = Auth.getUser();
+    const [openCreate, setOpenCreate] = useState(false);
+    const [openEdit, setOpenEdit] = useState(false);
     const [title, setTitle] = useState('');
     const [note, setNote] = useState('');
     const [subject, setSubject] = useState('');
@@ -29,55 +46,185 @@ export function Notes() {
     const [createdCards, setCreatedCards] = useState([]);
     const [inProgressCards, setInProgressCards] = useState([]);
     const [finishedCards, setFinishedCards] = useState([]);
+    const [openSymbolDialog, setOpenSymbolDialog] = useState(false);
+    const [editingCard, setEditingCard] = useState(null); // New state to track edited card
+    const [currentCard, setCurrentCard] = useState(null);
+    const [openNoteDialog, setOpenNoteDialog] = useState(false); // Controls dialog visibility
+    const [selectedNote, setSelectedNote] = useState(''); // Stores the note content for the dialog
+    const [selectedTitleOfNote, setSelectedTitleOfNote] = useState('');
+    const [filterSubject, setFilterSubject] = useState(''); // Manage the selected filter
 
+    const [selectedSubjects, setSelectedSubjects] = useState(new Set());
 
+    const toggleSubject = (subjectName) => {
+        const normalizedSubject = subjectName.trim().toLowerCase(); // Normalize subject name
+        setSelectedSubjects((prevSelectedSubjects) => {
+            const newSelectedSubjects = new Set(prevSelectedSubjects);
+    
+            if (newSelectedSubjects.has(normalizedSubject)) {
+                newSelectedSubjects.delete(normalizedSubject); // Remove subject if already selected
+            } else {
+                newSelectedSubjects.add(normalizedSubject); // Add subject if not selected
+            }
+    
+            return newSelectedSubjects;
+        });
+    };
+      
+    // Filter function to apply the selected subject
+    const filterCards = (cards) => {
+        // If no subjects are selected, return all cards
+        if (selectedSubjects.size === 0) {
+            return cards;
+        }
+    
+        // Filter the cards based on the selected subjects
+        return cards.filter((card) => {
+            const cardSubject = card.subject?.trim().toLowerCase(); // Normalize card subject
+            return selectedSubjects.has(cardSubject); // Check if the normalized subject is selected
+        });
+    };
+      
+    // Opens the dialog and sets the selected note
+    const handleOpenNoteDialog = (note, title) => {
+        setSelectedTitleOfNote(title)
+        setSelectedNote(note); // Set the selected note content
+        setOpenNoteDialog(true); // Open the dialog
+    };
 
+    // Closes the dialog
+    const handleCloseNoteDialog = () => {
+        setSelectedNote(''); // Clear the selected note content
+        setSelectedTitleOfNote('')
+        setOpenNoteDialog(false); // Close the dialog
+    };
     const autofocusNoSpellcheckerOptions = useMemo(() => {
         return {
             previewRender: function (plainText) {
-                return ReactDOMServer.renderToString(React.createElement(ReactMarkdown, { children: plainText }));
-            }
+                return ReactDOMServer.renderToString(
+                    React.createElement(ReactMarkdown, { children: plainText })
+                );
+            },
         };
     }, []);
 
-    const simpleMDE = useRef(null);
-    const Auth = useAuth();
-    const user = Auth.getUser();
-    const userSubjects = subjects.filter(subject => subject.section.includes(user.data.field));
+    const handleOpenEdit = (card) => {
+        setOpenEdit(true);
+        setEditingCard(card);
+        setTitle(card.title);
+        setNote(card.note);
+        setSubject(card.subject);
+        setContext(card.context);
 
+    };
+    const handleDelete = async (id) => {
+        try {
+            await candidatsApi.deleteCard(user, id);
+            // onDelete(); // Trigger the parent component to update state or re-fetch data
+            setCreatedCards((prev) => prev.filter((card) => card.id !== id));
+            setInProgressCards((prev) => prev.filter((card) => card.id !== id));
+            setFinishedCards((prev) => prev.filter((card) => card.id !== id));
+        } catch (error) {
+            console.error('Error deleting card:', error);
+        }
+    };
+
+    const handleUpdate = async (id) => {
+        const card = { title, note, context, subject };
+        try {
+            const response = await candidatsApi.updateCardById(user, id, card);
+            const updatedCard = response.data;
+
+            // Update the state to reflect the changes of the updated card
+            setCreatedCards((prevCards) =>
+                prevCards.map((card) => (card.id === id ? updatedCard : card))
+            );
+            setInProgressCards((prevCards) =>
+                prevCards.map((card) => (card.id === id ? updatedCard : card))
+            );
+            setFinishedCards((prevCards) =>
+                prevCards.map((card) => (card.id === id ? updatedCard : card))
+            );
+
+
+
+            //   setCreatedCards((prev) => prev.filter((card) => card.id !== id));
+            //    onUpdate();
+            handleClose();
+        } catch (error) {
+            console.error('Error updating card:', error);
+        }
+    };
+
+
+
+    const simpleMDE = useRef(null);
+    const symbols = [
+        'δ', 'θ', 'λ', 'μ', 'π', 'σ', 'τ', 'Φ', 'Ω', '∞',
+        '√', '∑', '∫', '≠', '≈', '≡', '≤', '≥', '∂', '∇',
+        '∈', '∉', '⊂', '⊆', '⊄', '⊇', '⊕', '⊗', '⊥', '∩',
+        '∪', '∅', '∝', '∞', 'ℵ', 'ℶ', '↔', '⇔', '⇐', '⇒',
+        '∀', '∃', '∅', '⊤', '∠', '∿', '⊆', '∃', '∇', '⊢'
+    ];
+
+    const handleOpenSymbolDialog = () => {
+        setOpenSymbolDialog(true);
+    };
+
+    const handleCloseSymbolDialog = () => {
+        setOpenSymbolDialog(false);
+    };
+
+    const handleSelectSymbol = (symbol) => {
+        if (simpleMDE.current) {
+            const cursor = simpleMDE.current.codemirror.getCursor();
+            simpleMDE.current.codemirror.replaceRange(symbol, cursor);
+        }
+    };
+
+    const userSubjects = subjects; // Default subjects, removing dependency on authentication
 
     const fetchCards = async () => {
+        if (!user || !user.data) {
+            console.error('User is not authenticated or missing data');
+            return;
+        }
 
         try {
-            console.log("fetch " + user);
-            const response = await candidatsApi.getCards(user)
+            const response = await candidatsApi.getCards(user);
+
+            if (!response || !response.data) {
+                console.error('Invalid response from API');
+                return;
+            }
+
             const data = response.data;
 
-            const created = data.filter(card => card.status === 'CREATED');
-            const inProgress = data.filter(card => card.status === 'INPROGRESS');
-            const finished = data.filter(card => card.status === 'FINISHED');
+            const created = data.filter((card) => card.status === 'CREATED');
+            const inProgress = data.filter((card) => card.status === 'INPROGRESS');
+            const finished = data.filter((card) => card.status === 'FINISHED');
 
             setCreatedCards(created);
             setInProgressCards(inProgress);
             setFinishedCards(finished);
-
         } catch (error) {
-            console.error('Error fetching Cards:', error);
+            console.error('Error fetching cards:', error);
         }
     };
-    useEffect(() => {
-        fetchCards()
 
-    }, [])
+    useEffect(() => {
+        fetchCards();
+    }, []);
 
     const handleClose = () => {
         resetInputs();
-        setOpen(false);
+        setOpenCreate(false);
+        setOpenEdit(false)
+        setEditingCard(null);
     };
 
-    const handleOpen = () => {
-
-        setOpen(true);
+    const handleOpenCreate = () => {
+        setOpenCreate(true);
     };
 
     const resetInputs = () => {
@@ -87,59 +234,226 @@ export function Notes() {
         setContext('');
     };
 
-    const handleSubmit = async (e) => {
-        e.preventDefault()
-        console.log('Title:', title);
-        console.log('Markdown:', note);
+    const handleCreate = async (card) => {
+        try {
+            const response = await candidatsApi.createNote(user, card);
+            // onDelete(); // Trigger the parent component to update state or re-fetch data
+            setCreatedCards((prevCards) => [...prevCards, response.data]);
+        } catch (error) {
+            console.error('Error creating  card:', error);
+        }
+    };
 
-        console.log('Subject Option:', subject);
-        console.log('Context Option:', context);
+    const handleSubmit = async (e, id) => {
+        e.preventDefault();
         if (!(title && note && subject && context)) {
             return;
         }
-        const card = { note, title, context, subject }
-        console.log("My card ", card)
-        try {
-            await candidatsApi.createNote(user, card);
-            fetchCards()
-        } catch (error) {
-            console.log(error)
+
+
+        const updatedCard = {
+
+            note,
+            title,
+            context,
+            subject,
+            status: editingCard ? editingCard.status : 'CREATED',
+        };
+        if (openCreate) {
+            handleCreate(updatedCard);
+            setOpenCreate(false);
         }
+        if (openEdit) {
+            handleUpdate(editingCard.id);
+
+
+        }
+
         resetInputs();
         handleClose();
     };
+
+
 
     const togglePreview = () => {
         if (simpleMDE.current) {
             simpleMDE.current.togglePreview();
         }
     };
-    const handleDelete = () => {
-        fetchCards(); // Fetch cards again after deletion to update the state
-      };
+
+    const handleDrop = async (event, status) => {
+        const cardId = event.dataTransfer.getData('cardId');
+        const cardType = event.dataTransfer.getData('cardType');
+        let movedCard;
+
+        // Check if the card is dropped in the same section
+        if (cardType === 'created') {
+            if (status === 'CREATED') return;
+            movedCard = createdCards.find((card) => card.id === cardId);
+            setCreatedCards(createdCards.filter((card) => card.id !== cardId));
+        } else if (cardType === 'inProgress') {
+            if (status === 'INPROGRESS') return;
+            movedCard = inProgressCards.find((card) => card.id === cardId);
+            setInProgressCards(inProgressCards.filter((card) => card.id !== cardId));
+        } else if (cardType === 'finished') {
+            if (status === 'FINISHED') return;
+            movedCard = finishedCards.find((card) => card.id === cardId);
+            setFinishedCards(finishedCards.filter((card) => card.id !== cardId));
+        }
+
+        if (!movedCard) {
+            console.error('Card not found');
+            return;
+        }
+
+        try {
+            await candidatsApi.updateCardStatusById(user, movedCard.id, status);
+            console.log('Card status updated successfully');
+        } catch (error) {
+            console.error('Error updating card status:', error);
+            // Optionally revert the card status locally if the API call fails
+            if (cardType === 'created') {
+                setCreatedCards([...createdCards, movedCard]);
+            } else if (cardType === 'inProgress') {
+                setInProgressCards([...inProgressCards, movedCard]);
+            } else if (cardType === 'finished') {
+                setFinishedCards([...finishedCards, movedCard]);
+            }
+            return;
+        }
+
+        movedCard.status = status;
+        if (status === 'CREATED') {
+            setCreatedCards([...createdCards, movedCard]);
+        } else if (status === 'INPROGRESS') {
+            setInProgressCards([...inProgressCards, movedCard]);
+        } else if (status === 'FINISHED') {
+            setFinishedCards([...finishedCards, movedCard]);
+        }
+    };
+
+    const handleDragStart = (event, card, type) => {
+        event.dataTransfer.setData('cardId', card.id);
+        event.dataTransfer.setData('cardType', type);
+    };
+
+    const deleteCard = (cardId, status) => {
+        if (status === 'CREATED') {
+            setCreatedCards((prev) => prev.filter((card) => card.id !== cardId));
+        } else if (status === 'INPROGRESS') {
+            setInProgressCards((prev) => prev.filter((card) => card.id !== cardId));
+        } else if (status === 'FINISHED') {
+            setFinishedCards((prev) => prev.filter((card) => card.id !== cardId));
+        }
+    };
+
+    const handleDeleteCard = (cardId, status) => {
+        deleteCard(cardId, status);
+    };
+
+
+
+    const SymbolDialog = ({ open, onClose, onSelectSymbol }) => {
+        return (
+            <Dialog open={open} onClose={onClose}>
+                <DialogTitle style={{ fontSize: '16px' }}>Insert Mathematical Symbol</DialogTitle>
+                <DialogContent>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '10px' }}>
+                        {symbols.map((symbol, index) => (
+                            <Button
+                                style={{ fontSize: '16px' }}
+                                key={index}
+                                variant="outlined"
+                                onClick={() => {
+                                    onSelectSymbol(symbol);
+                                    onClose();
+                                }}
+                            >
+                                {symbol}
+                            </Button>
+                        ))}
+                    </div>
+                </DialogContent>
+                <DialogActions>
+                    <Button style={{ fontSize: '12px' }} onClick={onClose} color="primary">
+                        Close
+                    </Button>
+                </DialogActions>
+            </Dialog>
+        );
+    };
 
     return (
         <>
-
-            <Button variant="contained" color="primary" onClick={handleOpen}>
+           
+            {/* Filter Dropdown */}
+            <div style={{ margin: '20px' }}>
+      <div style={{ display: 'flex', gap: '5px', marginBottom: '20px', flexWrap: 'wrap' }}>
+      <Button style={{ margin: '10px', fontSize: '15px' }} variant="contained" color="primary" onClick={handleOpenCreate}>
                 Create Card
             </Button>
-            <Dialog open={open} onClose={handleClose}>
-                <DialogTitle>create a note</DialogTitle>
+        {userSubjects.map((subject, index) => (
+          <div
+            key={index}
+            onClick={() => toggleSubject(subject.name)}
+            style={{
+              width: '50px',
+              height: '50px',
+              borderRadius: '50%',
+              backgroundColor: selectedSubjects.has(subject.name.trim().toLowerCase())
+                ? '#ff5722' // Highlight color for selected subjects
+                : '#0079bf', // Default color for unselected subjects
+              color: '#fff',
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              fontSize: '12px',
+              fontWeight: 'bold',
+              cursor: 'pointer',
+              userSelect: 'none',
+              transition: 'background-color 0.3s',
+            }}
+          >
+            {subject.name.slice(0, 4).toUpperCase()}
+          </div>
+        ))}
+      </div>
+
+    </div>
+           
+
+            <SymbolDialog
+                open={openSymbolDialog}
+                onClose={handleCloseSymbolDialog}
+                onSelectSymbol={handleSelectSymbol}
+            />
+
+            <Dialog open={openCreate || openEdit} onClose={handleClose}>
+                <DialogTitle></DialogTitle>
                 <DialogContent>
                     <TextField
                         label="Title"
                         variant="outlined"
                         fullWidth
                         value={title}
-                        onChange={(e) => setTitle(e.target.value)}
+                        onChange={(e) => {
+                            const inputValue = e.target.value;
+                            // Allow only alphabets and ensure the max length is 100
+                            const alphabeticInput = inputValue.replace(/[^a-zA-Z]/g, ""); // Remove non-alphabetic characters
+                            if (alphabeticInput.length <= 100) {
+                                setTitle(alphabeticInput);
+                            }
+                        }}
                         margin="normal"
+                        inputProps={{
+                            maxLength: 100, // Enforce max length on the input element
+                        }}
                     />
+                    {/* **NEW: Button to Open Symbol Dialog** */}
+                    <Button onClick={handleOpenSymbolDialog} style={{ border: '1px solid black', color: 'black', margin: '5px 0' }}> Insert Symbol</Button>
                     <SimpleMDEEditor
                         value={note}
-                        onChange={(value) => {
-                            setNote(value);
-                        }}
+                        onChange={(value) => setNote(value)}
                         options={autofocusNoSpellcheckerOptions}
                         getMdeInstance={(instance) => (simpleMDE.current = instance)}
                     />
@@ -189,21 +503,318 @@ export function Notes() {
                 </DialogActions>
             </Dialog>
 
-            <div style={{ display: 'flex' }}>
-                <div style={{ flex: 1 }}>
-                    <h1>CREATED</h1>
-                    <Board handleDelete={handleDelete}  cards={createdCards} />
+            <div className='notes-row' style={{ margin: '20px', justifyContent: 'center' }}>
+                <div
+                    className='notes-card-div'
+                    style={{ border: '1px solid blue', backgroundColor: '#eee', margin: '20px', borderRadius: '10px', minHeight: '60vh' }}
+                    onDrop={(e) => handleDrop(e, 'CREATED')}
+                    onDragOver={(e) => e.preventDefault()}
+                >
+                    <h1 style={{ margin: '10px', textAlign: 'center' }}>CREATED</h1>
+                    {/* <Board handleDelete={handleDelete} handleUpdate={fetchCards} cards={createdCards} /> */}
+                    {filterCards(createdCards).map((card, index) => (
+                         <div
+                         style={{
+                           position: "relative", // Required for absolute positioning of child elements
+                           padding: "10px",
+                           width: "95%",
+                           margin: "5px auto",
+                           borderRadius: "5px",
+                           backgroundColor: "white",
+                           border: "2px solid #1875d2", // Add border with the specified color
+                         }}
+                         className="card"
+                         draggable
+                         onDragStart={(e) => handleDragStart(e, card, "created")}
+                     
+                       >
+                         {/* Three-dot menu */}
+                         <IconButton
+                           onClick={(e) => handleMenuOpen(e, card.id)}
+                           style={{
+                             position: "absolute",
+                             top: "10px",
+                             right: "10px",
+                             zIndex: 1,
+                             backgroundColor: "#1875d2",
+                             color: "white",
+                           }}
+                         >
+                           <MoreHorizIcon />
+                         </IconButton>
+                         <Menu
+                           anchorEl={anchorEl}
+                           open={Boolean(anchorEl) && menuCardId === card.id}
+                           onClose={handleMenuClose}
+                         >
+                           <MenuItem
+                             onClick={() => {
+                               handleDelete(card.id);
+                               handleMenuClose();
+                             }}
+                           >
+                             Delete
+                           </MenuItem>
+                           <MenuItem
+                             onClick={() => {
+                               handleOpenEdit(card);
+                               handleMenuClose();
+                             }}
+                           >
+                             Edit
+                           </MenuItem>
+                         </Menu>
+                   
+                         {/* Card Content */}
+                         <h3
+                           style={{
+                             fontSize: "calc(1.5em + 0.5vw)",
+                             wordWrap: "break-word",
+                             overflow: "hidden",
+                             textOverflow: "ellipsis",
+                             whiteSpace: "nowrap",
+                             lineHeight: "1.4",
+                           }}
+                         >
+                           {card.title}
+                         </h3>
+                         <p>
+                           Note:{" "}
+                           <span
+                             style={{ textDecoration: "underline", cursor: "pointer" }}
+                             onClick={() => handleOpenNoteDialog(card.note, card.title)}
+                           >
+                             View
+                           </span>
+                         </p>
+                         <p>Subject: {card.subject}</p>
+                         <p>Context: {card.context}</p>
+                       </div>
+                    ))}
                 </div>
-                <div style={{ flex: 1 }}>
-                    <h1>IN PROGRESS</h1>
-                    <Board handleDelete={handleDelete} cards={inProgressCards} />
+
+                <div
+                    className='notes-card-div'
+                    style={{ border: '1px solid blue', backgroundColor: '#eee', margin: '20px', borderRadius: '10px', minHeight: '60vh' }}
+                    onDrop={(e) => handleDrop(e, 'INPROGRESS')}
+                    onDragOver={(e) => e.preventDefault()}
+                >
+                    <h1 style={{ margin: '10px', textAlign: 'center' }}>IN PROGRESS</h1>
+                    {filterCards(inProgressCards).map((card, index) => (
+                         <div
+                         style={{
+                           position: "relative", // Required for absolute positioning of child elements
+                           padding: "10px",
+                           width: "95%",
+                           margin: "5px auto",
+                           borderRadius: "5px",
+                           backgroundColor: "white",
+                           border: "2px solid #1875d2", // Add border with the specified color
+                         }}
+                         className="card"
+                         draggable
+                         onDragStart={(e) => handleDragStart(e, card, "inProgress")}
+                     
+                       >
+                         {/* Three-dot menu */}
+                         <IconButton
+                           onClick={(e) => handleMenuOpen(e, card.id)}
+                           style={{
+                             position: "absolute",
+                             top: "10px",
+                             right: "10px",
+                             zIndex: 1,
+                             backgroundColor: "#1875d2",
+                             color: "white",
+                           }}
+                         >
+                           <MoreHorizIcon />
+                         </IconButton>
+                         <Menu
+                           anchorEl={anchorEl}
+                           open={Boolean(anchorEl) && menuCardId === card.id}
+                           onClose={handleMenuClose}
+                         >
+                           <MenuItem
+                             onClick={() => {
+                               handleDelete(card.id);
+                               handleMenuClose();
+                             }}
+                           >
+                             Delete
+                           </MenuItem>
+                           <MenuItem
+                             onClick={() => {
+                               handleOpenEdit(card);
+                               handleMenuClose();
+                             }}
+                           >
+                             Edit
+                           </MenuItem>
+                         </Menu>
+                            <h3
+                                style={{
+                                    fontSize: 'calc(1.5em + 0.5vw)', // Responsive font size
+                                    wordWrap: 'break-word',          // Handle long words
+                                    overflow: 'hidden',              // Prevent content overflow
+                                    textOverflow: 'ellipsis',        // Add ellipsis for overflowed text
+                                    whiteSpace: 'nowrap',            // Prevent wrapping (change to 'normal' for multi-line)
+                                    lineHeight: '1.4'                // Adjust line height for better readability
+                                }}
+                            >
+                                {card.title}
+                            </h3>
+                            <p>
+                                Note:{' '}
+                                <span style={{ textDecoration: 'underline', cursor: 'pointer' }} onClick={() => handleOpenNoteDialog(card.note, card.title)}>
+                                    View
+                                </span>
+                            </p>
+                            <p>Subject:{card.subject}</p>
+                            <p>Context: {card.context}</p>
+                        </div>
+                    ))}
                 </div>
-                <div style={{ flex: 1 }}>
-                    <h1>FINISHED</h1>
-                    <Board handleDelete={handleDelete} cards={finishedCards} />
+
+                <div
+                    className='notes-card-div'
+                    style={{ border: '1px solid blue', backgroundColor: '#eee', margin: '20px', borderRadius: '10px', minHeight: '60vh' }}
+                    onDrop={(e) => handleDrop(e, 'FINISHED')}
+                    onDragOver={(e) => e.preventDefault()}
+                >
+                    <h1 style={{ margin: '10px', textAlign: 'center' }}>FINISHED</h1>
+                    {filterCards(finishedCards).map((card, index) => (
+                       <div
+                       style={{
+                         position: "relative", // Required for absolute positioning of child elements
+                         padding: "10px",
+                         width: "95%",
+                         margin: "5px auto",
+                         borderRadius: "5px",
+                         backgroundColor: "white",
+                         border: "2px solid #1875d2", // Add border with the specified color
+                       }}
+                       className="card"
+                       draggable
+                       onDragStart={(e) => handleDragStart(e, card, "finished")}
+                   
+                     >
+                       {/* Three-dot menu */}
+                       <IconButton
+                         onClick={(e) => handleMenuOpen(e, card.id)}
+                         style={{
+                           position: "absolute", // Position in the top-right corner
+                           top: "10px",
+                           right: "10px",
+                           zIndex: 1,
+                           backgroundColor: "#1875d2", // Set background color
+                           color: "white", // Set icon color to contrast with the background
+                           
+                         }}
+                       >
+                         <MoreHorizIcon />
+                       </IconButton>
+                       <Menu
+                         anchorEl={anchorEl}
+                         open={Boolean(anchorEl) && menuCardId === card.id}
+                         onClose={handleMenuClose}
+                       >
+                         <MenuItem
+                           onClick={() => {
+                             handleDelete(card.id);
+                             handleMenuClose();
+                           }}
+                         >
+                           Delete
+                         </MenuItem>
+                         <MenuItem
+                           onClick={() => {
+                             handleOpenEdit(card);
+                             handleMenuClose();
+                           }}
+                         >
+                             Edit
+                           </MenuItem>
+                       </Menu>
+                            <h3
+                                style={{
+                                    fontSize: 'calc(1.5em + 0.5vw)', // Responsive font size
+                                    wordWrap: 'break-word',          // Handle long words
+                                    overflow: 'hidden',              // Prevent content overflow
+                                    textOverflow: 'ellipsis',        // Add ellipsis for overflowed text
+                                    whiteSpace: 'nowrap',            // Prevent wrapping (change to 'normal' for multi-line)
+                                    lineHeight: '1.4'                // Adjust line height for better readability
+                                }}
+                            >
+                                {card.title}
+                            </h3>
+                            <p>
+                                Note:{' '}
+                                <span style={{ textDecoration: 'underline', cursor: 'pointer' }} onClick={() => handleOpenNoteDialog(card.note, card.title)}>
+                                    View
+                                </span>
+                            </p>
+                            <p>Subject:{card.subject}</p>
+                            <p>Context: {card.context}</p>
+                            
+                        </div>
+                    ))}
                 </div>
             </div>
-
+            <Dialog
+                open={openNoteDialog}
+                onClose={handleCloseNoteDialog}
+                fullWidth
+                maxWidth="sm"
+                PaperProps={{
+                    style: {
+                        padding: '20px',
+                        overflow: 'hidden', // Prevent horizontal scrolling
+                    },
+                }}
+            >
+                <DialogTitle
+                    style={{
+                        display: 'block', // Ensures proper rendering within the dialog
+                        maxWidth: '100%', // Constrain title width within the dialog
+                        wordWrap: 'break-word', // Wrap long words
+                        whiteSpace: 'pre-wrap', // Preserve line breaks
+                        border: '2px solid #4CAF50', // Green border for the title
+                        borderRadius: '8px', // Rounded corners
+                        padding: '12px', // Inner padding for spacing
+                        backgroundColor: '#f0f8ff', // Light blue background
+                        textAlign: 'center', // Center-align the text
+                        boxSizing: 'border-box', // Include border size in the element's dimensions
+                    }}
+                >
+                    <h3
+                        style={{
+                            margin: 0, // Remove default margin
+                            overflow: 'hidden', // Prevent content from overflowing
+                            textOverflow: 'ellipsis', // Add ellipsis for overflowing text
+                            lineHeight: '1.5', // Improve readability
+                        }}
+                    >
+                        {selectedTitleOfNote}
+                    </h3>
+                </DialogTitle>
+                <DialogContent
+                    style={{
+                        whiteSpace: 'pre-wrap',
+                        wordWrap: 'break-word',
+                        maxWidth: '100%',
+                        margin: '16px 0',
+                        border: '1px solid #ddd',
+                        borderRadius: '8px',
+                        padding: '16px',
+                        boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)',
+                        backgroundColor: '#f9f9f9',
+                        overflowWrap: 'break-word',
+                    }}
+                >
+                    <ReactMarkdown>{selectedNote}</ReactMarkdown>
+                </DialogContent>
+            </Dialog>
         </>
     );
 }

@@ -4,67 +4,20 @@
     "paragraph": "Nous sommes votre ressource en ligne dédiée pour les étudiants en classe préparatoire"
   },
   "About": {
-    "paragraph": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+    "paragraph": "Nous sommes une entreprise dédiée à fournir une plateforme d'apprentissage en ligne innovante, conçue pour les étudiants des classes préparatoires en Tunisie. Notre plateforme propose une large gamme de ressources documentaires provenant de différentes régions de Tunisie, ainsi que de contributeurs internationaux. En plus des ressources académiques, nous aidons les étudiants à gérer efficacement leur temps grâce à l'application. Notre plateforme offre également des statistiques détaillées pour vous donner une vision claire de votre rythme d'étude, vous permettant d'optimiser votre apprentissage. Avec une variété de fonctionnalités conçues pour enrichir votre expérience éducative, nous sommes engagés à vous accompagner vers la réussite.",
     "Why": [
-      "Lorem ipsum dolor",
-      "Tempor incididunt",
-      "Lorem ipsum dolor",
-      "Incididunt ut labore"
+      "Plateforme d'apprentissage en ligne complète",
+      "Ressources disponibles de Tunisie et au-delà",
+      "Outils de gestion du temps efficaces avec chronomètre intégré",
+      "Informations détaillées sur votre rythme d'étude"
     ],
     "Why2": [
-      "Aliquip ex ea commodo",
-      "Lorem ipsum dolor",
-      "Exercitation ullamco",
-      "Lorem ipsum dolor"
+      "Gérez vos notes et créez des résumés facilement",
+      "Application conviviale et riche en fonctionnalités",
+      "Nous vous offrons des motivations pour rester sur la bonne voie",
+      "Engagés à vous aider à réussir"
     ]
   },
-  "Gallery": [
-    {
-      "title": "Project Title",
-      "largeImage": "img/portfolio/01-large.jpg",
-      "smallImage": "img/portfolio/01-small.jpg"
-    },
-    {
-      "title": "Project Title",
-      "largeImage": "img/portfolio/02-large.jpg",
-      "smallImage": "img/portfolio/02-small.jpg"
-    },
-    {
-      "title": "Project Title",
-      "largeImage": "img/portfolio/03-large.jpg",
-      "smallImage": "img/portfolio/03-small.jpg"
-    },
-    {
-      "title": "Project Title",
-      "largeImage": "img/portfolio/04-large.jpg",
-      "smallImage": "img/portfolio/04-small.jpg"
-    },
-    {
-      "title": "Project Title",
-      "largeImage": "img/portfolio/05-large.jpg",
-      "smallImage": "img/portfolio/05-small.jpg"
-    },
-    {
-      "title": "Project Title",
-      "largeImage": "img/portfolio/06-large.jpg",
-      "smallImage": "img/portfolio/06-small.jpg"
-    },
-    {
-      "title": "Project Title",
-      "largeImage": "img/portfolio/07-large.jpg",
-      "smallImage": "img/portfolio/07-small.jpg"
-    },
-    {
-      "title": "Project Title",
-      "largeImage": "img/portfolio/08-large.jpg",
-      "smallImage": "img/portfolio/08-small.jpg"
-    },
-    {
-      "title": "Project Title",
-      "largeImage": "img/portfolio/09-large.jpg",
-      "smallImage": "img/portfolio/09-small.jpg"
-    }
-  ],
   "Services": [
     {
       "icon": "fa fa-wordpress",
@@ -134,21 +87,6 @@
       "img": "img/team/01.jpg",
       "name": "Dhia Saadi",
       "job": "Directeur"
-    },
-    {
-      "img": "img/team/02.jpg",
-      "name": "Mike Doe",
-      "job": "Senior Designer"
-    },
-    {
-      "img": "img/team/03.jpg",
-      "name": "Jane Doe",
-      "job": "Senior Designer"
-    },
-    {
-      "img": "img/team/04.jpg",
-      "name": "Karen Doe",
-      "job": "Project Manager"
     }
   ],
   "Contact": {
@@ -161,24 +99,24 @@
   },
   "Features": [
     {
-      "icon": "fa fa-comments-o",
-      "title": "Lorem ipsum",
-      "text": "Lorem ipsum dolor sit amet placerat facilisis felis mi in tempus eleifend pellentesque natoque etiam."
+      "icon": "fa fa-file-text-o",
+      "title": "Documents (CV, examens, DS, concours)",
+      "text": "Notre plateforme met à votre disposition une large bibliothèque de documents essentiels : CV, examens passés, devoirs surveillés (DS) et sujets de concours. Ces ressources vous permettent de vous entraîner efficacement, de comparer vos résultats et de mieux vous préparer pour vos objectifs académiques et professionnels."
     },
     {
-      "icon": "fa fa-bullhorn",
-      "title": "Lorem ipsum",
-      "text": "Lorem ipsum dolor sit amet placerat facilisis felis mi in tempus eleifend pellentesque natoque etiam."
+      "icon": "fa fa-book",
+      "title": "Création de notes",
+      "text": "La plateforme intègre un système de gestion du temps qui vous aide à planifier vos sessions d’étude et à rester concentré sur vos objectifs. Vous pouvez organiser vos journées, définir vos priorités et optimiser vos efforts grâce à une meilleure organisation."
     },
     {
-      "icon": "fa fa-group",
-      "title": "Lorem ipsum",
-      "text": "Lorem ipsum dolor sit amet placerat facilisis felis mi in tempus eleifend pellentesque natoque etiam."
+      "icon": "fa fa-clock-o",
+      "title": "Gestion du temps",
+      "text": "La plateforme intègre un système de gestion du temps qui vous aide à planifier vos sessions d’étude et à rester concentré sur vos objectifs. Vous pouvez organiser vos journées, définir vos priorités et optimiser vos efforts grâce à une meilleure organisation."
     },
     {
-      "icon": "fa fa-magic",
-      "title": "Lorem ipsum",
-      "text": "Lorem ipsum dolor sit amet placerat facilisis felis mi in tempus eleifend pellentesque natoque etiam."
+      "icon": "fa fa-bar-chart",
+      "title": "Statistiques et suivi personnalisé",
+      "text": "Vous avez accès à des statistiques détaillées qui mesurent le temps que vous consacrez à chaque matière ou activité. Grâce à ce suivi précis, vous pouvez analyser vos habitudes de travail, identifier vos points forts et ajuster votre méthode de révision pour plus d’efficacité."
     }
   ],
 

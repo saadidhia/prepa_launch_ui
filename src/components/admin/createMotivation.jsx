@@ -19,7 +19,7 @@ export function CreateMotivation() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log("Handle Submit");
+
         if (!(title && description)) {
             return;
         }

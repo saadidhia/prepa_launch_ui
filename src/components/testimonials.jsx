@@ -7,7 +7,7 @@ export const Testimonials = (props) => {
         <div className="section-title text-center">
           <h2>Ce que disent nos clients</h2>
         </div>
-        <div className="row">
+      {/* <div className="row">
           {props.data
             ? props.data.map((d, i) => (
                 <div key={`${d.name}-${i}`} className="col-md-4">
@@ -24,7 +24,7 @@ export const Testimonials = (props) => {
                 </div>
               ))
             : "loading"}
-        </div>
+        </div> */}
       </div>
     </div>
   );

@@ -1,14 +1,20 @@
-import {Cours} from './components/user/cours'
-import {Exams} from './components/user/exams'
-import {Series} from  './components/user/series'
-import {Notes} from './components/user/notes'
-import {Users} from './components/admin/users'
+import { Cours } from './components/user/cours'
+import { Exams } from './components/user/exams'
+import { Series } from './components/user/series'
+import { Notes } from './components/user/notes'
+import { Users } from './components/admin/users'
 import { SignUp } from './components/admin/signUp';
 import { NotifCandidates } from './components/admin/notifCandidates';
 import { Resume } from './components/user/Resume'
 import { CreateMotivation } from './components/admin/createMotivation'
 import { Motivations } from './components/user/motivations'
-
+import { Concours } from './components/user/Concours'
+import { ArchiveCards } from './components/admin/ArchiveCards'
+import { CreateBook } from './components/admin/createBook'
+import { Books } from './components/admin/Books'
+import Chronometer  from './components/user/chronometer'
+import { UsersStat } from './components/admin/UsersStat'
+import { Progression }  from './components/user/Progression'
 
 
 const navigations = [
@@ -32,9 +38,16 @@ const navigations = [
     },
     {
         text: "Resumes",
-        link: "Resumes",
+        link: "resumes",
         component: Resume,
-        role:"user"
+        role: "user"
+    },
+    {
+        text: "Concours",
+        link: "Concours",
+        component: Concours,
+        role: "user"
+
     },
     {
         text: "Notes",
@@ -48,8 +61,8 @@ const navigations = [
         component: Motivations,
         role: "user"
     },
-   
-    
+
+
     {
         text: "users",
         link: "users",
@@ -76,13 +89,51 @@ const navigations = [
 
     },
     {
-        text: "Motivation",
-        link: "motivation",
+        text: "Motivation mananegement",
+        link: "motivation-admin",
         component: Motivations,
         role: "admin"
+    },
+    {
+        text: "Archive Cards",
+        link: "archive_cards",
+        component: ArchiveCards,
+        role: "admin"
+    },
+    {
+        text: "Book",
+        link: "book",
+        component: CreateBook,
+        role: "admin"
+    },
+    {
+        text: "Books",
+        link: "books",
+        component: Books,
+        role: "admin"
+    },
+    {
+        text: "Chronometer",
+        link: "chronometer",
+        component:  Chronometer,
+        role: "user"
+    },
+    {
+        text: "Statics",
+        link: "statics",
+        component:  UsersStat,
+        role: "admin"
+        
+    },
+    {
+        text: "Progression",
+        link: "progression",
+        component:  Progression,
+        role: "user"
+        
     }
 
-   
+
 ];
 
 export default navigations

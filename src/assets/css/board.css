@@ -6,5 +6,29 @@
   
   .board-column {
     flex: 1; /* Allow boards to grow and take available space */
-    margin: 0 10px; /* Adjust margins for spacing between boards */
+    margin: 0 15px; /* Adjust margins for spacing between boards */
   }
+
+  .notes-row{
+    display: flex;
+    justify-content: center;
+    }
+    .notes-card-div{
+    min-width:350px;
+    max-width: 350px;
+    }
+    
+    
+    @media (max-width: 1150px)
+    {
+    .notes-row{
+    display: grid;
+    grid-template-columns: 33% 33% 33%;
+    justify-content: space-around;
+    }
+    .notes-card-div{
+    min-width:95%;
+    max-width: 95%;
+    margin: 10px auto;
+    }
+    }

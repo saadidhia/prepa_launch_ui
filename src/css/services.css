@@ -1,0 +1,69 @@
+/* Styling for the pricing cards container */
+.pricing-card {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 20px;
+  text-align: center;
+  background-color: #fff; /* White background for the card */
+  color: #333; /* Dark text for readability */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.pricing-plan-title {
+  font-size: 32px;
+  color: #007bff; /* Blue */
+  margin-bottom: 10px;
+}
+.pricing-card {
+  background-color: #fff; /* White background */
+  color: #333;
+}
+
+.pricing-card:hover {
+  transform: translateY(-10px); /* Subtle hover effect */
+  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+}
+
+
+
+.pricing-card h4 {
+  font-size: 32px;
+  color: #007bff; /* Blue text for pricing */
+  margin-bottom: 20px;
+}
+
+/* List styling */
+.pricing-card ul {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 20px 0;
+}
+
+.pricing-card ul li {
+  margin-bottom: 10px;
+  font-size: 16px;
+  color: #333; /* Dark text for features */
+}
+
+/* Button styling */
+.pricing-card .btn {
+  background-color: #007bff; /* Primary blue background */
+  color: #fff; /* White text on the button */
+  border: none;
+  padding: 10px 20px;
+  font-size: 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.pricing-card .btn:hover {
+  background-color: #0056b3; /* Darker blue on hover */
+}
+
+/* Responsive adjustments for smaller screens */
+@media (max-width: 768px) {
+  .pricing-card {
+    margin-bottom: 20px;
+  }
+}
