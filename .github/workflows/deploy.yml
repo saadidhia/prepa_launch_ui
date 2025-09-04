@@ -10,6 +10,8 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env: 
+     CI: false # Set CI environment variable to false
 
     steps:
     - name: Checkout code
