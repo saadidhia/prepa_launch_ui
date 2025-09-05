@@ -13,7 +13,7 @@ export const authApi = {
 
 async function authenticate(username, password) {
 
-  return instance.post('/auth/authenticate', { username, password }, {
+  return instance.post('/api/auth/authenticate', { username, password }, {
     headers: {
       'Content-type': 'application/json'
     }
@@ -21,7 +21,7 @@ async function authenticate(username, password) {
 };
 
 function signup(user, admin) {
-  return instance.post("/auth/signup", user, {
+  return instance.post("/api/auth/signup", user, {
     headers: {
       Authorization: bearerAuth(admin),
       "Content-type": "application/json",
@@ -30,7 +30,7 @@ function signup(user, admin) {
 }
 
 function logout(user) {
-  return instance.post('/auth/logout', null, {
+  return instance.post('/api/auth/logout', null, {
     headers: {
       'Authorization': bearerAuth(user),
       'Content-type': 'application/json'
@@ -67,4 +67,5 @@ instance.interceptors.request.use(function (config) {
 
 export function bearerAuth(user) {
   return `Bearer ${user.accessToken}`
+
 }
