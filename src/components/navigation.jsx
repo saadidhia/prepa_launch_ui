@@ -18,7 +18,7 @@ export const Navigation = (props) => {
             <span className="icon-bar"></span>{" "}
           </button>
           <a className="navbar-brand page-scroll" href="#page-top">
-            PREPA LAUNCH
+            TIME4PREPA
           </a>{" "}
         </div>
 
