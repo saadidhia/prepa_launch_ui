@@ -22,7 +22,7 @@ export const adminApi = {
 }
 
 export const instance = axios.create({
-  baseURL: process.env.REACT_APP_API + "api/"
+  baseURL: process.env.REACT_APP_API
 })
 
 function getUsers(admin) {
@@ -172,4 +172,5 @@ function resetSession(admin, username){
         }
     })
 }
+
 
