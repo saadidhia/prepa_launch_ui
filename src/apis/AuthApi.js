@@ -42,7 +42,7 @@ function logout(user) {
 // -- Axios
 
 const instance = axios.create({
-  baseURL: process.env.REACT_APP_API
+  baseURL: process.env.REACT_APP_API + "api/"
 })
 
 instance.interceptors.request.use(function (config) {
@@ -69,5 +69,6 @@ export function bearerAuth(user) {
   return `Bearer ${user.accessToken}`
 
 }
+
 
 
