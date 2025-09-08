@@ -78,6 +78,7 @@ jobs:
        echo "🚀 Deploying frontend to Hetzner..."
        ssh -o StrictHostKeyChecking=no root@91.98.119.218 "mkdir -p /opt/prepa/frontend && rm -rf /opt/prepa/frontend/*"
        scp -r build/* root@91.98.119.218:/opt/prepa/frontend/
+       ssh root@91.98.119.218 "cp -r /opt/prepa/frontend/* /var/www/prepa/"   # ⬅️ this is the line I added
        ssh root@91.98.119.218 "ls -lh /opt/prepa/frontend"
        ssh root@91.98.119.218 "systemctl reload nginx || true"
        echo "✅ Frontend deployed successfully!"
