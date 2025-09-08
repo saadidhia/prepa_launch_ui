@@ -28,7 +28,13 @@ jobs:
         npm install -g env-cmd
     
     - name: Build frontend
-      run: npm run build-dev
+      run: npm run build-qa
+
+    - name: Upload build artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: frontend-build
+        path: build   
 
   deploy_qa:
     runs-on: ubuntu-latest
@@ -53,31 +59,25 @@ jobs:
   deploy_prod:
     runs-on: ubuntu-latest
     needs: build
-    if: github.ref == 'refs/heads/prod'   # فقط لما تكون على prod
+    if: github.ref == 'refs/heads/prod'
     
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
+    - name: Download build artifact
+      uses: actions/download-artifact@v4
+      with:
+        name: frontend-build
+        path: build   # يرجع يعمل download للـ build folder هنا
 
     - name: Start ssh-agent
       uses: webfactory/ssh-agent@v0.9.0
       with:
-        ssh-private-key: ${{ secrets.HETZNER_CICD_KEY }}
+        ssh-private-key: ${{ secrets.HETZNER_BUSINESS_SERVER }}
 
     - name: Deploy frontend to Hetzner
       run: |
-        echo "🚀 Deploying frontend to Hetzner..."
-        
-        # أنشئ folder frontend إذا ما كانش موجود
-        ssh -o StrictHostKeyChecking=no root@91.98.119.218 "mkdir -p /opt/prepa/frontend"
-        
-        # انسخ الملفات
-        scp -r build/* root@91.98.119.218:/opt/prepa/frontend/
-        
-        # تحقق من الملفات بعد النسخ
-        ssh root@91.98.119.218 "ls -lh /opt/prepa/frontend"
-
-        # Reload Nginx (مفترض config موجود مسبقًا)
-        ssh root@91.98.119.218 "systemctl reload nginx"
-        
-        echo "✅ Frontend deployed successfully!"
+       echo "🚀 Deploying frontend to Hetzner..."
+       ssh -o StrictHostKeyChecking=no root@91.98.119.218 "mkdir -p /opt/prepa/frontend && rm -rf /opt/prepa/frontend/*"
+       scp -r build/* root@91.98.119.218:/opt/prepa/frontend/
+       ssh root@91.98.119.218 "ls -lh /opt/prepa/frontend"
+       ssh root@91.98.119.218 "systemctl reload nginx || true"
+       echo "✅ Frontend deployed successfully!"
