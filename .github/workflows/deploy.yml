@@ -72,7 +72,7 @@ jobs:
       uses: webfactory/ssh-agent@v0.9.0
       with:
         ssh-private-key: ${{ secrets.HETZNER_BUSINESS_SERVER }}
-
+        
     - name: Deploy frontend to Hetzner
       run: |
        echo "🚀 Deploying frontend to Hetzner..."
@@ -82,3 +82,5 @@ jobs:
        ssh root@91.98.119.218 "ls -lh /opt/prepa/frontend"
        ssh root@91.98.119.218 "systemctl reload nginx || true"
        echo "✅ Frontend deployed successfully!"
+
+    
