@@ -1,50 +1,86 @@
-import { useState } from 'react';
-import { config } from '../../constants';
+import { useState, useEffect } from 'react';
+import { bearerAuth } from '../../apis/AuthApi';
+import { useAuth } from '../context/AuthContext';
 
-export function PdfViewer({ pdf }) {
+export function PdfViewer({ pdf, expiryMinutes = 10 }) {
+  const Auth = useAuth();
+  const user = Auth.getUser(); // make sure this is stable (e.g., contains token only)
   const [showModal, setShowModal] = useState(false);
-  const [isHovered, setIsHovered] = useState(false); // State to manage hover color
+  const [isHovered, setIsHovered] = useState(false);
+  const [presignedUrl, setPresignedUrl] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  // Extract the file name from the full path
   const fileName = pdf.split('/').pop();
 
-  // Function to toggle modal
-  const toggleModal = () => {
-    setShowModal(!showModal);
-  };
+  useEffect(() => {
+    console.log("Fetching presigned URL for PDF:", pdf);
+    //if (!token) return; // don’t call API if no token yet
+    const fetchPresignedUrl = async () => {
+      setLoading(true);
+      try {
+        const response = await fetch(
+          `http://localhost:8086/api/url?key=${encodeURIComponent(pdf)}&expiryMinutes=${expiryMinutes}`,
+          {
+            headers: {
+              'Authorization': bearerAuth(user),
+          'Content-type': 'application/json'
+            },
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error(`Failed to get presigned URL (${response.status})`);
+        }
+
+        const url = await response.text(); // plain text URL
+        setPresignedUrl(url);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchPresignedUrl();
+  }, [pdf, expiryMinutes]); // only depend on stable token
+
+  const toggleModal = () => setShowModal(!showModal);
+
+  if (loading) return <p>Loading PDF...</p>;
+  if (error) return <p style={{ color: 'red' }}>{error}</p>;
+  if (!presignedUrl) return null;
 
   return (
     <>
-      {/* PDF Thumbnail / Preview */}
       <div className="pdf-item" onClick={toggleModal}>
         <iframe
-          src={`${config.s3_storage_url}/${pdf}#toolbar=0`}
-          title="PDF Viewer"
+          src={`${presignedUrl}#toolbar=0`}
+          title={fileName}
           width="100%"
           height="700"
-          style={{ cursor: 'pointer' }} // Add cursor pointer directly
+          style={{ cursor: 'pointer' }}
         />
         <p
-          onMouseEnter={() => setIsHovered(true)} // Change color on mouse enter
-          onMouseLeave={() => setIsHovered(false)} // Reset color on mouse leave
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
           style={{
             fontWeight: 'bold',
             margin: '0',
             textAlign: 'center',
-            color: isHovered ? 'blue' : 'black', // Change color on hover
-            transition: 'color 0.2s', // Smooth transition for color change
+            color: isHovered ? 'blue' : 'black',
+            transition: 'color 0.2s',
           }}
         >
           {fileName}
         </p>
       </div>
 
-      {/* Modal */}
       {showModal && (
         <div className="modal-overlay" onClick={toggleModal}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
             <iframe
-              src={`${config.s3_storage_url}/${pdf}#toolbar=0`}
+              src={`${presignedUrl}#toolbar=0`}
               title="PDF Viewer"
               width="100%"
               height="700"
@@ -55,7 +91,6 @@ export function PdfViewer({ pdf }) {
         </div>
       )}
 
-      {/* Inline CSS for modal */}
       <style jsx>{`
         .modal-overlay {
           position: fixed;
@@ -69,7 +104,6 @@ export function PdfViewer({ pdf }) {
           align-items: center;
           z-index: 1000;
         }
-
         .modal-content {
           background: white;
           padding: 20px;
@@ -78,7 +112,6 @@ export function PdfViewer({ pdf }) {
           width: 80%;
           height: 80%;
         }
-
         .close-button {
           position: absolute;
           top: 10px;
@@ -89,7 +122,6 @@ export function PdfViewer({ pdf }) {
           padding: 5px 10px;
           cursor: pointer;
         }
-
         .pdf-item {
           cursor: pointer;
         }
