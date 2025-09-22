@@ -3,11 +3,21 @@ import { instance } from './adminApi'
 
 
 export const filesApi = {
-  getPdfs
+  getPdfs,
+  presignedUrl
 }
 
 function getPdfs(user, subFolderName) {
   return instance.get(`/api/files?folderPrefix=${user.data.level}/${user.data.field}/${subFolderName}`, {
+    headers: {
+      'Authorization': bearerAuth(user),
+      'Content-Type': 'application/json'
+    }
+  });
+}
+
+function presignedUrl(user, pdf,expiryMinutes) {
+  return instance.get(`/api/url?key=${encodeURIComponent(pdf)}&expiryMinutes=${expiryMinutes}`, {
     headers: {
       'Authorization': bearerAuth(user),
       'Content-Type': 'application/json'

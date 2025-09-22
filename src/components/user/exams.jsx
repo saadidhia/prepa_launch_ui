@@ -26,14 +26,14 @@ export function Exams() {
           <CardActions style={{ display: 'flex', justifyContent: 'space-between' }}>
             <Button
               size="small"
-              onClick={() => navigate(`/dashboard/exams/ds/${course.links}`, { state: { subFolderName: 'DS' } })}
+              onClick={() => navigate(`/dashboard/exams/ds/${course.links}`, { state: { subFolderName: `exams/ds/${course.links}` } })}
               style={{ flex: 1, backgroundColor: '#4CAF50', color: 'white', marginRight: '5px' }} // Green color
             >
               DS
             </Button>
             <Button
               size="small"
-              onClick={() => navigate(`/dashboard/exams/exam/${course.links}`, { state: { subFolderName: 'Exams' } })}
+              onClick={() => navigate(`/dashboard/exams/exam/${course.links}`, { state: { subFolderName: `exams/exam/${course.links}` } })}
               style={{ flex: 1, backgroundColor: '#2196F3', color: 'white', marginLeft: '5px' }} // Blue color
             >
               EXAMS

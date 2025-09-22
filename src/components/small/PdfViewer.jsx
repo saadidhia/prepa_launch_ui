@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
 import { bearerAuth } from '../../apis/AuthApi';
 import { useAuth } from '../context/AuthContext';
+import { filesApi } from '../../apis/filesApi';
 
 export function PdfViewer({ pdf, expiryMinutes = 10 }) {
   const Auth = useAuth();
-  const user = Auth.getUser(); // make sure this is stable (e.g., contains token only)
+  const user = Auth.getUser();
   const [showModal, setShowModal] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
   const [presignedUrl, setPresignedUrl] = useState(null);
@@ -14,26 +15,18 @@ export function PdfViewer({ pdf, expiryMinutes = 10 }) {
   const fileName = pdf.split('/').pop();
 
   useEffect(() => {
-    console.log("Fetching presigned URL for PDF:", pdf);
-    //if (!token) return; // don’t call API if no token yet
+
     const fetchPresignedUrl = async () => {
       setLoading(true);
       try {
-        const response = await fetch(
-          `http://localhost:8086/api/url?key=${encodeURIComponent(pdf)}&expiryMinutes=${expiryMinutes}`,
-          {
-            headers: {
-              'Authorization': bearerAuth(user),
-          'Content-type': 'application/json'
-            },
-          }
-        );
+        const response = await filesApi.presignedUrl(user, pdf, expiryMinutes);
+        console.log("Presigned URL response:", response);
 
-        if (!response.ok) {
+        if (response.status !== 200) {
           throw new Error(`Failed to get presigned URL (${response.status})`);
         }
 
-        const url = await response.text(); // plain text URL
+        const url = await response.data; 
         setPresignedUrl(url);
       } catch (err) {
         setError(err.message);
