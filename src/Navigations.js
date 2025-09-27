@@ -55,12 +55,12 @@ const navigations = [
         component: Notes,
         role: "user"
     },
-    {
+   /* {
         text: "Motivation",
         link: "motivation",
         component: Motivations,
         role: "user"
-    },
+    }, */
 
 
     {
