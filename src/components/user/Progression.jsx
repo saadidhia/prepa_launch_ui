@@ -10,26 +10,66 @@ import {
   Legend,
   PieChart,
   Pie,
+  LineChart,
+  Line,
 } from "recharts";
 import { FilterStatistic } from "../small/filterStatistic";
 
-const colors = ["#8884d8", "#83a6ed", "#8dd1e1", "#82ca9d", "#a4de6c"];
+const colors = [
+  "#8884d8", // purple
+  "#83a6ed", // blue
+  "#8dd1e1", // cyan
+  "#82ca9d", // green
+  "#a4de6c", // lime
+  "#d0ed57", // yellow
+  "#ffc658", // orange
+  "#ff8042", // coral
+  "#ff6666", // red
+  "#d888d8"  // pink/purple
+];
 
 export function Progression() {
   const [statisticsData, setStatisticsData] = useState([]);
 
+  // Format seconds into hh:mm:ss
+  const formatTime = (s) => {
+    const seconds = Math.floor(s);
+    const h = Math.floor(seconds / 3600);
+    const m = Math.floor((seconds % 3600) / 60);
+    const sec = seconds % 60;
+
+    if (h > 0) return `${h}h ${m}m`;
+    if (m > 0) return `${m}m ${sec}s`;
+    return `${sec}s`;
+  };
+
+  // Transform elapsedTime into total seconds
   const handleDataReceived = (data) => {
-    // Transform elapsedTime into total seconds
     const transformedData = data.map((item) => {
       const [hours, minutes, seconds] = item.elapsedTime
         .match(/\d+/g)
         .map(Number);
+
+      const totalSeconds = (hours * 3600 + minutes * 60 + seconds) / 1_000_000;
+
+      // Calculate percentage for pie chart
       return {
         ...item,
-        totalSeconds: hours * 3600 + minutes * 60 + seconds, // Calculate total seconds
+        totalSeconds,
       };
     });
-    setStatisticsData(transformedData);
+
+    // Calculate total for percentages
+    const totalTime = transformedData.reduce(
+      (acc, item) => acc + item.totalSeconds,
+      0
+    );
+    const withPercentages = transformedData.map((item) => ({
+      ...item,
+      percentage: totalTime > 0 ? item.totalSeconds / totalTime : 0,
+    }));
+
+    setStatisticsData(withPercentages);
   };
 
   return (
@@ -38,23 +78,23 @@ export function Progression() {
       <div
         style={{
           display: "flex",
-          flexDirection: "row", // Arrange items in a row
-          justifyContent: "center", // Center the charts horizontally
-          alignItems: "flex-start", // Align charts at the top
-          gap: "20px", // Adds spacing between the charts
-          flexWrap: "wrap", // Ensure responsiveness for smaller screens
+          flexDirection: "row",
+          justifyContent: "center",
+          alignItems: "flex-start",
+          gap: "20px",
+          flexWrap: "wrap",
         }}
       >
-        {/* Bar Chart Box */}
+        {/* Bar Chart */}
         <div
           style={{
-            flex: "1 1 45%", // Allow the chart to take up 45% of the row
+            flex: "1 1 45%",
             margin: "10px",
-            padding: "20px", // Adds padding inside the box
-            border: "2px solid #ccc", // Adds a border around the box
-            borderRadius: "10px", // Rounds the corners of the box
-            backgroundColor: "#f9f9f9", // Light background color for the box
-            boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)", // Adds a subtle shadow
+            padding: "20px",
+            border: "2px solid #ccc",
+            borderRadius: "10px",
+            backgroundColor: "#f9f9f9",
+            boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
           }}
         >
           <h3 style={{ textAlign: "center", marginBottom: "20px" }}>
@@ -62,18 +102,15 @@ export function Progression() {
           </h3>
           <BarChart
             width={500}
-            height={300} // Adjusted height for better row alignment
+            height={300}
             data={statisticsData}
             margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
           >
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis dataKey="subject" />
             <YAxis
-              label={{
-                value: "Time (seconds)",
-                angle: -90,
-                position: "insideLeft",
-              }}
+              label={{ value: "Time", angle: -90, position: "insideLeft" }}
+              tickFormatter={formatTime}
             />
             <Tooltip />
             <Legend />
@@ -88,16 +125,16 @@ export function Progression() {
           </BarChart>
         </div>
 
-        {/* Pie Chart Box */}
+        {/* Pie Chart */}
         <div
           style={{
-            flex: "1 1 45%", // Allow the chart to take up 45% of the row
+            flex: "1 1 45%",
             margin: "10px",
-            padding: "20px", // Adds padding inside the box
-            border: "2px solid #ccc", // Adds a border around the box
-            borderRadius: "10px", // Rounds the corners of the box
-            backgroundColor: "#f9f9f9", // Light background color for the box
-            boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)", // Adds a subtle shadow
+            padding: "20px",
+            border: "2px solid #ccc",
+            borderRadius: "10px",
+            backgroundColor: "#f9f9f9",
+            boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
           }}
         >
           <h3 style={{ textAlign: "center", marginBottom: "20px" }}>
@@ -126,6 +163,45 @@ export function Progression() {
             <Tooltip />
             <Legend />
           </PieChart>
+        </div>
+
+        {/* Line Chart */}
+        <div
+          style={{
+            flex: "1 1 90%",
+            margin: "10px",
+            padding: "20px",
+            border: "2px solid #ccc",
+            borderRadius: "10px",
+            backgroundColor: "#f9f9f9",
+            boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+          }}
+        >
+          <h3 style={{ textAlign: "center", marginBottom: "20px" }}>
+            Time Progression by Subject (Line Chart)
+          </h3>
+          <LineChart
+            width={900}
+            height={300}
+            data={statisticsData}
+            margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+          >
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="subject" />
+            <YAxis tickFormatter={formatTime} />
+            <Tooltip />
+            <Legend />
+            {statisticsData.map((entry, index) => (
+              <Line
+                key={`line-${index}`}
+                type="monotone"
+                dataKey="totalSeconds"
+                name={entry.subject}
+                dot={{ r: 5 }}
+                activeDot={{ r: 8 }}
+              />
+            ))}
+          </LineChart>
         </div>
       </div>
     </>

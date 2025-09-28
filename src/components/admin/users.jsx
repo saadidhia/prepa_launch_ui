@@ -20,7 +20,6 @@ export function Users() {
   const [openRows, setOpenRows] = useState({});
   const [activateStartDate, setActivateStartDate] = useState("");
   const [activateDuration, setActivateDuration] = useState("ONE");
-  const [activatePrice, setActivatePrice] = useState("");
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false); // State for delete dialog
 const [userToDelete, setUserToDelete] = useState(null); // State to hold the user to delete
 
@@ -117,8 +116,7 @@ const handleSubmitDelete = async () => {
     if (selectedUser) {
       const subscription = {
         startDate: activateStartDate,
-        duration: activateDuration,
-        price: activatePrice
+        duration: activateDuration
       };
       handleActivateUser(selectedUser.id, subscription); // Pass userId and subscription entity
       handleCloseDialog();
@@ -166,6 +164,7 @@ const handleSubmitDelete = async () => {
               <TableCell>Name</TableCell>
               <TableCell>Email</TableCell>
               <TableCell>Gender</TableCell>
+              <TableCell>Niveau</TableCell>
               <TableCell>Branch</TableCell>
               <TableCell>Phone</TableCell>
               <TableCell>Role</TableCell>
@@ -188,6 +187,7 @@ const handleSubmitDelete = async () => {
                   <TableCell>{user.name}</TableCell>
                   <TableCell>{user.email}</TableCell>
                   <TableCell>{user.gender}</TableCell>
+                  <TableCell>{user.level}</TableCell>
                   <TableCell>{user.field}</TableCell>
                   <TableCell>{user.numberPhone}</TableCell>
                   <TableCell>{user.role}</TableCell>
@@ -298,15 +298,7 @@ const handleSubmitDelete = async () => {
       </Select>
     </FormControl>
 
-    {/* Price Input */}
-    <TextField
-      margin="dense"
-      label="Price"
-      type="number"
-      fullWidth
-      value={activatePrice}
-      onChange={(e) => setActivatePrice(Number(e.target.value))}
-    />
+  
   </DialogContent>
   
   <DialogActions>

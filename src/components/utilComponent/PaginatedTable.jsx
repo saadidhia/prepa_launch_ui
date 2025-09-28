@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Table,
   TableBody,
@@ -13,13 +13,17 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
-  TextField,InputLabel,Select, MenuItem
+  TextField,
+  InputLabel,
+  Select,
+  MenuItem
 } from '@mui/material';
+import HourglassEmptyIcon from '@mui/icons-material/HourglassEmpty';
 import { useAuth } from '../context/AuthContext';
 import { chronometersApi } from '../../apis/chronometersApi';
-import subjects from '../../subjects'
+import subjects from '../../subjects';
 
-const PaginatedTable = ({ rows, columns, onPauseTimer, onResumeTimer, actualResponse,fetchTimers  }) => {
+const PaginatedTable = ({ rows, columns, onPauseTimer, onResumeTimer, actualResponse, fetchTimers }) => {
   const Auth = useAuth();
   const user = Auth.getUser();
   const [page, setPage] = useState(0);
@@ -29,11 +33,18 @@ const PaginatedTable = ({ rows, columns, onPauseTimer, onResumeTimer, actualResp
   const [editRowId, setEditRowId] = useState(null);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [description, setDescription] = useState('');
-  const [subject, setSubject] = useState('')
-  const [elapsedTime, setElapsedTime] = useState('');
+  const [subject, setSubject] = useState('');
   const [deleteRowId, setDeleteRowId] = useState(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const userSubjects = subjects.filter(subject => subject.section.includes(user.data.field));
+
+  // force re-render each minute to update timers
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setPage(p => p); // trigger refresh
+    }, 60000); // every 60s
+    return () => clearInterval(interval);
+  }, []);
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -53,6 +64,7 @@ const PaginatedTable = ({ rows, columns, onPauseTimer, onResumeTimer, actualResp
     setViewDialogOpen(false);
     setSelectedDescription('');
   };
+
   const handleCloseEditDialog = () => {
     setEditDialogOpen(false);
     setDescription('');
@@ -61,13 +73,14 @@ const PaginatedTable = ({ rows, columns, onPauseTimer, onResumeTimer, actualResp
 
   const handleUpdate = async () => {
     try {
-      const response = await chronometersApi.updateChronometer(user, editRowId, { description, subject });
+      await chronometersApi.updateChronometer(user, editRowId, { description, subject });
       handleCloseEditDialog();
       fetchTimers();
     } catch (error) {
       console.error('Failed to edit timer description:', error);
     }
   };
+
   const handleOpenEditDialog = (row) => {
     setEditRowId(row.id);
     setDescription(row.description);
@@ -79,12 +92,12 @@ const PaginatedTable = ({ rows, columns, onPauseTimer, onResumeTimer, actualResp
     setDeleteDialogOpen(true);
   };
 
-    const handleCloseDeleteDialog = () => {
-      setDeleteDialogOpen(false);
-      setDeleteRowId(null);
-    };
+  const handleCloseDeleteDialog = () => {
+    setDeleteDialogOpen(false);
+    setDeleteRowId(null);
+  };
 
- const handleDelete = async () => {
+  const handleDelete = async () => {
     try {
       await chronometersApi.deleteChronometer(user, deleteRowId);
       handleCloseDeleteDialog();
@@ -95,55 +108,66 @@ const PaginatedTable = ({ rows, columns, onPauseTimer, onResumeTimer, actualResp
   };
 
   const CheckItemChrononometerIdInLocalStorage = () => {
-    if (localStorage.getItem("chronometerId")===null){
-      return false
-    }
-    return true;
-  } 
+    return localStorage.getItem("chronometerId") !== null;
+  };
 
   const emptyRows = rowsPerPage - Math.min(rowsPerPage, rows.length - page * rowsPerPage);
 
-const isWithin24Hours = (dateTimeString) => {
-  const currentTime = new Date();
-  const eventTime = new Date(dateTimeString);
-  const timeDifference = (currentTime - eventTime) / (1000 * 60 * 60); // Difference in hours
-  return timeDifference >= 0 && timeDifference <= 24;
-};
+  // helper: calculate remaining time
+  const getRemainingTime = (dateTimeString, limitHours) => {
+    const currentTime = new Date();
+    const eventTime = new Date(dateTimeString);
+    const endTime = new Date(eventTime.getTime() + limitHours * 60 * 60 * 1000);
+    const diff = endTime - currentTime;
 
-const isWithin48Hours = (dateTimeString) => {
-  const currentTime = new Date();
-  const eventTime = new Date(dateTimeString);
-  const timeDifference = (currentTime - eventTime) / (1000 * 60 * 60); // Difference in hours
-  return timeDifference >= 0 && timeDifference <= 48;
-};
+    if (diff <= 0) return null; // expired
 
+    const hours = Math.floor(diff / (1000 * 60 * 60));
+    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
 
- const renderActionButtons = (row) => {
-    const shouldShowEditButton = actualResponse.some(response =>
-      response.id === row.id && isWithin48Hours(response.created_at)
-    );
+    return `${hours}h ${minutes}m`;
+  };
 
-    const shouldShowDeleteButton = actualResponse.some(response =>
-      response.id === row.id && isWithin24Hours(response.created_at)
-    );
+  const renderActionButtons = (row) => {
+    const response = actualResponse.find(r => r.id === row.id);
+
+    if (!response) return null;
+
+    const editRemaining = getRemainingTime(response.created_at, 48);
+    const deleteRemaining = getRemainingTime(response.created_at, 24);
 
     return (
       <>
-        {shouldShowEditButton && (
-          <Button variant="contained" color="primary" onClick={() => handleOpenEditDialog(row)}>
-            Edit
-          </Button>
+        {editRemaining && (
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={() => handleOpenEditDialog(row)}
+            >
+              Modifier
+            </Button>
+            <span style={{ fontSize: "12px", color: "gray", display: "flex", alignItems: "center" }}>
+              <HourglassEmptyIcon fontSize="small" style={{ marginRight: "2px" }} />
+              {editRemaining}
+            </span>
+          </div>
         )}
-        {shouldShowDeleteButton && (
-          <Button
-            variant="contained"
-            color="error"
-            onClick={() => handleOpenDeleteDialog(row.id)}
-            style={{ marginLeft: '8px' }}
-            disable={CheckItemChrononometerIdInLocalStorage()}
-          >
-            Delete
-          </Button>
+        {deleteRemaining && (
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', marginLeft: "8px" }}>
+            <Button
+              variant="contained"
+              color="error"
+              onClick={() => handleOpenDeleteDialog(row.id)}
+              disabled={CheckItemChrononometerIdInLocalStorage()}
+            >
+              Supprimer
+            </Button>
+            <span style={{ fontSize: "12px", color: "gray", display: "flex", alignItems: "center" }}>
+              <HourglassEmptyIcon fontSize="small" style={{ marginRight: "2px" }} />
+              {deleteRemaining}
+            </span>
+          </div>
         )}
       </>
     );
@@ -158,8 +182,7 @@ const isWithin48Hours = (dateTimeString) => {
               {columns.map((column) => (
                 <TableCell key={column.id}>{column.label}</TableCell>
               ))}
-              <TableCell >Action</TableCell>
-
+              <TableCell>Action</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -173,7 +196,7 @@ const isWithin48Hours = (dateTimeString) => {
                         color="secondary"
                         onClick={() => handleOpenModal(row[column.id])}
                       >
-                        VIEW
+                        Voir
                       </Button>
                     ) : (
                       row[column.id]
@@ -203,6 +226,8 @@ const isWithin48Hours = (dateTimeString) => {
         onPageChange={handleChangePage}
         onRowsPerPageChange={handleChangeRowsPerPage}
       />
+
+      {/* View dialog */}
       <Dialog open={viewDialogOpen} onClose={handleCloseModal}>
         <DialogTitle>Description</DialogTitle>
         <DialogContent>
@@ -215,6 +240,7 @@ const isWithin48Hours = (dateTimeString) => {
         </DialogActions>
       </Dialog>
 
+      {/* Edit dialog */}
       <Dialog open={editDialogOpen} onClose={handleCloseEditDialog}>
         <DialogTitle>Edit Chronometer</DialogTitle>
         <DialogContent>
@@ -228,47 +254,46 @@ const isWithin48Hours = (dateTimeString) => {
             value={description}
             onChange={(e) => setDescription(e.target.value)}
           />
-           <InputLabel id="subject-label">Matière</InputLabel>
-           <Select
-                        labelId="subject-label"
-                        id="subject"
-                        value={subject}
-                        onChange={(e) => setSubject(e.target.value)}
-                        label="Matière"
-                    >
-                        {userSubjects.map((subject, index) => (
-                            <MenuItem key={index} value={subject.name}>
-                                {subject.name}
-                            </MenuItem>
-                        ))}
-                    </Select>
-        
+          <InputLabel id="subject-label">Matière</InputLabel>
+          <Select
+            labelId="subject-label"
+            id="subject"
+            value={subject}
+            onChange={(e) => setSubject(e.target.value)}
+            label="Matière"
+          >
+            {userSubjects.map((subject, index) => (
+              <MenuItem key={index} value={subject.name}>
+                {subject.name}
+              </MenuItem>
+            ))}
+          </Select>
         </DialogContent>
         <DialogActions>
           <Button onClick={handleCloseEditDialog} color="primary">
             Cancel
           </Button>
-           <Button onClick={handleUpdate}  color="primary" variant="contained">
+          <Button onClick={handleUpdate} color="primary" variant="contained">
             Update
-          </Button> 
+          </Button>
         </DialogActions>
       </Dialog>
 
-       <Dialog open={deleteDialogOpen} onClose={handleCloseDeleteDialog}>
-              <DialogTitle>Confirm Delete</DialogTitle>
-              <DialogContent>
-                Are you sure you want to delete this timer?
-              </DialogContent>
-              <DialogActions>
-                <Button onClick={handleCloseDeleteDialog} color="primary">
-                  Cancel
-                </Button>
-               <Button onClick={handleDelete} color="error" variant="contained">
-                  Delete
-                </Button> 
-              </DialogActions>
-            </Dialog>
-
+      {/* Delete dialog */}
+      <Dialog open={deleteDialogOpen} onClose={handleCloseDeleteDialog}>
+        <DialogTitle>Confirmer la suppression</DialogTitle>
+        <DialogContent>
+          Êtes-vous sûr de vouloir supprimer ce minuteur ?
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseDeleteDialog} color="primary">
+            Annuler
+          </Button>
+          <Button onClick={handleDelete} color="error" variant="contained">
+            Supprimer
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Paper>
   );
 };

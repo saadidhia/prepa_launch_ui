@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
-import { bearerAuth } from '../../apis/AuthApi';
 import { useAuth } from '../context/AuthContext';
+import { filesApi } from '../../apis/filesApi';
 
 export function PdfViewer({ pdf, expiryMinutes = 10 }) {
   const Auth = useAuth();
-  const user = Auth.getUser(); // make sure this is stable (e.g., contains token only)
+  const user = Auth.getUser();
   const [showModal, setShowModal] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
   const [presignedUrl, setPresignedUrl] = useState(null);
@@ -12,28 +12,36 @@ export function PdfViewer({ pdf, expiryMinutes = 10 }) {
   const [error, setError] = useState(null);
 
   const fileName = pdf.split('/').pop();
+  const storageKey = `pdfUrl_${pdf}`;
 
   useEffect(() => {
-    console.log("Fetching presigned URL for PDF:", pdf);
-    //if (!token) return; // don’t call API if no token yet
     const fetchPresignedUrl = async () => {
       setLoading(true);
-      try {
-        const response = await fetch(
-          `http://localhost:8086/api/url?key=${encodeURIComponent(pdf)}&expiryMinutes=${expiryMinutes}`,
-          {
-            headers: {
-              'Authorization': bearerAuth(user),
-          'Content-type': 'application/json'
-            },
-          }
-        );
 
-        if (!response.ok) {
+      try {
+        // Check sessionStorage for cached URL
+        const cachedData = sessionStorage.getItem(storageKey);
+        if (cachedData) {
+          const { url, expiry } = JSON.parse(cachedData);
+          if (Date.now() < expiry) {
+            setPresignedUrl(url);
+            setLoading(false);
+            return; // still valid, no need to fetch
+          }
+        }
+
+        // Fetch new pre-signed URL
+        const response = await filesApi.presignedUrl(user, pdf, expiryMinutes);
+        if (response.status !== 200) {
           throw new Error(`Failed to get presigned URL (${response.status})`);
         }
 
-        const url = await response.text(); // plain text URL
+        const url = await response.data;
+
+        // Save to sessionStorage with expiry timestamp
+        const expiryTime = Date.now() + expiryMinutes * 60 * 1000; // in ms
+        sessionStorage.setItem(storageKey, JSON.stringify({ url, expiry: expiryTime }));
+
         setPresignedUrl(url);
       } catch (err) {
         setError(err.message);
@@ -43,7 +51,7 @@ export function PdfViewer({ pdf, expiryMinutes = 10 }) {
     };
 
     fetchPresignedUrl();
-  }, [pdf, expiryMinutes]); // only depend on stable token
+  }, [pdf, expiryMinutes, storageKey, user]);
 
   const toggleModal = () => setShowModal(!showModal);
 
