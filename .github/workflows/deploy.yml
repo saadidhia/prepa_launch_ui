@@ -28,7 +28,7 @@ jobs:
         npm install -g env-cmd
     
     - name: Build frontend
-      run: npm run build-dev
+      run: npm run build-prod
 
 
     - name: Upload build artifact
