@@ -439,7 +439,7 @@ export function Notes() {
                         onChange={(e) => {
                             const inputValue = e.target.value;
                             // Allow only alphabets and ensure the max length is 100
-                            const alphabeticInput = inputValue.replace(/[^a-zA-Z]/g, ""); // Remove non-alphabetic characters
+                            const alphabeticInput = inputValue.replace(/[^a-zA-Z ]/g, "");
                             if (alphabeticInput.length <= 100) {
                                 setTitle(alphabeticInput);
                             }
