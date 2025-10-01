@@ -25,11 +25,11 @@ const Stopwatch = ({ isRunning, onStart, onStop, textInput, subject }) => {
       <div className="button-container">
         {isRunning ? (
           <Button variant="outlined" color="error" onClick={handleStop}>
-            Stop
+            Arrêter
           </Button>
         ) : (
           <Button variant="outlined" onClick={handleStart} disabled={startButtonDisabled}>
-            Start
+            Démarrer
           </Button>
         )}
       </div>

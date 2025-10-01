@@ -182,7 +182,7 @@ export function Notes() {
         }
     };
 
-    const userSubjects = subjects; // Default subjects, removing dependency on authentication
+    const userSubjects = subjects.filter(subject => subject.section.includes(user.data.field)); // Default subjects, removing dependency on authentication
 
     const fetchCards = async () => {
         if (!user || !user.data) {
@@ -390,7 +390,7 @@ export function Notes() {
             <div style={{ margin: '20px' }}>
       <div style={{ display: 'flex', gap: '5px', marginBottom: '20px', flexWrap: 'wrap' }}>
       <Button style={{ margin: '10px', fontSize: '15px' }} variant="contained" color="primary" onClick={handleOpenCreate}>
-                Create Card
+                Créer une note
             </Button>
         {userSubjects.map((subject, index) => (
           <div
@@ -439,7 +439,7 @@ export function Notes() {
                         onChange={(e) => {
                             const inputValue = e.target.value;
                             // Allow only alphabets and ensure the max length is 100
-                            const alphabeticInput = inputValue.replace(/[^a-zA-Z]/g, ""); // Remove non-alphabetic characters
+                            const alphabeticInput = inputValue.replace(/[^a-zA-Z ]/g, "");
                             if (alphabeticInput.length <= 100) {
                                 setTitle(alphabeticInput);
                             }

@@ -86,7 +86,7 @@ export function FilterStatistic({ onDataReceived }) {
         filterStat.startDate ? filterStat.startDate.toISOString().split('T')[0] : null,
         filterStat.endDate ? filterStat.endDate.toISOString().split('T')[0] : null
       );
-      console.log('API Response:', response.data);
+      console.log('API Response getMyStatisticsBasedOnRangeDate:', response.data);
       onDataReceived(response.data);
     } catch (error) {
       console.error('Error fetching statistics:', error);
