@@ -510,7 +510,7 @@ export function Notes() {
                     onDrop={(e) => handleDrop(e, 'CREATED')}
                     onDragOver={(e) => e.preventDefault()}
                 >
-                    <h1 style={{ margin: '10px', textAlign: 'center' }}>CREATED</h1>
+                    <h1 style={{ margin: '10px', textAlign: 'center' }}>CRÉÉ</h1>
                     {/* <Board handleDelete={handleDelete} handleUpdate={fetchCards} cards={createdCards} /> */}
                     {filterCards(createdCards).map((card, index) => (
                          <div
@@ -599,7 +599,7 @@ export function Notes() {
                     onDrop={(e) => handleDrop(e, 'INPROGRESS')}
                     onDragOver={(e) => e.preventDefault()}
                 >
-                    <h1 style={{ margin: '10px', textAlign: 'center' }}>IN PROGRESS</h1>
+                    <h1 style={{ margin: '10px', textAlign: 'center' }}>EN COURS</h1>
                     {filterCards(inProgressCards).map((card, index) => (
                          <div
                          style={{
@@ -682,7 +682,7 @@ export function Notes() {
                     onDrop={(e) => handleDrop(e, 'FINISHED')}
                     onDragOver={(e) => e.preventDefault()}
                 >
-                    <h1 style={{ margin: '10px', textAlign: 'center' }}>FINISHED</h1>
+                    <h1 style={{ margin: '10px', textAlign: 'center' }}>TERMINÉ</h1>
                     {filterCards(finishedCards).map((card, index) => (
                        <div
                        style={{
