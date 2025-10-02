@@ -1,34 +1,26 @@
-/* CSS - This should be in your stylesheet */
+/* Board container */
 .trello-board {
-    display: flex;
-    justify-content: space-between; /* Distribute space between the boards */
-  }
-  
-  .board-column {
-    flex: 1; /* Allow boards to grow and take available space */
-    margin: 0 15px; /* Adjust margins for spacing between boards */
-  }
+  display: flex;
+  justify-content: space-between; /* Distribute space between the boards */
+}
 
-  .notes-row{
-    display: flex;
-    justify-content: center;
-    }
-    .notes-card-div{
-    min-width:350px;
-    max-width: 350px;
-    }
-    
-    
-    @media (max-width: 1150px)
-    {
-    .notes-row{
-    display: grid;
-    grid-template-columns: 33% 33% 33%;
-    justify-content: space-around;
-    }
-    .notes-card-div{
-    min-width:95%;
-    max-width: 95%;
-    margin: 10px auto;
-    }
-    }
+/* Board columns */
+.board-column {
+  flex: 1;
+  margin: 0 15px; /* spacing between boards */
+}
+
+/* Notes row layout */
+.notes-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); /* responsive columns */
+  gap: 20px; /* spacing between columns */
+  justify-content: center;
+}
+
+/* Notes card styling */
+.notes-card-div {
+  min-width: 300px;   /* don’t shrink smaller than this */
+  max-width: 100%;    /* allow full width on smaller screens */
+  margin: 0 auto;     /* center cards if narrower than column */
+}
