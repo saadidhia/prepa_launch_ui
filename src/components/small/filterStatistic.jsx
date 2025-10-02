@@ -73,7 +73,7 @@ export function FilterStatistic({ onDataReceived }) {
 
   useEffect(() => {
     // Call handleSubmit only after all required states are set
-    if (filterStat.selectedSubjects.length && filterStat.startDate && filterStat.endDate) {
+    if (filterStat.selectedSubjects?.length && filterStat.startDate && filterStat.endDate) {
       handleSubmit();
     }
   }, [filterStat]);
