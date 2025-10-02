@@ -129,7 +129,7 @@ export function FilterStatistic({ onDataReceived }) {
               key={index}
               control={
                 <Checkbox
-                  checked={filterStat.selectedSubjects.includes(course.name)}
+                  checked={filterStat.selectedSubjects?.includes(course.name)}
                   onChange={() => handleCheckboxChange(course.name)}
                 />
               }
@@ -184,7 +184,7 @@ export function FilterStatistic({ onDataReceived }) {
             color="primary" 
             onClick={handleSubmit}
           >
-            Submit Filter
+            soumettre le filtre
           </Button>
         </Box>
       </Box>

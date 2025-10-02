@@ -11,6 +11,7 @@ import francais from './assets/statics/francais.jpg'
 import geologie from './assets/statics/geologie.jpg'
 import bio_animale from './assets/statics/bio_animale.jpg'
 import bio_vegetable from './assets/statics/bio_vegetable.jpg'
+import bio_cellelaire from './assets/statics/bio_cellelaire.jpg'
 
 
 const subjects = [
@@ -80,20 +81,20 @@ const subjects = [
         image: francais
     },
     {
-        link: "cfm",
+        links: "cfm",
         name: "CFM",
         section: ["PT"],
         components: <Content/>,
         image:"dd"
     },
     {
-        link: "geologie",
+        links: "geologie",
         name: "Geologie",
         section: ["BG"],
         components: <Content/>,
         image: geologie
     },
-    {  link: "bio_animal",
+    {  links: "bio.animal",
        name: "Bio.Animal",
        section:["BG"],
        components: <Content/>,
@@ -101,18 +102,18 @@ const subjects = [
         
     },
     {
-        link: "bio_vegetable",
+        links: "bio.vegetale",
         name: "Bio.vegetale",
         section:["BG"],
         components: <Content/>,
         image: bio_vegetable
     },
     {
-        link: "bio_cellelaire",
+        links: "bio.cellelaire",
         name: "Bio.cellelaire",
         section: ["BG"],
         components: <Content/>,
-        image: ""
+        image: bio_cellelaire
     }
 
 
