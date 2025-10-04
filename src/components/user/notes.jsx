@@ -15,12 +15,14 @@ import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import { useAuth } from '../context/AuthContext';
 import subjects from '../../subjects';
+import context from '../../context';
 import contexts from '../../context';
 import { candidatsApi } from '../../apis/candidatsApi';
 import Board from './Board'; // Commenting out the Board component import
 import '../../assets/css/board.css';
 import { Menu, IconButton } from "@mui/material";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
+import FiltreNotes from './FiltreNotes';
 
 export function Notes() {
     const [anchorEl, setAnchorEl] = useState(null);
@@ -53,8 +55,22 @@ export function Notes() {
     const [selectedNote, setSelectedNote] = useState(''); // Stores the note content for the dialog
     const [selectedTitleOfNote, setSelectedTitleOfNote] = useState('');
     const [filterSubject, setFilterSubject] = useState(''); // Manage the selected filter
-
     const [selectedSubjects, setSelectedSubjects] = useState(new Set());
+    const [selectedContexts, setSelectedContexts] = useState(new Set());
+
+const toggleContext = (contextName) => {
+  const normalizedContext = contextName.trim().toLowerCase();
+  setSelectedContexts((prev) => {
+    const newSet = new Set(prev);
+    if (newSet.has(normalizedContext)) {
+      newSet.delete(normalizedContext);
+    } else {
+      newSet.add(normalizedContext);
+    }
+    return newSet;
+  });
+};
+
 
     const toggleSubject = (subjectName) => {
         const normalizedSubject = subjectName.trim().toLowerCase(); // Normalize subject name
@@ -73,17 +89,20 @@ export function Notes() {
       
     // Filter function to apply the selected subject
     const filterCards = (cards) => {
-        // If no subjects are selected, return all cards
-        if (selectedSubjects.size === 0) {
-            return cards;
-        }
-    
-        // Filter the cards based on the selected subjects
-        return cards.filter((card) => {
-            const cardSubject = card.subject?.trim().toLowerCase(); // Normalize card subject
-            return selectedSubjects.has(cardSubject); // Check if the normalized subject is selected
-        });
-    };
+  return cards.filter((card) => {
+    const cardSubject = card.subject?.trim().toLowerCase();
+    const cardContext = card.context?.trim().toLowerCase();
+
+    const subjectMatch =
+      selectedSubjects.size === 0 || selectedSubjects.has(cardSubject);
+
+    const contextMatch =
+      selectedContexts.size === 0 || selectedContexts.has(cardContext);
+
+    return subjectMatch && contextMatch;
+  });
+};
+
       
     // Opens the dialog and sets the selected note
     const handleOpenNoteDialog = (note, title) => {
@@ -356,7 +375,7 @@ export function Notes() {
     const SymbolDialog = ({ open, onClose, onSelectSymbol }) => {
         return (
             <Dialog open={open} onClose={onClose}>
-                <DialogTitle style={{ fontSize: '16px' }}>Insert Mathematical Symbol</DialogTitle>
+                <DialogTitle style={{ fontSize: '16px' }}>Insérer des symboles mathématiques</DialogTitle>
                 <DialogContent>
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '10px' }}>
                         {symbols.map((symbol, index) => (
@@ -386,40 +405,16 @@ export function Notes() {
     return (
         <>
            
-            {/* Filter Dropdown */}
-            <div style={{ margin: '20px' }}>
-      <div style={{ display: 'flex', gap: '5px', marginBottom: '20px', flexWrap: 'wrap' }}>
-      <Button style={{ margin: '10px', fontSize: '15px' }} variant="contained" color="primary" onClick={handleOpenCreate}>
-                Créer une note
-            </Button>
-        {userSubjects.map((subject, index) => (
-          <div
-            key={index}
-            onClick={() => toggleSubject(subject.name)}
-            style={{
-              width: '50px',
-              height: '50px',
-              borderRadius: '50%',
-              backgroundColor: selectedSubjects.has(subject.name.trim().toLowerCase())
-                ? '#ff5722' // Highlight color for selected subjects
-                : '#0079bf', // Default color for unselected subjects
-              color: '#fff',
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center',
-              fontSize: '12px',
-              fontWeight: 'bold',
-              cursor: 'pointer',
-              userSelect: 'none',
-              transition: 'background-color 0.3s',
-            }}
-          >
-            {subject.name.slice(0, 4).toUpperCase()}
-          </div>
-        ))}
-      </div>
-
-    </div>
+       
+    
+   <FiltreNotes
+      userSubjects={userSubjects}
+      selectedSubjects={selectedSubjects}
+      selectedContexts={selectedContexts}
+      toggleSubject={toggleSubject}
+      toggleContext={toggleContext}
+      handleOpenCreate={handleOpenCreate}
+    />
            
 
             <SymbolDialog
@@ -450,14 +445,14 @@ export function Notes() {
                         }}
                     />
                     {/* **NEW: Button to Open Symbol Dialog** */}
-                    <Button onClick={handleOpenSymbolDialog} style={{ border: '1px solid black', color: 'black', margin: '5px 0' }}> Insert Symbol</Button>
+                    <Button onClick={handleOpenSymbolDialog} style={{ border: '1px solid black', color: 'black', margin: '5px 0' }}> Insérer des symboles</Button>
                     <SimpleMDEEditor
                         value={note}
                         onChange={(value) => setNote(value)}
                         options={autofocusNoSpellcheckerOptions}
                         getMdeInstance={(instance) => (simpleMDE.current = instance)}
                     />
-                    <InputLabel id="subject-label">Subject</InputLabel>
+                    <InputLabel id="subject-label">Sujet</InputLabel>
                     <Select
                         value={subject}
                         onChange={(e) => setSubject(e.target.value)}
@@ -492,13 +487,13 @@ export function Notes() {
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handleClose} color="primary">
-                        Cancel
+                        Annuler
                     </Button>
                     <Button onClick={handleSubmit} color="primary">
-                        Submit
+                        Valider
                     </Button>
                     <Button onClick={togglePreview} color="primary">
-                        Toggle Preview
+                        Aperçu du basculeur
                     </Button>
                 </DialogActions>
             </Dialog>
@@ -553,7 +548,7 @@ export function Notes() {
                                handleMenuClose();
                              }}
                            >
-                             Delete
+                             Supprimer
                            </MenuItem>
                            <MenuItem
                              onClick={() => {
@@ -561,7 +556,7 @@ export function Notes() {
                                handleMenuClose();
                              }}
                            >
-                             Edit
+                             Editer
                            </MenuItem>
                          </Menu>
                    
@@ -584,10 +579,10 @@ export function Notes() {
                              style={{ textDecoration: "underline", cursor: "pointer" }}
                              onClick={() => handleOpenNoteDialog(card.note, card.title)}
                            >
-                             View
+                             Voir
                            </span>
                          </p>
-                         <p>Subject: {card.subject}</p>
+                         <p>Sujet: {card.subject}</p>
                          <p>Context: {card.context}</p>
                        </div>
                     ))}
@@ -641,7 +636,7 @@ export function Notes() {
                                handleMenuClose();
                              }}
                            >
-                             Delete
+                             Supprimer
                            </MenuItem>
                            <MenuItem
                              onClick={() => {
@@ -649,7 +644,7 @@ export function Notes() {
                                handleMenuClose();
                              }}
                            >
-                             Edit
+                             Editer
                            </MenuItem>
                          </Menu>
                             <h3
@@ -667,7 +662,7 @@ export function Notes() {
                             <p>
                                 Note:{' '}
                                 <span style={{ textDecoration: 'underline', cursor: 'pointer' }} onClick={() => handleOpenNoteDialog(card.note, card.title)}>
-                                    View
+                                    Voir
                                 </span>
                             </p>
                             <p>Subject:{card.subject}</p>
@@ -725,7 +720,7 @@ export function Notes() {
                              handleMenuClose();
                            }}
                          >
-                           Delete
+                           Supprimer
                          </MenuItem>
                          <MenuItem
                            onClick={() => {
@@ -733,7 +728,7 @@ export function Notes() {
                              handleMenuClose();
                            }}
                          >
-                             Edit
+                             Editer
                            </MenuItem>
                        </Menu>
                             <h3
@@ -751,10 +746,10 @@ export function Notes() {
                             <p>
                                 Note:{' '}
                                 <span style={{ textDecoration: 'underline', cursor: 'pointer' }} onClick={() => handleOpenNoteDialog(card.note, card.title)}>
-                                    View
+                                    Voir
                                 </span>
                             </p>
-                            <p>Subject:{card.subject}</p>
+                            <p>Sujet:{card.subject}</p>
                             <p>Context: {card.context}</p>
                             
                         </div>
