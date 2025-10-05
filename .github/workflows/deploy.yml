@@ -5,7 +5,7 @@ on:
     branches:
       - master
       - qa
-      - prod   # أضفنا prod
+      - prod
 
 jobs:
   build:
