@@ -84,6 +84,17 @@ export function Profile() {
     const handleUpdatePhone = async () => {
         try {
             setErrorMessage('');
+            setErrorMessage('');
+
+            // ✅ Check if the new number is the same as the current one
+        if (newNumberPhone === numberPhone) {
+        setErrorMessage("Le même numéro est inséré. Aucune modification n'a été effectuée.");
+          setTimeout(() => {
+            setErrorMessage('');
+        }, 3000);
+        setIsEditingPhone(false);
+        return;
+      } 
 
             if (!/^\d{8}$/.test(newNumberPhone)) {
                 setErrorMessage("Le numéro de téléphone doit contenir exactement 8 chiffres.");
