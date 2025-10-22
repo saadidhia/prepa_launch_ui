@@ -1,5 +1,6 @@
 import React, { useState, useRef, useMemo, useEffect } from 'react';
 import 'bootstrap-icons/font/bootstrap-icons.css';
+import { useLocation } from 'react-router-dom';
 import ReactDOMServer from 'react-dom/server';
 import ReactMarkdown from 'react-markdown';
 import Button from '@mui/material/Button';
@@ -58,6 +59,11 @@ export function Notes() {
     const [selectedSubjects, setSelectedSubjects] = useState(new Set());
     const [selectedContexts, setSelectedContexts] = useState(new Set());
 
+    function useQuery() {
+    return new URLSearchParams(useLocation().search);
+}
+const query = useQuery();
+const noteIdFromUrl = query.get('id'); // This is the UUID from the URL
 const toggleContext = (contextName) => {
   const normalizedContext = contextName.trim().toLowerCase();
   setSelectedContexts((prev) => {
@@ -102,6 +108,16 @@ const toggleContext = (contextName) => {
     return subjectMatch && contextMatch;
   });
 };
+
+const filterById = (cards) => {
+    if (!noteIdFromUrl) return cards;
+    return cards.filter(card => card.id === noteIdFromUrl);
+};
+
+const filteredCreatedCards = filterById(filterCards(createdCards));
+const filteredInProgressCards = filterById(filterCards(inProgressCards));
+const filteredFinishedCards = filterById(filterCards(finishedCards));
+
 
       
     // Opens the dialog and sets the selected note
@@ -507,7 +523,7 @@ const toggleContext = (contextName) => {
                 >
                     <h1 style={{ margin: '10px', textAlign: 'center' }}>CRÉÉ</h1>
                     {/* <Board handleDelete={handleDelete} handleUpdate={fetchCards} cards={createdCards} /> */}
-                    {filterCards(createdCards).map((card, index) => (
+                    {filteredCreatedCards.map((card, index) => (
                          <div
                          style={{
                            position: "relative", // Required for absolute positioning of child elements
@@ -595,7 +611,7 @@ const toggleContext = (contextName) => {
                     onDragOver={(e) => e.preventDefault()}
                 >
                     <h1 style={{ margin: '10px', textAlign: 'center' }}>EN COURS</h1>
-                    {filterCards(inProgressCards).map((card, index) => (
+                    {filteredInProgressCards.map((card, index) => (
                          <div
                          style={{
                            position: "relative", // Required for absolute positioning of child elements
@@ -678,7 +694,7 @@ const toggleContext = (contextName) => {
                     onDragOver={(e) => e.preventDefault()}
                 >
                     <h1 style={{ margin: '10px', textAlign: 'center' }}>TERMINÉ</h1>
-                    {filterCards(finishedCards).map((card, index) => (
+                    {filteredFinishedCards.map((card, index) => (
                        <div
                        style={{
                          position: "relative", // Required for absolute positioning of child elements

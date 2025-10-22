@@ -15,7 +15,7 @@ import { Books } from './components/admin/Books'
 import Chronometer  from './components/user/chronometer'
 import { UsersStat } from './components/admin/UsersStat'
 import { Progression }  from './components/user/Progression'
-
+import Agenda from './components/user/Agenda'
 
 const navigations = [
     {
@@ -131,6 +131,12 @@ const navigations = [
         component:  Progression,
         role: "user"
         
+    },
+    {
+        text: "Agenda",
+        link: "agenda",
+        component:  Agenda,
+        role: "user"
     }
 
 

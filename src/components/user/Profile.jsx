@@ -86,7 +86,6 @@ export function Profile() {
             setErrorMessage('');
             setErrorMessage('');
 
-            // ✅ Check if the new number is the same as the current one
         if (newNumberPhone === numberPhone) {
         setErrorMessage("Le même numéro est inséré. Aucune modification n'a été effectuée.");
           setTimeout(() => {

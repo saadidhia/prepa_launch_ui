@@ -17,11 +17,14 @@ import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
-import navigations from '../Navigations';
 import AccountCircleRoundedIcon from '@mui/icons-material/AccountCircleRounded';
-import Alert from './small/Alert'
 import Avatar from '@mui/material/Avatar';
+import MuiAlert from '@mui/material/Alert';
+import Stack from '@mui/material/Stack';
+import NotificationsIcon from '@mui/icons-material/Notifications';
+import EventNoteIcon from '@mui/icons-material/EventNote';
 
+import navigations from '../Navigations';
 import { Outlet, useNavigate } from 'react-router-dom';
 import { useAuth } from './context/AuthContext';
 import Logout from './small/logout';
@@ -73,43 +76,33 @@ const DrawerHeader = styled('div')(({ theme }) => ({
   justifyContent: 'flex-end',
 }));
 
-const SingleLevel = ({ item, handleNavigation, level }) => {
-  return (
-    <ListItemButton
-  onClick={() => handleNavigation(item.link)}
-  sx={{
-    '&:hover': {
-      backgroundColor: '#2196F3', 
-    },
-    backgroundColor: '#d0d0d0', 
-    padding: '10px 20px', 
-    borderRadius: '12px', 
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center', 
-    boxShadow: '0px 4px 6px rgba(0, 0, 0, 0.1)', 
-    transition: 'background-color 0.3s ease', 
-  }}
->
-  <ListItemText
-    primary={item.text}
-    primaryTypographyProps={{
-      sx: {
-        color: 'white', 
-        fontSize: '18px',
-        textAlign: 'center', 
-      },
+const SingleLevel = ({ item, handleNavigation }) => (
+  <ListItemButton
+    onClick={() => handleNavigation(item.link)}
+    sx={{
+      '&:hover': { backgroundColor: '#2196F3' },
+      backgroundColor: '#d0d0d0',
+      padding: '10px 20px',
+      borderRadius: '12px',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      boxShadow: '0px 4px 6px rgba(0, 0, 0, 0.1)',
+      transition: 'background-color 0.3s ease',
     }}
-  />
-</ListItemButton>
+  >
+    <ListItemText
+      primary={item.text}
+      primaryTypographyProps={{
+        sx: { color: 'white', fontSize: '18px', textAlign: 'center' },
+      }}
+    />
+  </ListItemButton>
+);
 
-
-  );
-};
-
-const MenuItem = ({ item, handleNavigation, level = 0 }) => {
-  return <SingleLevel item={item} handleNavigation={handleNavigation} level={level} />;
-};
+const MenuItem = ({ item, handleNavigation }) => (
+  <SingleLevel item={item} handleNavigation={handleNavigation} />
+);
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -118,34 +111,43 @@ export default function Dashboard() {
 
   const theme = useTheme();
   const [open, setOpen] = useState(false);
-  const [alertOpen, setAlertOpen] = useState(false); // State for the alert
-  const [alertMessage, setAlertMessage] = useState('');
 
-  const handleDrawerOpen = () => {
-    setOpen(true);
-  };
+  // Subscription alert state
+  const [subAlertOpen, setSubAlertOpen] = useState(false);
+  const [subAlertMessage, setSubAlertMessage] = useState('');
 
-  const handleDrawerClose = () => {
-    setOpen(false);
-  };
+  // Agenda alert state
+  const [agendaAlertOpen, setAgendaAlertOpen] = useState(false);
+  const [agendaAlertMessage, setAgendaAlertMessage] = useState('');
 
-  const handleNavigation = (link) => {
-    navigate(`/dashboard/${link}`);
-  };
-  const handleProfileClick = () => {
+  const handleDrawerOpen = () => setOpen(true);
+  const handleDrawerClose = () => setOpen(false);
+  const handleNavigation = (link) => navigate(`/dashboard/${link}`);
+  const handleProfileClick = () => navigate('/dashboard/profile');
 
-    navigate('/dashboard/profile');
-  };
-
-  // Example condition to show alert
- // const condition = Auth.isUserAlertedToRenewSubscription(); // Replace with your actual condition
-
+  // Subscription alert
   useEffect(() => {
     if (Auth.isUserAlertedToRenewSubscription()) {
-      setAlertMessage('Votre compte va expirer à '+ user.data.lock_date+ ". Contactez l'administrateur SVP!");
-      setAlertOpen(true);
+      setSubAlertMessage(
+        'Votre compte va expirer à ' + user.data.lock_date + ". Contactez l'administrateur SVP!"
+      );
+      setSubAlertOpen(true);
+
+      const timer = setTimeout(() => setSubAlertOpen(false), 10000);
+      return () => clearTimeout(timer);
     }
   }, []);
+
+  // Agenda alert
+  useEffect(() => {
+    if (Auth.hasAgendaReminder) {
+      setAgendaAlertMessage("Vous avez un agenda prévu bientôt !");
+      setAgendaAlertOpen(true);
+
+      const timer = setTimeout(() => setAgendaAlertOpen(false), 10000);
+      return () => clearTimeout(timer);
+    }
+  }, [Auth.hasAgendaReminder]);
 
   return (
     <>
@@ -167,7 +169,6 @@ export default function Dashboard() {
             <div className="right-content">
               <Typography variant="h6" noWrap component="div">
                 <Logout />
-                
                 <IconButton
                   color="inherit"
                   aria-label="open drawer"
@@ -180,14 +181,12 @@ export default function Dashboard() {
             </div>
           </Toolbar>
         </AppBar>
+
         <Drawer
           sx={{
             width: drawerWidth,
             flexShrink: 0,
-            '& .MuiDrawer-paper': {
-              width: drawerWidth,
-              boxSizing: 'border-box',
-            },
+            '& .MuiDrawer-paper': { width: drawerWidth, boxSizing: 'border-box' },
           }}
           variant="persistent"
           anchor="left"
@@ -198,80 +197,96 @@ export default function Dashboard() {
               {theme.direction === 'ltr' ? <ChevronLeftIcon /> : <ChevronRightIcon />}
             </IconButton>
           </DrawerHeader>
+
           <ListItemIcon sx={{ color: 'white' }}>
             <AccountCircleIcon />
           </ListItemIcon>
-          <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', position: 'relative' }}>
-      {/* Wrapper for avatar and status dot */}
-      <Box sx={{ position: 'relative', display: 'inline-block' }}>
-        {/* Circle avatar with initials */}
-        <Avatar
-          sx={{
-            bgcolor: 'green', // Green background for the avatar
-            color: 'white', // White text color for initials
-            width: 56,
-            height: 56,
-            fontSize: 24,
-          }}
-        >
-         {user.data.preferred_username[0]}
-        </Avatar>
-        
-        {/* Small green dot for connection status */}
-        <Box
-          sx={{
-            width: 12,
-            height: 12,
-            bgcolor: 'limegreen', // Green dot color for "connected" status
-            borderRadius: '50%', // Make it a circle
-            border: '2px solid white', // White border around the dot
-            position: 'absolute',
-            bottom: 0, // Align it at the bottom of the avatar
-            right: 0, // Align it to the right of the avatar
-          }}
-        />
-      </Box>
 
-      {/* Typography displaying the lock date */}
-      <Typography
-        gutterBottom
-        variant="h5"
-        component="div"
-        style={{ fontWeight: 'bold', marginTop: '10px' }} // Space between avatar and lock date
-      >
-        {user.data.lock_date}
-      </Typography>
-    </Box>
+          <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', position: 'relative' }}>
+            <Box sx={{ position: 'relative', display: 'inline-block' }}>
+              <Avatar sx={{ bgcolor: 'green', color: 'white', width: 56, height: 56, fontSize: 24 }}>
+                {user.data.preferred_username[0]}
+              </Avatar>
+              <Box
+                sx={{
+                  width: 12,
+                  height: 12,
+                  bgcolor: 'limegreen',
+                  borderRadius: '50%',
+                  border: '2px solid white',
+                  position: 'absolute',
+                  bottom: 0,
+                  right: 0,
+                }}
+              />
+            </Box>
+            <Typography gutterBottom variant="h5" component="div" sx={{ fontWeight: 'bold', marginTop: '10px' }}>
+              {user.data.lock_date}
+            </Typography>
+          </Box>
+
           <Divider />
           <List>
             {user.data.rol[0] === "ADMIN"
-              ? navigations.filter(navigation => navigation.role === "admin").map((item, index) => (
-                <ListItem key={index} disablePadding>
-                  <ListItemButton>
-                    <MenuItem key={index} item={item} handleNavigation={handleNavigation} />
-                  </ListItemButton>
-                </ListItem>
-              ))
-              : navigations.filter(navigation => navigation.role === "user").map((item, index) => (
-                <ListItem key={index} disablePadding>
-                  <ListItemButton>
-                    <MenuItem key={index} item={item} handleNavigation={handleNavigation} />
-                  </ListItemButton>
-                </ListItem>
-              ))}
+              ? navigations.filter(n => n.role === "admin").map((item, index) => (
+                  <ListItem key={index} disablePadding>
+                    <ListItemButton>
+                      <MenuItem item={item} handleNavigation={handleNavigation} />
+                    </ListItemButton>
+                  </ListItem>
+                ))
+              : navigations.filter(n => n.role === "user").map((item, index) => (
+                  <ListItem key={index} disablePadding>
+                    <ListItemButton>
+                      <MenuItem item={item} handleNavigation={handleNavigation} />
+                    </ListItemButton>
+                  </ListItem>
+                ))
+            }
           </List>
         </Drawer>
+
         <Main open={open}>
           <DrawerHeader />
           <NotificationPanelTimer />
           <Outlet />
         </Main>
       </Box>
-      <Alert
-        open={alertOpen}
-        message={alertMessage}
-        onClose={() => setAlertOpen(false)}
-      />
+
+      {/* Alerts centered at top */}
+      <Stack 
+        spacing={2} 
+        sx={{ 
+          width: 'auto', 
+          position: 'fixed', 
+          top: 20, 
+          left: '50%', 
+          transform: 'translateX(-50%)',
+          zIndex: 2000 
+        }}
+      >
+        {subAlertOpen && (
+          <MuiAlert
+            severity="error"
+            icon={<NotificationsIcon />}
+            onClose={() => setSubAlertOpen(false)}
+            sx={{ borderRadius: 2, fontSize: 16, fontWeight: 'bold', boxShadow: 3 }}
+          >
+            {subAlertMessage}
+          </MuiAlert>
+        )}
+
+        {agendaAlertOpen && (
+          <MuiAlert
+            severity="info"
+            icon={<EventNoteIcon />}
+            onClose={() => setAgendaAlertOpen(false)}
+            sx={{ borderRadius: 2, fontSize: 16, fontWeight: 'bold', boxShadow: 3 }}
+          >
+            {agendaAlertMessage}
+          </MuiAlert>
+        )}
+      </Stack>
     </>
   );
 }
