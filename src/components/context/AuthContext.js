@@ -1,5 +1,6 @@
 import React, { Component, useContext } from "react";
 import { authApi } from "../../apis/AuthApi";
+import { candidatsApi } from "../../apis/candidatsApi";
 
 const AuthContext = React.createContext();
 
@@ -7,14 +8,17 @@ class AuthProvider extends Component {
   state = {
     user: null,
     tokenCheckInterval: null,
+    hasAgendaReminder: false, // new flag
   };
 
-  componentDidMount() {
+   componentDidMount() {
     const user = localStorage.getItem("user");
-    this.setState({ user });
-
-    // Start token expiry check on mount
-    this.startTokenExpiryCheck();
+    if (user) {
+      const parsedUser = JSON.parse(user);
+      this.setState({ user: parsedUser });
+      this.startTokenExpiryCheck();
+      this.checkAgendaReminder(parsedUser); // check agenda when app loads
+    }
   }
 
   componentWillUnmount() {
@@ -71,12 +75,30 @@ class AuthProvider extends Component {
     return true;
   };
 
-  userLogin = (user) => {
+  userLogin = async (user) => {
     localStorage.setItem("user", JSON.stringify(user));
     this.setState({ user });
-
-    // Start or reset token expiry check after login
     this.startTokenExpiryCheck();
+    await this.checkAgendaReminder(user);
+  };
+
+    checkAgendaReminder = async (user) => {
+    try {
+      const agendas = await candidatsApi.getAgendas(user);
+      console.log("Agendas fetched for reminder check:", agendas);
+      const now = new Date();
+
+      const hasReminder = agendas.data.some((agenda) => {
+        const firstReminder = new Date(agenda.remindTime);
+        const eventTime = new Date(agenda.eventTime);
+        console.log("Checking agenda:", agenda, "First Reminder:", firstReminder, "Event Time:", eventTime, "Now:", now);
+        return now >= firstReminder && now < eventTime;
+      });
+
+      this.setState({ hasAgendaReminder: hasReminder });
+    } catch (error) {
+      console.error("Error checking agenda reminder:", error);
+    }
   };
 
   userLogout = () => {
@@ -123,8 +145,8 @@ class AuthProvider extends Component {
 
   render() {
     const { children } = this.props;
-    const { user } = this.state;
-    const { getUser, userIsAuthenticated, userIsAdmin, userLogin, userLogout, userHasRole, isUserAlertedToRenewSubscription } =
+    const { user ,  hasAgendaReminder } = this.state;
+    const { getUser, userIsAuthenticated, userIsAdmin, userLogin, userLogout, userHasRole, isUserAlertedToRenewSubscription,  } =
       this;
 
     return (
@@ -137,7 +159,8 @@ class AuthProvider extends Component {
           userLogin,
           userLogout,
           userHasRole,
-          isUserAlertedToRenewSubscription
+          isUserAlertedToRenewSubscription,
+          hasAgendaReminder
         }}
       >
         {children}

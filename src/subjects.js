@@ -95,7 +95,7 @@ const subjects = [
         image: geologie
     },
     {  links: "bio.animal",
-       name: "Bio.Animal",
+       name: "BioAnimale",
        section:["BG"],
        components: <Content/>,
        image: bio_animale
@@ -103,14 +103,14 @@ const subjects = [
     },
     {
         links: "bio.vegetale",
-        name: "Bio.vegetale",
+        name: "Biovegetale",
         section:["BG"],
         components: <Content/>,
         image: bio_vegetable
     },
     {
         links: "bio.cellelaire",
-        name: "Bio.cellelaire",
+        name: "Biocellelaire",
         section: ["BG"],
         components: <Content/>,
         image: bio_cellelaire
