@@ -1,6 +1,5 @@
-import { useState } from "react";
-import emailjs from "emailjs-com";
-import React from "react";
+import { useState, useEffect } from "react";
+import emailjs from "@emailjs/browser";
 
 const initialState = {
   name: "",
@@ -8,6 +7,7 @@ const initialState = {
   phone: "",
   message: "",
 };
+
 export const Contact = (props) => {
   const [{ name, email, phone, message }, setState] = useState(initialState);
   const [successMessage, setSuccessMessage] = useState("");
@@ -21,12 +21,13 @@ export const Contact = (props) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    
     emailjs
       .sendForm(
-        props.mail.SERVICE_ID,
-        props.mail.TEMPLATE_ID,
+        props.data.SERVICE_ID,
+        props.data.TEMPLATE_ID,
         e.target,
-        props.mail.USER_ID
+        props.data.PUBLIC_ID// Replace with your actual EmailJS public key
       )
       .then(
         (result) => {
@@ -40,6 +41,10 @@ export const Contact = (props) => {
         },
         (error) => {
           console.log(error.text);
+          setSuccessMessage("Une erreur s'est produite. Veuillez réessayer.");
+          setTimeout(() => {
+            setSuccessMessage("");
+          }, 3000);
         }
       );
   };
@@ -53,10 +58,11 @@ export const Contact = (props) => {
               <div className="section-title">
                 <h2>ENVOYEZ VOTRE MESSAGE</h2>
                 <p>
-                  Veuillez remplir le formulaire ci-dessous pour nous envoyer un e-mail, et nous vous répondrons dans les plus brefs délais.
+                  Veuillez remplir le formulaire ci-dessous pour nous envoyer un
+                  e-mail, et nous vous répondrons dans les plus brefs délais.
                 </p>
               </div>
-              <form name="sentMessage" validate onSubmit={handleSubmit}>
+              <form name="sentMessage" onSubmit={handleSubmit}>
                 <div className="row">
                   <div className="col-md-6">
                     <div className="form-group">
@@ -68,6 +74,7 @@ export const Contact = (props) => {
                         placeholder="Name"
                         required
                         onChange={handleChange}
+                        value={name}
                       />
                       <p className="help-block text-danger"></p>
                     </div>
@@ -82,6 +89,7 @@ export const Contact = (props) => {
                         placeholder="Email"
                         required
                         onChange={handleChange}
+                        value={email}
                       />
                       <p className="help-block text-danger"></p>
                     </div>
@@ -96,6 +104,7 @@ export const Contact = (props) => {
                         placeholder="Whatsapp Number (e.g., +216 55555555)"
                         required
                         onChange={handleChange}
+                        value={phone}
                       />
                       <p className="help-block text-danger"></p>
                     </div>
@@ -110,6 +119,7 @@ export const Contact = (props) => {
                     placeholder="Message"
                     required
                     onChange={handleChange}
+                    value={message}
                   ></textarea>
                   <p className="help-block text-danger"></p>
                 </div>
@@ -120,7 +130,7 @@ export const Contact = (props) => {
                   ENVOYER
                 </button>
               </form>
-              </div>
+            </div>
           </div>
           <div className="col-md-3 col-md-offset-1 contact-info">
             <div className="contact-item">

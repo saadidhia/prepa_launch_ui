@@ -13,7 +13,22 @@ export const candidatsApi = {
     getSubscriptions,
     updateCardStatusById,
     getMyStatisticsBasedOnRangeDate,
+    createAgenda,
+    getAgendas,
+    deleteAgenda,
+    updateAgendaById,
 }
+
+function updateAgendaById(user, id, alreadySpent) {
+  return instance.patch(`/api/v1/agenda/${id}?alreadySpent=${alreadySpent}`, null, {
+    headers: { 
+      Authorization: bearerAuth(user)
+    }
+  });
+}
+
+
+
 
 function getMotivations(user) {
     return instance.get('/api/motivations',{
@@ -23,6 +38,24 @@ function getMotivations(user) {
         }
       });
 
+}
+
+function getAgendas(user) {
+    return instance.get('/api/v1/agenda',{
+        headers: {
+      'Authorization': bearerAuth(user),
+      'Content-type': 'application/json'
+    }
+  }); 
+}
+
+function createAgenda(user, agenda){
+  return instance.post(`/api/v1/agenda`,agenda, {
+    headers: {
+      'Authorization': bearerAuth(user),
+      'Content-type': 'application/json'
+    }
+  })
 }
 
 function createNote(user, card){
@@ -46,6 +79,15 @@ function getCards(user) {
 
 function deleteCard(user,id){
   return instance.delete(`api/cards/${id}`,{
+  headers: {
+        'Authorization': bearerAuth(user),
+        'Content-type': 'application/json'
+      }
+  })
+}
+
+function deleteAgenda(user,id){
+  return instance.delete(`api/v1/agenda/${id}`,{
   headers: {
         'Authorization': bearerAuth(user),
         'Content-type': 'application/json'
