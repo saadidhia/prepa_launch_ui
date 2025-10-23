@@ -24,18 +24,30 @@ export function FilterStatistic({ onDataReceived }) {
   });
   const [selectAll, setSelectAll] = useState(false);
 
+
+  // ✅ Compute default dates
+  const today = new Date();
+  const oneMonthBefore = new Date();
+  oneMonthBefore.setMonth(today.getMonth() - 1);
+
   // Load state from localStorage when the component mounts
   useEffect(() => {
-    const savedFilterStat = JSON.parse(localStorage.getItem('filter_stat')) || {
-      selectedSubjects: filteredCourses.map((course) => course.name),
-      startDate: new Date().toISOString().split('T')[0],
-      endDate: new Date().toISOString().split('T')[0],
-    };
-    setFilterStat({
-      selectedSubjects: savedFilterStat.selectedSubjects,
-      startDate: savedFilterStat.startDate ? new Date(savedFilterStat.startDate) : null,
-      endDate: savedFilterStat.endDate ? new Date(savedFilterStat.endDate) : null,
-    });
+   const savedFilterStat = JSON.parse(localStorage.getItem('filter_stat'));
+
+    if (savedFilterStat) {
+      setFilterStat({
+        selectedSubjects: savedFilterStat.selectedSubjects || filteredCourses.map((course) => course.name),
+        startDate: savedFilterStat.startDate ? new Date(savedFilterStat.startDate) : oneMonthBefore, // ✅ fallback one month ago
+        endDate: savedFilterStat.endDate ? new Date(savedFilterStat.endDate) : today, // ✅ fallback today
+      });
+    } else {
+      // ✅ Default case when no saved data
+      setFilterStat({
+        selectedSubjects: filteredCourses.map((course) => course.name),
+        startDate: oneMonthBefore,
+        endDate: today,
+      });
+    }
   }, []);
 
   // Save state to localStorage whenever it changes
