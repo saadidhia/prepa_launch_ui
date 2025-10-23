@@ -81,7 +81,7 @@ export default function ModernCalendar() {
 
     const num = parseFloat(inputValue);
     if (isNaN(num) || num < 0 || num > activeAgenda.timeShouldSpent) {
-      alert(`Please enter a number between 0 and ${activeAgenda.timeShouldSpent}`);
+      alert(` 🔄 Veuillez saisir un nombre d’heures compris entre 0 et ${activeAgenda.timeShouldSpent}`);
       return;
     }
 
@@ -98,10 +98,9 @@ export default function ModernCalendar() {
         )
       );
 
-      alert(`✅ You added ${num} hours to "${activeAgenda.title}"`);
     } catch (err) {
       console.error("Error updating agenda:", err);
-      alert("❌ Failed to update agenda");
+      alert("❌ Échec de la mise à jour de l’agenda, 🔄 Actualisez la page et réessayez");
     } finally {
       setInputVisible(false);
       setInputValue('');
@@ -273,15 +272,15 @@ export default function ModernCalendar() {
               </div>
 
               <div style={{ fontSize: '14px', color: '#555' }}>
-                Event Date: {ag.eventTime && new Date(ag.eventTime).toLocaleDateString()}
+                Heure de l’événement: {ag.eventTime && new Date(ag.eventTime).toLocaleDateString()}
               </div>
 
               <div style={{ fontSize: '14px', color: '#555' }}>
-                First date Remind: {new Date(ag.remindTime).toLocaleDateString()} · {new Date(ag.remindTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                Première heure de rappel: {new Date(ag.remindTime).toLocaleDateString()} · {new Date(ag.remindTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
               </div>
 
-              <div style={{ fontSize: '14px', color: '#555' }}>Time should spent: {ag.timeShouldSpent} Hours</div>
-              <div style={{ fontSize: '14px', color: '#555' }}>Already Spent: {ag.alreadySpent} Hours</div>
+              <div style={{ fontSize: '14px', color: '#555' }}>Durée prévue (Heures): {ag.timeShouldSpent} Heures</div>
+              <div style={{ fontSize: '14px', color: '#555' }}>Temps déjà passé: {ag.alreadySpent} Heures</div>
 
               {isCompleted && (
                 <FaCheckCircle
@@ -298,7 +297,7 @@ export default function ModernCalendar() {
                 fontWeight: 'bold',
                 marginTop: '5px'
               }}>
-                Progress: {percentage.toFixed(0)}%
+                Progression: {percentage.toFixed(0)}%
               </div>
 
               {ag.notes && ag.notes.length > 0 && (
@@ -364,8 +363,8 @@ export default function ModernCalendar() {
             minWidth: "300px",
             textAlign: "center"
           }}>
-            <h3 style={{ marginBottom: "10px" }}>Add Number for "{activeAgenda.title}"</h3>
-            <h3 style={{ marginBottom: "10px" }}>Already Spent {activeAgenda.alreadySpent} hours</h3>
+            <h3 style={{ marginBottom: "10px" }}>{activeAgenda.title}</h3>
+            <h3 style={{ marginBottom: "10px" }}>⏱️ Temps déjà passé : {activeAgenda.alreadySpent} hours</h3>
             <input
               type="number"
               value={inputValue}
@@ -384,13 +383,13 @@ export default function ModernCalendar() {
               onClick={handleAddNumber}
               className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded-lg"
             >
-              Add
+              Ajouter
             </button>
             <button
               onClick={() => setInputVisible(false)}
               className="ml-2 bg-gray-400 hover:bg-gray-500 text-white px-3 py-1 rounded-lg"
             >
-              Cancel
+              Annuler
             </button>
           </div>
         </div>
