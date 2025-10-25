@@ -2,12 +2,41 @@ import { useState, useEffect } from 'react'
 import { candidatsApi } from '../../apis/candidatsApi';
 import { useAuth } from '../context/AuthContext';
 import subjects from '../../subjects';
-import { data } from 'autoprefixer';
+import {
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  TextField,
+  Button,
+  MenuItem,
+  Box,
+  Typography,
+  Chip,
+  Grid,
+  FormControl,
+  InputLabel,
+  Select,
+  Checkbox,
+  FormControlLabel,
+  Paper,
+  IconButton,
+  Divider,
+} from '@mui/material';
+import {
+  Close as CloseIcon,
+  Event as EventIcon,
+  AccessTime as AccessTimeIcon,
+  Description as DescriptionIcon,
+  Label as LabelIcon,
+  Notes as NotesIcon,
+  Subject as SubjectIcon,
+} from '@mui/icons-material';
 
 export default function AgendaFormular({ onClose, onSave }) {
-    const Auth = useAuth();
-        const user = Auth.getUser();
-const userSubjects = subjects.filter(subject => subject.section.includes(user.data.field)); // Default subjects, removing dependency on authentication
+  const Auth = useAuth();
+  const user = Auth.getUser();
+  const userSubjects = subjects.filter(subject => subject.section.includes(user.data.field));
 
   const [cards, setCards] = useState([]);
 
@@ -21,334 +50,614 @@ const userSubjects = subjects.filter(subject => subject.section.includes(user.da
     timeShouldSpent: '',
     remindTime: '',
     cardIds: []
-  })
+  });
 
   useEffect(() => {
-  const fetchCards = async () => {
-    try {
-      const response = await candidatsApi.getCards(user); // fetch all cards
-      const allCards = response.data;
+    const fetchCards = async () => {
+      try {
+        const response = await candidatsApi.getCards(user);
+        const allCards = response.data;
 
-      if (formData.subject) {
-        // Make sure to compare strings correctly
-        const filtered = allCards.filter(
-          card => card.subject?.toLowerCase() === formData.subject.toLowerCase()
-        );
-        setCards(filtered);
-      } else {
+        if (formData.subject) {
+          const filtered = allCards.filter(
+            card => card.subject?.toLowerCase() === formData.subject.toLowerCase()
+          );
+          setCards(filtered);
+        } else {
+          setCards([]);
+        }
+      } catch (error) {
+        console.error('Error fetching cards:', error);
         setCards([]);
       }
+    };
+
+    fetchCards();
+  }, [formData.subject]);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    
+    // Date validation
+    if (formData.remindTime && formData.eventTime) {
+      const remind = new Date(formData.remindTime);
+      const event = new Date(formData.eventTime);
+      if (event <= remind) {
+        alert('L\'heure de l\'événement doit être après l\'heure de rappel');
+        return;
+      }
+    }
+    
+    try {
+      const data = await candidatsApi.createAgenda(user, formData);
+      if (onSave) onSave(formData);
+      alert('✅ Agenda créé avec succès !');
+      onClose();
     } catch (error) {
-      console.error('Error fetching cards:', error);
-      setCards([]);
+      console.error('Error creating agenda:', error);
+      alert('❌ Erreur lors de la création de l\'agenda');
     }
   };
 
-  fetchCards();
-}, [formData.subject]);
-
-
-  const handleChange = (e) => {
-    const { name, value } = e.target
-    setFormData({ ...formData, [name]: value })
-  }
-
-  const handleSubmit = async (e) => {
-    e.preventDefault()
-    // Date validation
-    if (formData.remindTime && formData.eventTime) {
-        const remind = new Date(formData.remindTime);
-        const event = new Date(formData.eventTime);
-        if (event <= remind) {
-            alert('Event Time must be after Remind Time');
-            return; // stop form submission
-        }
+  const getPriorityColor = (priority) => {
+    switch (priority) {
+      case 'CRITICAL': return '#ef4444';
+      case 'HIGH': return '#f97316';
+      case 'MEDIUM': return '#3b82f6';
+      case 'LOW': return '#22c55e';
+      default: return '#94a3b8';
     }
-    try {
-        data =await candidatsApi.createAgenda(user, formData);
-        console.log("dhaw",formData)
-      console.log('Agenda created:', data)
-      if (onSave) onSave(formData)
-      alert('Agenda created successfully!')
-      onClose()
-    } catch (error) {
-      console.error('Error creating agenda:', error)
-      
+  };
+
+  const getTypeColor = (type) => {
+    switch (type) {
+      case 'DS': return '#8b5cf6';
+      case 'EXAMEN': return '#ec4899';
+      case 'TP': return '#14b8a6';
+      case 'OTHER': return '#64748b';
+      default: return '#94a3b8';
     }
-  }
-
-  useEffect(() => {
-    document.body.style.overflow = 'hidden'
-    return () => {
-      document.body.style.overflow = 'auto'
-    }
-  }, [])
-
-  const overlayStyle = {
-    position: 'fixed',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: 'rgba(0,0,0,0.45)',
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    zIndex: 2000,
-    padding: '15px'
-  }
-
-  const modalContainer = {
-    backgroundColor: 'white',
-    borderRadius: '18px',
-    width: '90%',
-    maxWidth: '900px',
-    boxShadow: '0 6px 25px rgba(0,0,0,0.3)',
-    overflow: 'hidden',
-    display: 'flex',
-    flexDirection: 'column',
-    animation: 'fadeIn 0.3s ease'
-  }
-
-  const formGrid = {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
-    gap: '15px',
-    alignItems: 'start'
-  }
-
-  const labelStyle = {
-    display: 'block',
-    fontWeight: '600',
-    marginBottom: '5px',
-    color: '#374151'
-  }
-
-  const inputStyle = {
-    width: '100%',
-    padding: '10px',
-    borderRadius: '8px',
-    border: '1px solid #ccc',
-    fontSize: '15px',
-    boxSizing: 'border-box'
-  }
-
-  const buttonBar = {
-    padding: '15px 25px',
-    borderTop: '1px solid #e5e7eb',
-    display: 'flex',
-    justifyContent: 'flex-end',
-    gap: '10px',
-    backgroundColor: '#f9fafb'
-  }
-
-  const cancelButton = {
-    backgroundColor: '#f3f4f6',
-    color: '#333',
-    padding: '10px 18px',
-    borderRadius: '8px',
-    border: '1px solid #d1d5db',
-    cursor: 'pointer',
-    fontSize: '15px',
-    minWidth: '100px'
-  }
-
-  const saveButton = {
-    backgroundColor: '#1d4ed8',
-    color: 'white',
-    padding: '10px 18px',
-    borderRadius: '8px',
-    border: 'none',
-    fontWeight: 'bold',
-    cursor: 'pointer',
-    fontSize: '15px',
-    minWidth: '100px'
-  }
+  };
 
   return (
-    <>
-      <style>
-        {`
-          @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-          }
+    <Dialog 
+      open={true} 
+      onClose={onClose}
+      maxWidth="md"
+      fullWidth
+      PaperProps={{
+        sx: {
+          borderRadius: '24px',
+          boxShadow: '0 20px 60px rgba(102, 126, 234, 0.25)',
+        }
+      }}
+    >
+      {/* Header */}
+      <DialogTitle sx={{ 
+        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+        color: 'white',
+        padding: '24px 32px',
+        position: 'relative',
+      }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <EventIcon sx={{ fontSize: 32 }} />
+            <Box>
+              <Typography variant="h5" sx={{ fontWeight: '700', marginBottom: '4px' }}>
+                Nouvel Événement
+              </Typography>
+              <Typography variant="body2" sx={{ opacity: 0.9, fontSize: '14px' }}>
+                Planifiez votre prochain événement
+              </Typography>
+            </Box>
+          </Box>
+          <IconButton 
+            onClick={onClose}
+            sx={{ 
+              color: 'white',
+              backgroundColor: 'rgba(255, 255, 255, 0.1)',
+              '&:hover': {
+                backgroundColor: 'rgba(255, 255, 255, 0.2)',
+                transform: 'rotate(90deg)',
+              },
+              transition: 'all 0.3s ease',
+            }}
+          >
+            <CloseIcon />
+          </IconButton>
+        </Box>
+      </DialogTitle>
 
-          @media (max-width: 600px) {
-            form {
-              padding: 15px;
-            }
-          }
-        `}
-      </style>
-
-      <div style={overlayStyle}>
-        <div style={modalContainer}>
-          <form onSubmit={handleSubmit} style={{ padding: '25px' }}>
-           
-
-            {/* Horizontal grid form */}
-            <div style={formGrid}>
-              {/* Row 1: Title + Description */}
-              <div>
-                <label style={labelStyle}>Titre</label>
-                <input
+      {/* Content */}
+      <DialogContent sx={{ padding: '32px', backgroundColor: '#f8f9fa' }}>
+        <form onSubmit={handleSubmit}>
+          <Grid container spacing={3}>
+            {/* Title */}
+            <Grid item xs={12} md={6}>
+              <Box sx={{
+                padding: '20px',
+                borderRadius: '16px',
+                backgroundColor: 'white',
+                border: '2px solid #e5e7eb',
+                transition: 'all 0.3s ease',
+                '&:focus-within': {
+                  borderColor: '#667eea',
+                  boxShadow: '0 4px 12px rgba(102, 126, 234, 0.15)',
+                },
+              }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
+                  <LabelIcon sx={{ color: '#667eea', fontSize: 20 }} />
+                  <Typography variant="subtitle2" sx={{ fontWeight: '700', color: '#374151' }}>
+                    Titre
+                  </Typography>
+                </Box>
+                <TextField
+                  fullWidth
                   name="title"
                   value={formData.title}
                   onChange={handleChange}
-                  style={inputStyle}
-                  placeholder="Examen physique à 9h30"
+                  placeholder="Ex: Examen de physique"
                   required
+                  variant="outlined"
+                  sx={{
+                    '& .MuiOutlinedInput-root': {
+                      borderRadius: '12px',
+                      '& fieldset': { border: 'none' },
+                    },
+                  }}
                 />
-              </div>
-              <div>
-                <label style={labelStyle}>Description</label>
-                <textarea
+              </Box>
+            </Grid>
+
+            {/* Description */}
+            <Grid item xs={12} md={6}>
+              <Box sx={{
+                padding: '20px',
+                borderRadius: '16px',
+                backgroundColor: 'white',
+                border: '2px solid #e5e7eb',
+                transition: 'all 0.3s ease',
+                '&:focus-within': {
+                  borderColor: '#667eea',
+                  boxShadow: '0 4px 12px rgba(102, 126, 234, 0.15)',
+                },
+              }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
+                  <DescriptionIcon sx={{ color: '#667eea', fontSize: 20 }} />
+                  <Typography variant="subtitle2" sx={{ fontWeight: '700', color: '#374151' }}>
+                    Description
+                  </Typography>
+                </Box>
+                <TextField
+                  fullWidth
                   name="description"
                   value={formData.description}
                   onChange={handleChange}
-                  rows="2"
-                  style={{ ...inputStyle, resize: 'vertical' }}
-                  placeholder="Description courte ..."
+                  placeholder="Description courte..."
+                  multiline
+                  rows={2}
+                  variant="outlined"
+                  sx={{
+                    '& .MuiOutlinedInput-root': {
+                      borderRadius: '12px',
+                      '& fieldset': { border: 'none' },
+                    },
+                  }}
                 />
-              </div>
+              </Box>
+            </Grid>
 
-              {/* Row 2: Type + Priority */}
-              <div>
-                <label style={labelStyle}>Type</label>
-                <select
+            {/* Type */}
+            <Grid item xs={12} md={6}>
+              <Box sx={{
+                padding: '20px',
+                borderRadius: '16px',
+                backgroundColor: 'white',
+                border: '2px solid #e5e7eb',
+                transition: 'all 0.3s ease',
+                '&:focus-within': {
+                  borderColor: '#667eea',
+                  boxShadow: '0 4px 12px rgba(102, 126, 234, 0.15)',
+                },
+              }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
+                  <Typography variant="subtitle2" sx={{ fontWeight: '700', color: '#374151' }}>
+                    Type
+                  </Typography>
+                  {formData.type && (
+                    <Chip 
+                      label={formData.type}
+                      size="small"
+                      sx={{
+                        backgroundColor: getTypeColor(formData.type),
+                        color: 'white',
+                        fontWeight: '700',
+                        fontSize: '11px',
+                      }}
+                    />
+                  )}
+                </Box>
+                <Select
+                  fullWidth
                   name="type"
                   value={formData.type}
                   onChange={handleChange}
-                  style={inputStyle}
                   required
+                  displayEmpty
+                  sx={{
+                    borderRadius: '12px',
+                    '& .MuiOutlinedInput-notchedOutline': { border: 'none' },
+                  }}
                 >
-                  <option value="">Select Type</option>
-                  <option value="DS">DS</option>
-                  <option value="EXAMEN">EXAMEN</option>
-                  <option value="TP">TP</option>
-                  <option value="OTHER">AUTRE</option>
-                </select>
-              </div>
-              <div>
-                <label style={labelStyle}>Priorité</label>
-                <select
+                  <MenuItem value="" disabled>Sélectionner un type</MenuItem>
+                  <MenuItem value="DS">DS</MenuItem>
+                  <MenuItem value="EXAMEN">EXAMEN</MenuItem>
+                  <MenuItem value="TP">TP</MenuItem>
+                  <MenuItem value="OTHER">AUTRE</MenuItem>
+                </Select>
+              </Box>
+            </Grid>
+
+            {/* Priority */}
+            <Grid item xs={12} md={6}>
+              <Box sx={{
+                padding: '20px',
+                borderRadius: '16px',
+                backgroundColor: 'white',
+                border: '2px solid #e5e7eb',
+                transition: 'all 0.3s ease',
+                '&:focus-within': {
+                  borderColor: '#667eea',
+                  boxShadow: '0 4px 12px rgba(102, 126, 234, 0.15)',
+                },
+              }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
+                  <Typography variant="subtitle2" sx={{ fontWeight: '700', color: '#374151' }}>
+                    Priorité
+                  </Typography>
+                  {formData.priority && (
+                    <Chip 
+                      label={formData.priority}
+                      size="small"
+                      sx={{
+                        backgroundColor: getPriorityColor(formData.priority),
+                        color: 'white',
+                        fontWeight: '700',
+                        fontSize: '11px',
+                      }}
+                    />
+                  )}
+                </Box>
+                <Select
+                  fullWidth
                   name="priority"
                   value={formData.priority}
                   onChange={handleChange}
-                  style={inputStyle}
                   required
+                  displayEmpty
+                  sx={{
+                    borderRadius: '12px',
+                    '& .MuiOutlinedInput-notchedOutline': { border: 'none' },
+                  }}
                 >
-                  <option value="">Select Priority</option>
-                  <option value="LOW">LOW</option>
-                  <option value="MEDIUM">MEDIUM</option>
-                  <option value="HIGH">HIGH</option>
-                  <option value="CRITICAL">CRITICAL</option>
-                </select>
-              </div>
+                  <MenuItem value="" disabled>Sélectionner une priorité</MenuItem>
+                  <MenuItem value="LOW">Basse</MenuItem>
+                  <MenuItem value="MEDIUM">Moyenne</MenuItem>
+                  <MenuItem value="HIGH">Haute</MenuItem>
+                  <MenuItem value="CRITICAL">Critique</MenuItem>
+                </Select>
+              </Box>
+            </Grid>
 
-              {/* Row 3: Event Time + Subject */}
-              <div>
-                <label style={labelStyle}>Heure de l’événement</label>
-                <input
+            {/* Event Time */}
+            <Grid item xs={12} md={6}>
+              <Box sx={{
+                padding: '20px',
+                borderRadius: '16px',
+                backgroundColor: 'white',
+                border: '2px solid #e5e7eb',
+                transition: 'all 0.3s ease',
+                '&:focus-within': {
+                  borderColor: '#667eea',
+                  boxShadow: '0 4px 12px rgba(102, 126, 234, 0.15)',
+                },
+              }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
+                  <EventIcon sx={{ color: '#667eea', fontSize: 20 }} />
+                  <Typography variant="subtitle2" sx={{ fontWeight: '700', color: '#374151' }}>
+                    Heure de l'événement
+                  </Typography>
+                </Box>
+                <TextField
+                  fullWidth
                   type="datetime-local"
                   name="eventTime"
                   value={formData.eventTime}
                   onChange={handleChange}
-                  style={inputStyle}
                   required
+                  variant="outlined"
+                  sx={{
+                    '& .MuiOutlinedInput-root': {
+                      borderRadius: '12px',
+                      '& fieldset': { border: 'none' },
+                    },
+                  }}
                 />
-              </div>
-              <div>
-  <label style={labelStyle}>Sujets</label>
-  <select
-    name="subject"
-    value={formData.subject}
-    onChange={handleChange}
-    style={inputStyle}
-    required
-  >
-    <option value="">Select Subject</option>
-    {userSubjects.map((subj, idx) => (
-      <option key={idx} value={subj.name}>{subj.name}</option>
-    ))}
-  </select>
-</div>
+              </Box>
+            </Grid>
 
-              {/* Row 4: Time Should Spent + Remind Time */}
-              <div>
-                <label style={labelStyle}>Durée prévue (Heures)</label>
-                <input
+            {/* Subject */}
+            <Grid item xs={12} md={6}>
+              <Box sx={{
+                padding: '20px',
+                borderRadius: '16px',
+                backgroundColor: 'white',
+                border: '2px solid #e5e7eb',
+                transition: 'all 0.3s ease',
+                '&:focus-within': {
+                  borderColor: '#667eea',
+                  boxShadow: '0 4px 12px rgba(102, 126, 234, 0.15)',
+                },
+              }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
+                  <SubjectIcon sx={{ color: '#667eea', fontSize: 20 }} />
+                  <Typography variant="subtitle2" sx={{ fontWeight: '700', color: '#374151' }}>
+                    Matière
+                  </Typography>
+                </Box>
+                <Select
+                  fullWidth
+                  name="subject"
+                  value={formData.subject}
+                  onChange={handleChange}
+                  required
+                  displayEmpty
+                  sx={{
+                    borderRadius: '12px',
+                    '& .MuiOutlinedInput-notchedOutline': { border: 'none' },
+                  }}
+                >
+                  <MenuItem value="" disabled>Sélectionner une matière</MenuItem>
+                  {userSubjects.map((subj, idx) => (
+                    <MenuItem key={idx} value={subj.name}>{subj.name}</MenuItem>
+                  ))}
+                </Select>
+              </Box>
+            </Grid>
+
+            {/* Time Should Spent */}
+            <Grid item xs={12} md={6}>
+              <Box sx={{
+                padding: '20px',
+                borderRadius: '16px',
+                backgroundColor: 'white',
+                border: '2px solid #e5e7eb',
+                transition: 'all 0.3s ease',
+                '&:focus-within': {
+                  borderColor: '#667eea',
+                  boxShadow: '0 4px 12px rgba(102, 126, 234, 0.15)',
+                },
+              }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
+                  <AccessTimeIcon sx={{ color: '#667eea', fontSize: 20 }} />
+                  <Typography variant="subtitle2" sx={{ fontWeight: '700', color: '#374151' }}>
+                    Durée prévue (Heures)
+                  </Typography>
+                </Box>
+                <TextField
+                  fullWidth
                   type="number"
                   name="timeShouldSpent"
                   value={formData.timeShouldSpent}
                   onChange={handleChange}
-                  style={inputStyle}
-                  min="1"
-                  placeholder="e.g. 4"
+                  placeholder="Ex: 4"
+                  inputProps={{ min: 1, step: 0.5 }}
+                  variant="outlined"
+                  sx={{
+                    '& .MuiOutlinedInput-root': {
+                      borderRadius: '12px',
+                      '& fieldset': { border: 'none' },
+                    },
+                  }}
                 />
-              </div>
-              <div>
-                <label style={labelStyle}>Première heure de rappel</label>
-                <input
+              </Box>
+            </Grid>
+
+            {/* Remind Time */}
+            <Grid item xs={12} md={6}>
+              <Box sx={{
+                padding: '20px',
+                borderRadius: '16px',
+                backgroundColor: 'white',
+                border: '2px solid #e5e7eb',
+                transition: 'all 0.3s ease',
+                '&:focus-within': {
+                  borderColor: '#667eea',
+                  boxShadow: '0 4px 12px rgba(102, 126, 234, 0.15)',
+                },
+              }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
+                  <AccessTimeIcon sx={{ color: '#667eea', fontSize: 20 }} />
+                  <Typography variant="subtitle2" sx={{ fontWeight: '700', color: '#374151' }}>
+                    Première heure de rappel
+                  </Typography>
+                </Box>
+                <TextField
+                  fullWidth
                   type="datetime-local"
                   name="remindTime"
                   value={formData.remindTime}
                   onChange={handleChange}
-                  style={inputStyle}
+                  variant="outlined"
+                  sx={{
+                    '& .MuiOutlinedInput-root': {
+                      borderRadius: '12px',
+                      '& fieldset': { border: 'none' },
+                    },
+                  }}
                 />
-              </div>
-            </div>
-            <div>
-  <label style={labelStyle}>Sélectionner des notes</label>
-  <div
-    style={{
-      maxHeight: '150px',
-      overflowY: 'auto',
-      border: '1px solid #ccc',
-      borderRadius: '8px',
-      padding: '10px'
-    }}
-  >
-    {cards.length === 0 ? (
-      <p style={{ color: '#9ca3af', fontSize: '14px' }}>No cards for this subject</p>
-    ) : (
-      cards.map(card => (
-        <div key={card.id} style={{ marginBottom: '5px' }}>
-          <label style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <input
-              type="checkbox"
-              value={card.id}
-              checked={formData.cardIds?.includes(card.id) || false}
-              onChange={(e) => {
-                const selected = formData.cardIds || [];
-                if (e.target.checked) {
-                  setFormData({ ...formData, cardIds: [...selected, card.id] });
-                } else {
-                  setFormData({
-                    ...formData,
-                    cardIds: selected.filter(id => id !== card.id)
-                  });
-                }
-              }}
-            />
-            {card.title}
-          </label>
-        </div>
-      ))
-    )}
-  </div>
-</div>
+              </Box>
+            </Grid>
 
-          </form>
+            {/* Notes Selection */}
+            <Grid item xs={12}>
+              <Box sx={{
+                padding: '20px',
+                borderRadius: '16px',
+                backgroundColor: 'white',
+                border: '2px solid #e5e7eb',
+              }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
+                  <NotesIcon sx={{ color: '#667eea', fontSize: 20 }} />
+                  <Typography variant="subtitle2" sx={{ fontWeight: '700', color: '#374151' }}>
+                    Sélectionner des notes
+                  </Typography>
+                  {formData.cardIds?.length > 0 && (
+                    <Chip 
+                      label={`${formData.cardIds.length} sélectionné(s)`}
+                      size="small"
+                      sx={{
+                        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                        color: 'white',
+                        fontWeight: '700',
+                        fontSize: '11px',
+                      }}
+                    />
+                  )}
+                </Box>
 
-          {/* Footer Buttons */}
-          <div style={buttonBar}>
-            <button type="button" onClick={onClose} style={cancelButton}>Annuler</button>
-            <button type="submit" onClick={handleSubmit} style={saveButton}>Enregistrer</button>
-          </div>
-        </div>
-      </div>
-    </>
-  )
+                <Paper
+                  sx={{
+                    maxHeight: '200px',
+                    overflowY: 'auto',
+                    borderRadius: '12px',
+                    padding: '16px',
+                    backgroundColor: '#f8f9fa',
+                    border: '1px solid #e5e7eb',
+                  }}
+                >
+                  {cards.length === 0 ? (
+                    <Typography 
+                      sx={{ 
+                        color: '#9ca3af', 
+                        fontSize: '14px',
+                        textAlign: 'center',
+                        padding: '20px',
+                      }}
+                    >
+                      {formData.subject 
+                        ? 'Aucune note disponible pour cette matière' 
+                        : 'Sélectionnez d\'abord une matière'}
+                    </Typography>
+                  ) : (
+                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                      {cards.map(card => (
+                        <FormControlLabel
+                          key={card.id}
+                          control={
+                            <Checkbox
+                              checked={formData.cardIds?.includes(card.id) || false}
+                              onChange={(e) => {
+                                const selected = formData.cardIds || [];
+                                if (e.target.checked) {
+                                  setFormData({ ...formData, cardIds: [...selected, card.id] });
+                                } else {
+                                  setFormData({
+                                    ...formData,
+                                    cardIds: selected.filter(id => id !== card.id)
+                                  });
+                                }
+                              }}
+                              sx={{
+                                color: '#667eea',
+                                '&.Mui-checked': {
+                                  color: '#667eea',
+                                },
+                              }}
+                            />
+                          }
+                          label={
+                            <Typography sx={{ fontSize: '14px', fontWeight: '500', color: '#374151' }}>
+                              {card.title}
+                            </Typography>
+                          }
+                          sx={{
+                            padding: '8px 12px',
+                            margin: 0,
+                            borderRadius: '8px',
+                            backgroundColor: 'white',
+                            border: '1px solid #e5e7eb',
+                            '&:hover': {
+                              backgroundColor: 'rgba(102, 126, 234, 0.05)',
+                              borderColor: '#667eea',
+                            },
+                            transition: 'all 0.2s ease',
+                          }}
+                        />
+                      ))}
+                    </Box>
+                  )}
+                </Paper>
+              </Box>
+            </Grid>
+          </Grid>
+        </form>
+      </DialogContent>
+
+      {/* Actions */}
+      <Divider />
+      <DialogActions sx={{ 
+        padding: '20px 32px',
+        backgroundColor: 'white',
+      }}>
+        <Button
+          onClick={onClose}
+          variant="outlined"
+          sx={{
+            borderRadius: '12px',
+            padding: '12px 32px',
+            fontWeight: '700',
+            textTransform: 'none',
+            fontSize: '15px',
+            borderColor: '#e5e7eb',
+            borderWidth: '2px',
+            color: '#6b7280',
+            '&:hover': {
+              borderColor: '#667eea',
+              borderWidth: '2px',
+              backgroundColor: 'rgba(102, 126, 234, 0.05)',
+            },
+          }}
+        >
+          Annuler
+        </Button>
+        <Button
+          onClick={handleSubmit}
+          variant="contained"
+          sx={{
+            borderRadius: '12px',
+            padding: '12px 32px',
+            fontWeight: '700',
+            textTransform: 'none',
+            fontSize: '15px',
+            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+            boxShadow: '0 4px 12px rgba(102, 126, 234, 0.3)',
+            '&:hover': {
+              background: 'linear-gradient(135deg, #764ba2 0%, #667eea 100%)',
+              transform: 'translateY(-2px)',
+              boxShadow: '0 8px 20px rgba(102, 126, 234, 0.4)',
+            },
+            transition: 'all 0.3s ease',
+          }}
+        >
+          Enregistrer
+        </Button>
+      </DialogActions>
+    </Dialog>
+  );
 }

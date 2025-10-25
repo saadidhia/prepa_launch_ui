@@ -23,6 +23,8 @@ import MuiAlert from '@mui/material/Alert';
 import Stack from '@mui/material/Stack';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import EventNoteIcon from '@mui/icons-material/EventNote';
+import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
+import VerifiedIcon from '@mui/icons-material/Verified';
 
 import navigations from '../Navigations';
 import { Outlet, useNavigate } from 'react-router-dom';
@@ -30,7 +32,7 @@ import { useAuth } from './context/AuthContext';
 import Logout from './small/logout';
 import NotificationPanelTimer from './user/timer/NotificationPanelTimer';
 
-const drawerWidth = 240;
+const drawerWidth = 260;
 
 const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })(
   ({ theme, open }) => ({
@@ -41,6 +43,8 @@ const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })(
       duration: theme.transitions.duration.leavingScreen,
     }),
     marginLeft: `-${drawerWidth}px`,
+    backgroundColor: '#f8f9fa',
+    minHeight: '100vh',
     ...(open && {
       transition: theme.transitions.create('margin', {
         easing: theme.transitions.easing.easeOut,
@@ -54,6 +58,9 @@ const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })(
 const AppBar = styled(MuiAppBar, {
   shouldForwardProp: (prop) => prop !== 'open',
 })(({ theme, open }) => ({
+  background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+  boxShadow: '0 4px 20px rgba(102, 126, 234, 0.25)',
+  backdropFilter: 'blur(10px)',
   transition: theme.transitions.create(['margin', 'width'], {
     easing: theme.transitions.easing.sharp,
     duration: theme.transitions.duration.leavingScreen,
@@ -80,21 +87,32 @@ const SingleLevel = ({ item, handleNavigation }) => (
   <ListItemButton
     onClick={() => handleNavigation(item.link)}
     sx={{
-      '&:hover': { backgroundColor: '#2196F3' },
-      backgroundColor: '#d0d0d0',
-      padding: '10px 20px',
+      '&:hover': { 
+        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+        transform: 'translateX(4px)',
+        boxShadow: '0 6px 16px rgba(102, 126, 234, 0.3)',
+      },
+      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+      padding: '12px 16px',
       borderRadius: '12px',
       display: 'flex',
       alignItems: 'center',
-      justifyContent: 'center',
-      boxShadow: '0px 4px 6px rgba(0, 0, 0, 0.1)',
-      transition: 'background-color 0.3s ease',
+      justifyContent: 'flex-start',
+      boxShadow: '0px 4px 12px rgba(102, 126, 234, 0.2)',
+      transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+      marginBottom: '6px',
+      border: 'none',
     }}
   >
     <ListItemText
       primary={item.text}
       primaryTypographyProps={{
-        sx: { color: 'white', fontSize: '18px', textAlign: 'center' },
+        sx: { 
+          color: 'white', 
+          fontSize: '14px', 
+          fontWeight: '600',
+          letterSpacing: '0.2px',
+        },
       }}
     />
   </ListItemButton>
@@ -154,30 +172,55 @@ export default function Dashboard() {
       <Box sx={{ display: 'flex' }}>
         <CssBaseline />
         <AppBar position="fixed" open={open}>
-          <Toolbar sx={{ display: 'flex', justifyContent: 'space-between' }}>
+          <Toolbar sx={{ display: 'flex', justifyContent: 'space-between', height: '70px' }}>
             <div className="left-content">
               <IconButton
                 color="inherit"
                 aria-label="open drawer"
                 onClick={handleDrawerOpen}
                 edge="start"
-                sx={{ mr: 2, ...(open && { display: 'none' }) }}
+                sx={{ 
+                  mr: 2, 
+                  ...(open && { display: 'none' }),
+                  '&:hover': {
+                    backgroundColor: 'rgba(255, 255, 255, 0.15)',
+                    transform: 'scale(1.1)',
+                  },
+                  transition: 'all 0.3s ease',
+                }}
               >
-                <MenuIcon />
+                <MenuIcon sx={{ fontSize: 28 }} />
               </IconButton>
-            </div>
-            <div className="right-content">
-              <Typography variant="h6" noWrap component="div">
-                <Logout />
-                <IconButton
-                  color="inherit"
-                  aria-label="open drawer"
-                  onClick={handleProfileClick}
-                  edge="start"
-                >
-                  <AccountCircleRoundedIcon fontSize="large" />
-                </IconButton>
+              <Typography 
+                variant="h6" 
+                noWrap 
+                component="div"
+                sx={{ 
+                  display: 'inline',
+                  fontWeight: '700',
+                  fontSize: '20px',
+                  letterSpacing: '0.5px',
+                }}
+              >
+                Prepa Launch
               </Typography>
+            </div>
+            <div className="right-content" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+              <Logout />
+              <IconButton
+                color="inherit"
+                aria-label="profile"
+                onClick={handleProfileClick}
+                sx={{
+                  '&:hover': {
+                    backgroundColor: 'rgba(255, 255, 255, 0.15)',
+                    transform: 'scale(1.1)',
+                  },
+                  transition: 'all 0.3s ease',
+                }}
+              >
+                <AccountCircleRoundedIcon sx={{ fontSize: 32 }} />
+              </IconButton>
             </div>
           </Toolbar>
         </AppBar>
@@ -186,64 +229,227 @@ export default function Dashboard() {
           sx={{
             width: drawerWidth,
             flexShrink: 0,
-            '& .MuiDrawer-paper': { width: drawerWidth, boxSizing: 'border-box' },
+            '& .MuiDrawer-paper': { 
+              width: drawerWidth, 
+              boxSizing: 'border-box',
+              background: '#ffffff',
+              borderRight: 'none',
+              boxShadow: '4px 0 24px rgba(0, 0, 0, 0.08)',
+            },
           }}
           variant="persistent"
           anchor="left"
           open={open}
         >
-          <DrawerHeader>
-            <IconButton onClick={handleDrawerClose}>
+          {/* Header with close button */}
+          <DrawerHeader 
+            sx={{ 
+              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+              minHeight: '70px !important',
+              padding: '0 16px',
+            }}
+          >
+            <IconButton 
+              onClick={handleDrawerClose}
+              sx={{ 
+                color: 'white',
+                '&:hover': {
+                  backgroundColor: 'rgba(255, 255, 255, 0.2)',
+                  transform: 'rotate(180deg)',
+                },
+                transition: 'all 0.4s ease',
+              }}
+            >
               {theme.direction === 'ltr' ? <ChevronLeftIcon /> : <ChevronRightIcon />}
             </IconButton>
           </DrawerHeader>
 
-          <ListItemIcon sx={{ color: 'white' }}>
-            <AccountCircleIcon />
-          </ListItemIcon>
+          {/* Compact Profile Section */}
+          <Box 
+            sx={{ 
+              position: 'relative',
+              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+              padding: '20px 16px',
+              marginBottom: '16px',
+              boxShadow: '0 4px 16px rgba(102, 126, 234, 0.2)',
+            }}
+          >
+            {/* Avatar with online status */}
+            <Box 
+              sx={{ 
+                display: 'flex',
+                alignItems: 'center',
+                gap: '12px',
+                marginBottom: '12px',
+              }}
+            >
+              <Box sx={{ position: 'relative' }}>
+                <Avatar 
+                  sx={{ 
+                    bgcolor: 'white', 
+                    color: '#667eea', 
+                    width: 50, 
+                    height: 50, 
+                    fontSize: 20,
+                    fontWeight: '700',
+                    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+                    border: '2px solid rgba(255, 255, 255, 0.5)',
+                    cursor: 'pointer',
+                    transition: 'all 0.3s ease',
+                    '&:hover': {
+                      transform: 'scale(1.05)',
+                    },
+                  }}
+                  onClick={handleProfileClick}
+                >
+                  {user.data.preferred_username[0].toUpperCase()}
+                </Avatar>
+                <Box
+                  sx={{
+                    width: 12,
+                    height: 12,
+                    bgcolor: '#10b981',
+                    borderRadius: '50%',
+                    border: '2px solid white',
+                    position: 'absolute',
+                    bottom: 2,
+                    right: 2,
+                    boxShadow: '0 2px 6px rgba(16, 185, 129, 0.4)',
+                  }}
+                />
+              </Box>
 
-          <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', position: 'relative' }}>
-            <Box sx={{ position: 'relative', display: 'inline-block' }}>
-              <Avatar sx={{ bgcolor: 'green', color: 'white', width: 56, height: 56, fontSize: 24 }}>
-                {user.data.preferred_username[0]}
-              </Avatar>
-              <Box
-                sx={{
-                  width: 12,
-                  height: 12,
-                  bgcolor: 'limegreen',
-                  borderRadius: '50%',
-                  border: '2px solid white',
-                  position: 'absolute',
-                  bottom: 0,
-                  right: 0,
-                }}
-              />
+              <Box sx={{ flex: 1 }}>
+                <Typography 
+                  variant="subtitle1" 
+                  component="div" 
+                  sx={{ 
+                    fontWeight: '700', 
+                    color: 'white',
+                    fontSize: '15px',
+                    lineHeight: 1.2,
+                    marginBottom: '4px',
+                  }}
+                >
+                  {user.data.preferred_username}
+                </Typography>
+                <Box
+                  sx={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    backgroundColor: 'rgba(255, 255, 255, 0.25)',
+                    padding: '3px 10px',
+                    borderRadius: '12px',
+                  }}
+                >
+                  <Typography 
+                    variant="caption" 
+                    sx={{ 
+                      fontWeight: '600', 
+                      color: 'white',
+                      fontSize: '10px',
+                      letterSpacing: '0.3px',
+                      textTransform: 'uppercase',
+                    }}
+                  >
+                    {user.data.rol[0]}
+                  </Typography>
+                </Box>
+              </Box>
             </Box>
-            <Typography gutterBottom variant="h5" component="div" sx={{ fontWeight: 'bold', marginTop: '10px' }}>
-              {user.data.lock_date}
-            </Typography>
+
+            {/* Expiration info */}
+            <Box
+              sx={{
+                background: 'rgba(255, 255, 255, 0.2)',
+                borderRadius: '10px',
+                padding: '10px 12px',
+                border: '1px solid rgba(255, 255, 255, 0.3)',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+              }}
+            >
+              <CalendarTodayIcon sx={{ color: 'white', fontSize: 16 }} />
+              <Box sx={{ flex: 1 }}>
+                <Typography 
+                  variant="caption" 
+                  sx={{ 
+                    color: 'rgba(255, 255, 255, 0.85)',
+                    fontSize: '10px',
+                    fontWeight: '600',
+                    display: 'block',
+                  }}
+                >
+                  Expire le
+                </Typography>
+                <Typography 
+                  variant="body2" 
+                  sx={{ 
+                    color: 'white',
+                    fontSize: '13px',
+                    fontWeight: '700',
+                  }}
+                >
+                  {user.data.lock_date}
+                </Typography>
+              </Box>
+            </Box>
           </Box>
 
-          <Divider />
-          <List>
-            {user.data.rol[0] === "ADMIN"
-              ? navigations.filter(n => n.role === "admin").map((item, index) => (
-                  <ListItem key={index} disablePadding>
-                    <ListItemButton>
+          {/* Navigation Section */}
+          <Box sx={{ padding: '0 16px', flexGrow: 1 }}>
+            <Typography 
+              variant="overline" 
+              sx={{ 
+                color: '#9ca3af', 
+                fontWeight: '700', 
+                fontSize: '10px',
+                letterSpacing: '1px',
+                paddingLeft: '4px',
+                marginBottom: '12px',
+                display: 'block',
+              }}
+            >
+              MENU
+            </Typography>
+            <List sx={{ padding: 0 }}>
+              {user.data.rol[0] === "ADMIN"
+                ? navigations.filter(n => n.role === "admin").map((item, index) => (
+                    <ListItem key={index} disablePadding sx={{ marginBottom: '6px' }}>
                       <MenuItem item={item} handleNavigation={handleNavigation} />
-                    </ListItemButton>
-                  </ListItem>
-                ))
-              : navigations.filter(n => n.role === "user").map((item, index) => (
-                  <ListItem key={index} disablePadding>
-                    <ListItemButton>
+                    </ListItem>
+                  ))
+                : navigations.filter(n => n.role === "user").map((item, index) => (
+                    <ListItem key={index} disablePadding sx={{ marginBottom: '6px' }}>
                       <MenuItem item={item} handleNavigation={handleNavigation} />
-                    </ListItemButton>
-                  </ListItem>
-                ))
-            }
-          </List>
+                    </ListItem>
+                  ))
+              }
+            </List>
+          </Box>
+
+          {/* Footer */}
+          <Box 
+            sx={{ 
+              padding: '12px',
+              borderTop: '1px solid #e5e7eb',
+              background: 'rgba(102, 126, 234, 0.03)',
+            }}
+          >
+            <Typography 
+              variant="caption" 
+              sx={{ 
+                color: '#9ca3af',
+                textAlign: 'center',
+                display: 'block',
+                fontSize: '10px',
+                fontWeight: '600',
+              }}
+            >
+              © 2025 Prepa Launch
+            </Typography>
+          </Box>
         </Drawer>
 
         <Main open={open}>
@@ -259,10 +465,12 @@ export default function Dashboard() {
         sx={{ 
           width: 'auto', 
           position: 'fixed', 
-          top: 20, 
+          top: 90, 
           left: '50%', 
           transform: 'translateX(-50%)',
-          zIndex: 2000 
+          zIndex: 2000,
+          maxWidth: '550px',
+          padding: '0 20px',
         }}
       >
         {subAlertOpen && (
@@ -270,7 +478,23 @@ export default function Dashboard() {
             severity="error"
             icon={<NotificationsIcon />}
             onClose={() => setSubAlertOpen(false)}
-            sx={{ borderRadius: 2, fontSize: 16, fontWeight: 'bold', boxShadow: 3 }}
+            sx={{ 
+              borderRadius: '16px', 
+              fontSize: '14px', 
+              fontWeight: '600', 
+              boxShadow: '0 12px 32px rgba(239, 68, 68, 0.25)',
+              backgroundColor: '#fef2f2',
+              border: '2px solid #fecaca',
+              padding: '16px',
+              '& .MuiAlert-icon': {
+                color: '#dc2626',
+                fontSize: '24px',
+              },
+              '& .MuiAlert-message': {
+                padding: '4px 0',
+              },
+              animation: 'slideDown 0.5s cubic-bezier(0.4, 0, 0.2, 1)',
+            }}
           >
             {subAlertMessage}
           </MuiAlert>
@@ -281,12 +505,53 @@ export default function Dashboard() {
             severity="info"
             icon={<EventNoteIcon />}
             onClose={() => setAgendaAlertOpen(false)}
-            sx={{ borderRadius: 2, fontSize: 16, fontWeight: 'bold', boxShadow: 3 }}
+            sx={{ 
+              borderRadius: '16px', 
+              fontSize: '14px', 
+              fontWeight: '600', 
+              boxShadow: '0 12px 32px rgba(59, 130, 246, 0.25)',
+              backgroundColor: '#eff6ff',
+              border: '2px solid #bfdbfe',
+              padding: '16px',
+              '& .MuiAlert-icon': {
+                color: '#2563eb',
+                fontSize: '24px',
+              },
+              '& .MuiAlert-message': {
+                padding: '4px 0',
+              },
+              animation: 'slideDown 0.5s cubic-bezier(0.4, 0, 0.2, 1)',
+            }}
           >
             {agendaAlertMessage}
           </MuiAlert>
         )}
       </Stack>
+
+      <style>{`
+        @keyframes slideDown {
+          from {
+            opacity: 0;
+            transform: translate(-50%, -30px);
+          }
+          to {
+            opacity: 1;
+            transform: translate(-50%, 0);
+          }
+        }
+
+        @keyframes pulse {
+          0%, 100% {
+            opacity: 1;
+            transform: scale(1);
+          }
+          50% {
+            opacity: 0.8;
+            transform: scale(0.95);
+          }
+        }
+      `}</style>
     </>
   );
 }
+
