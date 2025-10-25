@@ -1,10 +1,38 @@
 import React, { useState, useEffect } from 'react'
-import '../../assets/css/modernCalendar.css'
 import AgendaFormular from '../small/agendaFormular'
 import { useAuth } from '../context/AuthContext';
 import { candidatsApi } from '../../apis/candidatsApi';
 import { useNavigate } from "react-router-dom"
-import { FaPlus, FaCheckCircle, FaTrash } from "react-icons/fa"; // ✅ added trash icon
+import { 
+  Box, 
+  Container, 
+  Typography, 
+  IconButton, 
+  Card, 
+  CardContent, 
+  Chip, 
+  LinearProgress,
+  Button,
+  TextField,
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  Grid,
+  Paper,
+  useTheme,
+  useMediaQuery
+} from '@mui/material';
+import { 
+  Add as AddIcon,
+  CheckCircle as CheckCircleIcon,
+  Delete as DeleteIcon,
+  ChevronLeft as ChevronLeftIcon,
+  ChevronRight as ChevronRightIcon,
+  AccessTime as AccessTimeIcon,
+  Event as EventIcon,
+  CalendarToday as CalendarTodayIcon,
+  Notes as NotesIcon
+} from '@mui/icons-material';
 
 const WEEK_DAYS = ['Dim', 'Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam']
 
@@ -16,6 +44,8 @@ function formatDateISO(date) {
 export default function ModernCalendar() {
   const Auth = useAuth();
   const user = Auth.getUser();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const [agendas, setAgendas] = useState([]);
   const [currentMonth, setCurrentMonth] = useState(new Date(new Date().getFullYear(), new Date().getMonth(), 1));
   const [selectedDay, setSelectedDay] = useState(null);
@@ -49,23 +79,32 @@ export default function ModernCalendar() {
     }
   };
 
+  const getPriorityGradient = (priority) => {
+    switch (priority?.toLowerCase()) {
+      case 'critical': return 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)';
+      case 'high': return 'linear-gradient(135deg, #f97316 0%, #ea580c 100%)';
+      case 'low': return 'linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%)';
+      case 'optional': return 'linear-gradient(135deg, #22c55e 0%, #16a34a 100%)';
+      default: return 'linear-gradient(135deg, #94a3b8 0%, #64748b 100%)';
+    }
+  };
+
   const handleDeleteAgenda = async (id) => {
-    if (!window.confirm("🗑️ Are you sure you want to delete this agenda?")) return;
+    if (!window.confirm("Êtes-vous sûr de vouloir supprimer cet agenda ?")) return;
     try {
       await candidatsApi.deleteAgenda(user, id);
       setAgendas(prev => prev.filter(a => a.id !== id));
     } catch (err) {
       console.error("Error deleting agenda:", err);
-      alert("❌ Failed to delete agenda.");
+      alert("❌ Échec de la suppression de l'agenda.");
     }
   };
 
-  // ✅ Fixed: ensure alreadySpent is initialized to 0
   const addEvent = (formData) => {
     const newAgenda = {
       ...formData,
       date: formatDateISO(selectedDay),
-      alreadySpent: 0, // ✅ default value added
+      alreadySpent: 0,
     };
     setAgendas([...agendas, newAgenda]);
     setShowModal(false);
@@ -81,7 +120,7 @@ export default function ModernCalendar() {
 
     const num = parseFloat(inputValue);
     if (isNaN(num) || num < 0 || num > activeAgenda.timeShouldSpent) {
-      alert(` 🔄 Veuillez saisir un nombre d’heures compris entre 0 et ${activeAgenda.timeShouldSpent}`);
+      alert(`Veuillez saisir un nombre d'heures compris entre 0 et ${activeAgenda.timeShouldSpent}`);
       return;
     }
 
@@ -100,7 +139,7 @@ export default function ModernCalendar() {
 
     } catch (err) {
       console.error("Error updating agenda:", err);
-      alert("❌ Échec de la mise à jour de l’agenda, 🔄 Actualisez la page et réessayez");
+      alert("❌ Échec de la mise à jour de l'agenda");
     } finally {
       setInputVisible(false);
       setInputValue('');
@@ -119,282 +158,548 @@ export default function ModernCalendar() {
   for (let i = 1; i <= endDay.getDate(); i++) days.push(new Date(currentMonth.getFullYear(), currentMonth.getMonth(), i));
 
   return (
-    <div className="calendar-container">
-      <div className="calendar-header">
-        <button className="calendar-button" onClick={prevMonth}>◀ Précédent</button>
-        <span style={{ fontWeight: 'bold', fontSize: '22px', margin: '5px' }}>
-          {currentMonth.toLocaleString('fr-FR', { month: 'long', year: 'numeric' })}
-        </span>
-        <button className="calendar-button" onClick={nextMonth}>Suivant ▶</button>
-      </div>
+    <Container maxWidth="xl" sx={{ paddingY: '32px' }}>
+      {/* Header */}
+      <Box sx={{ marginBottom: '32px', textAlign: 'center' }}>
+        <Typography 
+          variant="h3" 
+          sx={{ 
+            fontWeight: '700', 
+            color: '#1a1a1a',
+            marginBottom: '12px',
+            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            backgroundClip: 'text',
+          }}
+        >
+          Mon Agenda
+        </Typography>
+        <Typography 
+          variant="body1" 
+          sx={{ 
+            color: '#6b7280',
+            fontSize: '16px',
+            fontWeight: '500',
+          }}
+        >
+          Planifiez et gérez vos événements
+        </Typography>
+      </Box>
 
-      {/* Calendar Grid */}
-      <div className="calendar-grid">
-        {WEEK_DAYS.map(d => (
-          <div key={d} style={{ padding: '8px', color: '#555', fontSize: '18px' }}>{d}</div>
-        ))}
+      {/* Calendar Card */}
+      <Card sx={{ 
+        marginBottom: '32px', 
+        borderRadius: '20px',
+        boxShadow: '0 8px 24px rgba(102, 126, 234, 0.15)',
+      }}>
+        <CardContent sx={{ padding: isMobile ? '16px' : '32px' }}>
+          {/* Month Navigation */}
+          <Box sx={{ 
+            display: 'flex', 
+            justifyContent: 'space-between', 
+            alignItems: 'center',
+            marginBottom: '24px',
+            flexWrap: 'wrap',
+            gap: '16px'
+          }}>
+            <IconButton 
+              onClick={prevMonth}
+              sx={{
+                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                color: 'white',
+                '&:hover': {
+                  background: 'linear-gradient(135deg, #764ba2 0%, #667eea 100%)',
+                  transform: 'scale(1.05)',
+                },
+                transition: 'all 0.3s ease',
+              }}
+            >
+              <ChevronLeftIcon />
+            </IconButton>
+            
+            <Typography 
+              variant="h5" 
+              sx={{ 
+                fontWeight: '700',
+                color: '#1a1a1a',
+                textTransform: 'capitalize',
+              }}
+            >
+              {currentMonth.toLocaleString('fr-FR', { month: 'long', year: 'numeric' })}
+            </Typography>
+            
+            <IconButton 
+              onClick={nextMonth}
+              sx={{
+                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                color: 'white',
+                '&:hover': {
+                  background: 'linear-gradient(135deg, #764ba2 0%, #667eea 100%)',
+                  transform: 'scale(1.05)',
+                },
+                transition: 'all 0.3s ease',
+              }}
+            >
+              <ChevronRightIcon />
+            </IconButton>
+          </Box>
 
-        {days.map((day, i) => (
-          <div
-            key={i}
-            className="calendar-day-cell"
-            style={{ backgroundColor: day ? '#f9f9f9' : '#e5e7eb' }}
-            onClick={() => day && (setSelectedDay(day), setShowModal(true))}
-          >
-            {day && <div className="day-number">{day.getDate()}</div>}
+          {/* Calendar Grid */}
+          <Grid container spacing={1}>
+            {/* Week Days Header */}
+            {WEEK_DAYS.map(day => (
+              <Grid item xs={12/7} key={day}>
+                <Box sx={{ 
+                  textAlign: 'center',
+                  fontWeight: '700',
+                  color: '#6b7280',
+                  fontSize: isMobile ? '12px' : '14px',
+                  padding: '8px 0',
+                }}>
+                  {day}
+                </Box>
+              </Grid>
+            ))}
 
-            {day && agendas
-              .filter(ag => {
+            {/* Calendar Days */}
+            {days.map((day, i) => {
+              const dayEvents = day ? agendas.filter(ag => {
                 const dateValue = ag.date || ag.eventTime;
                 if (!dateValue) return false;
                 const parsed = new Date(dateValue);
                 if (isNaN(parsed)) return false;
                 return formatDateISO(parsed) === formatDateISO(day);
-              })
-              .map((ag, idx) => (
-                <div key={idx} style={{
-                  fontSize: '14px',
-                  backgroundColor: getPriorityColor(ag.priority),
-                  color: 'white',
-                  margin: '3px 0',
-                  borderRadius: '5px',
-                  padding: '3px',
-                  whiteSpace: 'nowrap',
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis',
-                  textAlign: 'center'
-                }}>
-                  {ag.time} {ag.title.length > 25 ? ag.title.slice(0, 20) + '…' : ag.title}
-                </div>
-              ))}
-          </div>
-        ))}
-      </div>
+              }) : [];
 
-      {/* Agenda Section */}
-      <div>
-        {agendas.length === 0 && <div style={{ color: '#777', fontSize: '16px' }}>No events</div>}
-        {agendas.map((ag, i) => {
-          const now = new Date();
-          const remind = new Date(ag.remindTime);
-          const event = new Date(ag.eventTime);
-          const isActive = remind < now && now < event;
+              return (
+                <Grid item xs={12/7} key={i}>
+                  <Paper
+                    onClick={() => day && (setSelectedDay(day), setShowModal(true))}
+                    sx={{
+                      minHeight: isMobile ? '60px' : '100px',
+                      padding: '8px',
+                      cursor: day ? 'pointer' : 'default',
+                      backgroundColor: day ? '#ffffff' : '#f3f4f6',
+                      border: '2px solid',
+                      borderColor: day ? '#e5e7eb' : '#d1d5db',
+                      borderRadius: '12px',
+                      transition: 'all 0.3s ease',
+                      '&:hover': day ? {
+                        borderColor: '#667eea',
+                        transform: 'translateY(-2px)',
+                        boxShadow: '0 4px 12px rgba(102, 126, 234, 0.15)',
+                      } : {},
+                      position: 'relative',
+                      overflow: 'hidden',
+                    }}
+                  >
+                    {day && (
+                      <>
+                        <Typography 
+                          sx={{ 
+                            fontWeight: '700',
+                            fontSize: isMobile ? '14px' : '16px',
+                            color: '#1a1a1a',
+                            marginBottom: '4px',
+                          }}
+                        >
+                          {day.getDate()}
+                        </Typography>
+                        
+                        {/* Event indicators */}
+                        <Box sx={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                          {dayEvents.slice(0, isMobile ? 1 : 2).map((ag, idx) => (
+                            <Box
+                              key={idx}
+                              sx={{
+                                fontSize: isMobile ? '9px' : '11px',
+                                background: getPriorityGradient(ag.priority),
+                                color: 'white',
+                                borderRadius: '4px',
+                                padding: '2px 4px',
+                                whiteSpace: 'nowrap',
+                                overflow: 'hidden',
+                                textOverflow: 'ellipsis',
+                                fontWeight: '600',
+                              }}
+                            >
+                              {ag.title}
+                            </Box>
+                          ))}
+                          {dayEvents.length > (isMobile ? 1 : 2) && (
+                            <Typography sx={{ fontSize: '10px', color: '#667eea', fontWeight: '600' }}>
+                              +{dayEvents.length - (isMobile ? 1 : 2)} plus
+                            </Typography>
+                          )}
+                        </Box>
+                      </>
+                    )}
+                  </Paper>
+                </Grid>
+              );
+            })}
+          </Grid>
+        </CardContent>
+      </Card>
 
-          const should = ag.timeShouldSpent || 0;
-          const spent = ag.alreadySpent || 0;
-          const percentage = should > 0 ? Math.min((spent / should) * 100, 100) : 0;
-          const isCompleted = percentage >= 100;
+      {/* Agendas List */}
+      <Box>
+        <Typography 
+          variant="h5" 
+          sx={{ 
+            fontWeight: '700',
+            color: '#1a1a1a',
+            marginBottom: '24px',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+          }}
+        >
+          Tous les événements
+          <Chip 
+            label={agendas.length}
+            sx={{
+              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+              color: 'white',
+              fontWeight: '700',
+            }}
+          />
+        </Typography>
 
-          return (
-            <div
-              key={i}
-              className="agenda-card"
-              style={{
-                borderLeft: `6px solid ${getPriorityColor(ag.priority)}`,
-                position: "relative",
-                backgroundColor: isCompleted ? "#e0f7e9" : "white",
-                transition: "all 0.2s ease-in-out",
-                boxShadow: "0 2px 5px rgba(0,0,0,0.1)",
-                borderRadius: "10px",
-                marginBottom: "10px",
-                padding: "10px 12px"
-              }}
-            >
-              {/* ➕ Add Button */}
-              <button
-                disabled={!isActive}
-                onClick={() => handlePlusClick(ag)}
-                title={isActive ? "Add number" : "Not available yet"}
-                style={{
-                  position: "absolute",
-                  top: "10px",
-                  right: "50px",
-                  backgroundColor: isActive ? "#3b82f6" : "#cbd5e1",
-                  color: "white",
-                  border: "none",
-                  borderRadius: "50%",
-                  width: "30px",
-                  height: "30px",
-                  cursor: isActive ? "pointer" : "not-allowed",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  boxShadow: "0 2px 4px rgba(0,0,0,0.2)"
-                }}
-              >
-                <FaPlus size={14} />
-              </button>
-
-              {/* 🗑️ Delete Button */}
-              <button
-                onClick={() => handleDeleteAgenda(ag.id)}
-                title="Delete Agenda"
-                style={{
-                  position: "absolute",
-                  top: "10px",
-                  right: "10px",
-                  backgroundColor: "#ef4444",
-                  color: "white",
-                  border: "none",
-                  borderRadius: "50%",
-                  width: "30px",
-                  height: "30px",
-                  cursor: "pointer",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  transition: "background-color 0.2s ease",
-                  boxShadow: "0 2px 4px rgba(0,0,0,0.2)"
-                }}
-                onMouseEnter={(e) => e.target.style.backgroundColor = "#dc2626"}
-                onMouseLeave={(e) => e.target.style.backgroundColor = "#ef4444"}
-              >
-                <FaTrash size={13} />
-              </button>
-
-              {/* Title */}
-              <div
-                style={{
-                  maxWidth: '100%',
-                  wordBreak: 'break-word',
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis',
-                  display: '-webkit-box',
-                  WebkitLineClamp: 2,
-                  WebkitBoxOrient: 'vertical',
-                  lineHeight: '1.3em',
-                  marginBottom: '5px',
-                  fontWeight: 'bold',
-                  fontSize: '16px',
-                }}
-              >
-                {ag.title}
-              </div>
-
-              <div style={{ fontSize: '14px', color: '#555' }}>
-                Heure de l’événement: {ag.eventTime && new Date(ag.eventTime).toLocaleDateString()}
-              </div>
-
-              <div style={{ fontSize: '14px', color: '#555' }}>
-                Première heure de rappel: {new Date(ag.remindTime).toLocaleDateString()} · {new Date(ag.remindTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-              </div>
-
-              <div style={{ fontSize: '14px', color: '#555' }}>Durée prévue (Heures): {ag.timeShouldSpent} Heures</div>
-              <div style={{ fontSize: '14px', color: '#555' }}>Temps déjà passé: {ag.alreadySpent} Heures</div>
-
-              {isCompleted && (
-                <FaCheckCircle
-                  size={22}
-                  color="#22c55e"
-                  style={{ position: "absolute", bottom: "10px", right: "10px" }}
-                  title="Completed"
-                />
-              )}
-
-              <div style={{
-                fontSize: '14px',
-                color: isCompleted ? '#22c55e' : '#555',
-                fontWeight: 'bold',
-                marginTop: '5px'
-              }}>
-                Progression: {percentage.toFixed(0)}%
-              </div>
-
-              {ag.notes && ag.notes.length > 0 && (
-                <div style={{
-                  marginTop: '8px',
-                  display: 'flex',
-                  flexWrap: 'wrap',
-                  gap: '6px',
-                  justifyContent: 'center'
-                }}>
-                  {ag.notes.map((note, nIdx) => (
-                    <button
-                      key={nIdx}
-                      onClick={() => navigate(`/dashboard/notes?id=${note.id}`)}
-                      style={{
-                        backgroundColor: '#e0e7ff',
-                        color: '#1e3a8a',
-                        fontSize: '12px',
-                        padding: '4px 10px',
-                        borderRadius: '12px',
-                        border: '1px solid #c7d2fe',
-                        boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-                        cursor: 'pointer',
-                        transition: 'all 0.2s ease',
-                        maxWidth: '100%',
-                        whiteSpace: 'nowrap',
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                      }}
-                      title={note.title}
-                      onMouseEnter={(e) => e.target.style.backgroundColor = '#c7d2fe'}
-                      onMouseLeave={(e) => e.target.style.backgroundColor = '#e0e7ff'}
-                    >
-                      {note.title}
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-          );
-        })}
-      </div>
-
-      {/* Input Modal */}
-      {inputVisible && activeAgenda && (
-        <div style={{
-          position: "fixed",
-          top: "0",
-          left: "0",
-          width: "100vw",
-          height: "100vh",
-          backgroundColor: "rgba(0,0,0,0.4)",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          zIndex: 9999
-        }}>
-          <div style={{
-            backgroundColor: "white",
-            padding: "20px",
-            borderRadius: "10px",
-            boxShadow: "0 4px 8px rgba(0,0,0,0.2)",
-            minWidth: "300px",
-            textAlign: "center"
+        {agendas.length === 0 && (
+          <Paper sx={{
+            padding: '40px',
+            textAlign: 'center',
+            borderRadius: '20px',
+            border: '2px dashed #e5e7eb',
+            background: 'linear-gradient(135deg, rgba(102, 126, 234, 0.02) 0%, rgba(118, 75, 162, 0.05) 100%)',
           }}>
-            <h3 style={{ marginBottom: "10px" }}>{activeAgenda.title}</h3>
-            <h3 style={{ marginBottom: "10px" }}>⏱️ Temps déjà passé : {activeAgenda.alreadySpent} hours</h3>
-            <input
-              type="number"
-              value={inputValue}
-              onChange={(e) => setInputValue(e.target.value)}
-              min="0"
-              max={activeAgenda.timeShouldSpent - activeAgenda.alreadySpent}
-              style={{
-                width: "100%",
-                padding: "8px",
-                borderRadius: "5px",
-                border: "1px solid #ccc",
-                marginBottom: "10px"
-              }}
-            />
-            <button
+            <CalendarTodayIcon sx={{ fontSize: 64, color: '#9ca3af', marginBottom: '16px' }} />
+            <Typography variant="h6" sx={{ color: '#6b7280', fontWeight: '600' }}>
+              Aucun événement
+            </Typography>
+            <Typography sx={{ color: '#9ca3af', marginTop: '8px' }}>
+              Cliquez sur une date pour créer un nouvel événement
+            </Typography>
+          </Paper>
+        )}
+
+        <Grid container spacing={3}>
+          {agendas.map((ag, i) => {
+            const now = new Date();
+            const remind = new Date(ag.remindTime);
+            const event = new Date(ag.eventTime);
+            const isActive = remind < now && now < event;
+
+            const should = ag.timeShouldSpent || 0;
+            const spent = ag.alreadySpent || 0;
+            const percentage = should > 0 ? Math.min((spent / should) * 100, 100) : 0;
+            const isCompleted = percentage >= 100;
+
+            return (
+              <Grid item xs={12} sm={6} lg={4} key={i}>
+                <Card
+                  sx={{
+                    height: '100%',
+                    borderRadius: '20px',
+                    boxShadow: '0 4px 16px rgba(102, 126, 234, 0.15)',
+                    transition: 'all 0.3s ease',
+                    border: `3px solid ${getPriorityColor(ag.priority)}`,
+                    position: 'relative',
+                    background: isCompleted 
+                      ? 'linear-gradient(135deg, rgba(34, 197, 94, 0.05) 0%, rgba(22, 163, 74, 0.05) 100%)'
+                      : 'white',
+                    '&:hover': {
+                      transform: 'translateY(-4px)',
+                      boxShadow: '0 8px 24px rgba(102, 126, 234, 0.25)',
+                    },
+                  }}
+                >
+                  <CardContent sx={{ padding: '24px', position: 'relative' }}>
+                    {/* Action Buttons */}
+                    <Box sx={{ 
+                      position: 'absolute',
+                      top: '16px',
+                      right: '16px',
+                      display: 'flex',
+                      gap: '8px',
+                    }}>
+                      <IconButton
+                        disabled={!isActive}
+                        onClick={() => handlePlusClick(ag)}
+                        sx={{
+                          background: isActive 
+                            ? 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
+                            : '#e5e7eb',
+                          color: 'white',
+                          width: '36px',
+                          height: '36px',
+                          '&:hover': isActive ? {
+                            background: 'linear-gradient(135deg, #764ba2 0%, #667eea 100%)',
+                            transform: 'scale(1.1)',
+                          } : {},
+                          '&:disabled': {
+                            color: '#9ca3af',
+                          },
+                          transition: 'all 0.3s ease',
+                        }}
+                      >
+                        <AddIcon fontSize="small" />
+                      </IconButton>
+
+                      <IconButton
+                        onClick={() => handleDeleteAgenda(ag.id)}
+                        sx={{
+                          background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)',
+                          color: 'white',
+                          width: '36px',
+                          height: '36px',
+                          '&:hover': {
+                            background: 'linear-gradient(135deg, #dc2626 0%, #b91c1c 100%)',
+                            transform: 'scale(1.1)',
+                          },
+                          transition: 'all 0.3s ease',
+                        }}
+                      >
+                        <DeleteIcon fontSize="small" />
+                      </IconButton>
+                    </Box>
+
+                    {/* Priority Badge */}
+                    <Chip
+                      label={ag.priority || 'Normal'}
+                      sx={{
+                        background: getPriorityGradient(ag.priority),
+                        color: 'white',
+                        fontWeight: '700',
+                        fontSize: '11px',
+                        height: '24px',
+                        marginBottom: '12px',
+                      }}
+                    />
+
+                    {/* Title */}
+                    <Typography 
+                      variant="h6" 
+                      sx={{ 
+                        fontWeight: '700',
+                        color: '#1a1a1a',
+                        marginBottom: '16px',
+                        paddingRight: '80px',
+                        wordBreak: 'break-word',
+                      }}
+                    >
+                      {ag.title}
+                    </Typography>
+
+                    {/* Event Details */}
+                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '16px' }}>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <EventIcon sx={{ fontSize: 18, color: '#667eea' }} />
+                        <Typography variant="body2" sx={{ color: '#6b7280', fontSize: '13px' }}>
+                          {ag.eventTime && new Date(ag.eventTime).toLocaleDateString('fr-FR')}
+                        </Typography>
+                      </Box>
+
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <AccessTimeIcon sx={{ fontSize: 18, color: '#667eea' }} />
+                        <Typography variant="body2" sx={{ color: '#6b7280', fontSize: '13px' }}>
+                          Rappel: {new Date(ag.remindTime).toLocaleDateString('fr-FR')} · {new Date(ag.remindTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                        </Typography>
+                      </Box>
+                    </Box>
+
+                    {/* Progress Section */}
+                    <Box sx={{ 
+                      padding: '16px',
+                      borderRadius: '12px',
+                      background: 'linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%)',
+                      marginBottom: '16px',
+                    }}>
+                      <Box sx={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+                        <Typography variant="body2" sx={{ fontWeight: '600', color: '#374151', fontSize: '13px' }}>
+                          Progression
+                        </Typography>
+                        <Typography variant="body2" sx={{ fontWeight: '700', color: isCompleted ? '#22c55e' : '#667eea', fontSize: '13px' }}>
+                          {percentage.toFixed(0)}%
+                        </Typography>
+                      </Box>
+                      <LinearProgress 
+                        variant="determinate" 
+                        value={percentage}
+                        sx={{
+                          height: '8px',
+                          borderRadius: '4px',
+                          backgroundColor: '#e5e7eb',
+                          '& .MuiLinearProgress-bar': {
+                            borderRadius: '4px',
+                            background: isCompleted 
+                              ? 'linear-gradient(135deg, #22c55e 0%, #16a34a 100%)'
+                              : 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                          },
+                        }}
+                      />
+                      <Box sx={{ display: 'flex', justifyContent: 'space-between', marginTop: '8px' }}>
+                        <Typography variant="caption" sx={{ color: '#6b7280' }}>
+                          {spent}h / {should}h
+                        </Typography>
+                        {isCompleted && (
+                          <CheckCircleIcon sx={{ fontSize: 18, color: '#22c55e' }} />
+                        )}
+                      </Box>
+                    </Box>
+
+                    {/* Notes */}
+                    {ag.notes && ag.notes.length > 0 && (
+                      <Box>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
+                          <NotesIcon sx={{ fontSize: 16, color: '#667eea' }} />
+                          <Typography variant="body2" sx={{ fontWeight: '600', color: '#374151', fontSize: '13px' }}>
+                            Notes liées
+                          </Typography>
+                        </Box>
+                        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+                          {ag.notes.map((note, nIdx) => (
+                            <Chip
+                              key={nIdx}
+                              label={note.title}
+                              onClick={() => navigate(`/dashboard/notes?id=${note.id}`)}
+                              sx={{
+                                background: 'linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%)',
+                                color: '#667eea',
+                                fontWeight: '600',
+                                fontSize: '12px',
+                                border: '1px solid #c7d2fe',
+                                '&:hover': {
+                                  background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                                  color: 'white',
+                                  transform: 'scale(1.05)',
+                                },
+                                transition: 'all 0.3s ease',
+                                cursor: 'pointer',
+                              }}
+                            />
+                          ))}
+                        </Box>
+                      </Box>
+                    )}
+                  </CardContent>
+                </Card>
+              </Grid>
+            );
+          })}
+        </Grid>
+      </Box>
+
+      {/* Time Input Dialog */}
+      <Dialog 
+        open={inputVisible} 
+        onClose={() => setInputVisible(false)}
+        maxWidth="xs"
+        fullWidth
+        PaperProps={{
+          sx: {
+            borderRadius: '20px',
+            padding: '8px',
+          }
+        }}
+      >
+        <DialogTitle sx={{ 
+          textAlign: 'center',
+          fontWeight: '700',
+          color: '#1a1a1a',
+        }}>
+          {activeAgenda?.title}
+        </DialogTitle>
+        <DialogContent>
+          <Box sx={{ textAlign: 'center', marginBottom: '24px' }}>
+            <Typography variant="body2" sx={{ color: '#6b7280', marginBottom: '4px' }}>
+              Temps déjà passé
+            </Typography>
+            <Typography variant="h5" sx={{ fontWeight: '700', color: '#667eea' }}>
+              {activeAgenda?.alreadySpent || 0} heures
+            </Typography>
+          </Box>
+
+          <TextField
+            fullWidth
+            type="number"
+            label="Ajouter des heures"
+            value={inputValue}
+            onChange={(e) => setInputValue(e.target.value)}
+            inputProps={{ 
+              min: 0, 
+              max: activeAgenda?.timeShouldSpent - (activeAgenda?.alreadySpent || 0),
+              step: 0.5,
+            }}
+            sx={{
+              marginBottom: '24px',
+              '& .MuiOutlinedInput-root': {
+                borderRadius: '12px',
+                '& fieldset': {
+                  borderColor: '#e5e7eb',
+                  borderWidth: '2px',
+                },
+                '&:hover fieldset': {
+                  borderColor: '#667eea',
+                },
+                '&.Mui-focused fieldset': {
+                  borderColor: '#667eea',
+                },
+              },
+            }}
+          />
+
+          <Box sx={{ display: 'flex', gap: '12px' }}>
+            <Button
+              fullWidth
+              variant="contained"
               onClick={handleAddNumber}
-              className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded-lg"
+              sx={{
+                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                borderRadius: '12px',
+                padding: '12px',
+                fontWeight: '700',
+                textTransform: 'none',
+                fontSize: '15px',
+                '&:hover': {
+                  background: 'linear-gradient(135deg, #764ba2 0%, #667eea 100%)',
+                  transform: 'translateY(-2px)',
+                  boxShadow: '0 8px 16px rgba(102, 126, 234, 0.3)',
+                },
+                transition: 'all 0.3s ease',
+              }}
             >
               Ajouter
-            </button>
-            <button
+            </Button>
+            <Button
+              fullWidth
+              variant="outlined"
               onClick={() => setInputVisible(false)}
-              className="ml-2 bg-gray-400 hover:bg-gray-500 text-white px-3 py-1 rounded-lg"
+              sx={{
+                borderRadius: '12px',
+                padding: '12px',
+                fontWeight: '700',
+                textTransform: 'none',
+                fontSize: '15px',
+                borderColor: '#e5e7eb',
+                borderWidth: '2px',
+                color: '#6b7280',
+                '&:hover': {
+                  borderColor: '#667eea',
+                  borderWidth: '2px',
+                  backgroundColor: 'rgba(102, 126, 234, 0.05)',
+                },
+              }}
             >
               Annuler
-            </button>
-          </div>
-        </div>
-      )}
+            </Button>
+          </Box>
+        </DialogContent>
+      </Dialog>
 
+      {/* Agenda Form Modal */}
       {showModal && selectedDay && (
         <AgendaFormular
           onClose={() => setShowModal(false)}
@@ -402,6 +707,6 @@ export default function ModernCalendar() {
           date={selectedDay}
         />
       )}
-    </div>
+    </Container>
   );
 }
