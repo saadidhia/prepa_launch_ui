@@ -202,7 +202,7 @@ export default function Dashboard() {
                   letterSpacing: '0.5px',
                 }}
               >
-                Prepa Launch
+                Time4Prepa
               </Typography>
             </div>
             <div className="right-content" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
@@ -264,13 +264,13 @@ export default function Dashboard() {
             </IconButton>
           </DrawerHeader>
 
-          {/* Compact Profile Section */}
+          {/* Compact Profile Section - MOVED HIGHER WITH LESS PADDING */}
           <Box 
             sx={{ 
               position: 'relative',
               background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-              padding: '20px 16px',
-              marginBottom: '16px',
+              padding: '8px 16px 12px 16px',
+              marginBottom: '12px',
               boxShadow: '0 4px 16px rgba(102, 126, 234, 0.2)',
             }}
           >
@@ -279,8 +279,8 @@ export default function Dashboard() {
               sx={{ 
                 display: 'flex',
                 alignItems: 'center',
-                gap: '12px',
-                marginBottom: '12px',
+                gap: '10px',
+                marginBottom: '10px',
               }}
             >
               <Box sx={{ position: 'relative' }}>
@@ -288,9 +288,9 @@ export default function Dashboard() {
                   sx={{ 
                     bgcolor: 'white', 
                     color: '#667eea', 
-                    width: 50, 
-                    height: 50, 
-                    fontSize: 20,
+                    width: 44, 
+                    height: 44, 
+                    fontSize: 18,
                     fontWeight: '700',
                     boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
                     border: '2px solid rgba(255, 255, 255, 0.5)',
@@ -306,8 +306,8 @@ export default function Dashboard() {
                 </Avatar>
                 <Box
                   sx={{
-                    width: 12,
-                    height: 12,
+                    width: 10,
+                    height: 10,
                     bgcolor: '#10b981',
                     borderRadius: '50%',
                     border: '2px solid white',
@@ -326,9 +326,9 @@ export default function Dashboard() {
                   sx={{ 
                     fontWeight: '700', 
                     color: 'white',
-                    fontSize: '15px',
+                    fontSize: '14px',
                     lineHeight: 1.2,
-                    marginBottom: '4px',
+                    marginBottom: '3px',
                   }}
                 >
                   {user.data.preferred_username}
@@ -338,8 +338,8 @@ export default function Dashboard() {
                     display: 'inline-flex',
                     alignItems: 'center',
                     backgroundColor: 'rgba(255, 255, 255, 0.25)',
-                    padding: '3px 10px',
-                    borderRadius: '12px',
+                    padding: '2px 8px',
+                    borderRadius: '10px',
                   }}
                 >
                   <Typography 
@@ -347,7 +347,7 @@ export default function Dashboard() {
                     sx={{ 
                       fontWeight: '600', 
                       color: 'white',
-                      fontSize: '10px',
+                      fontSize: '9px',
                       letterSpacing: '0.3px',
                       textTransform: 'uppercase',
                     }}
@@ -358,25 +358,25 @@ export default function Dashboard() {
               </Box>
             </Box>
 
-            {/* Expiration info */}
+            {/* Expiration info - More compact */}
             <Box
               sx={{
                 background: 'rgba(255, 255, 255, 0.2)',
-                borderRadius: '10px',
-                padding: '10px 12px',
+                borderRadius: '8px',
+                padding: '8px 10px',
                 border: '1px solid rgba(255, 255, 255, 0.3)',
                 display: 'flex',
                 alignItems: 'center',
-                gap: '8px',
+                gap: '6px',
               }}
             >
-              <CalendarTodayIcon sx={{ color: 'white', fontSize: 16 }} />
+              <CalendarTodayIcon sx={{ color: 'white', fontSize: 14 }} />
               <Box sx={{ flex: 1 }}>
                 <Typography 
                   variant="caption" 
                   sx={{ 
                     color: 'rgba(255, 255, 255, 0.85)',
-                    fontSize: '10px',
+                    fontSize: '9px',
                     fontWeight: '600',
                     display: 'block',
                   }}
@@ -387,7 +387,7 @@ export default function Dashboard() {
                   variant="body2" 
                   sx={{ 
                     color: 'white',
-                    fontSize: '13px',
+                    fontSize: '12px',
                     fontWeight: '700',
                   }}
                 >
@@ -447,7 +447,7 @@ export default function Dashboard() {
                 fontWeight: '600',
               }}
             >
-              © 2025 Prepa Launch
+              © 2025 Time4Prepa. All rights reserved.
             </Typography>
           </Box>
         </Drawer>
@@ -554,4 +554,3 @@ export default function Dashboard() {
     </>
   );
 }
-
