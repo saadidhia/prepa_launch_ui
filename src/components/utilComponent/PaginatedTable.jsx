@@ -16,9 +16,19 @@ import {
   TextField,
   InputLabel,
   Select,
-  MenuItem
+  MenuItem,
+  Box,
+  Typography,
+  Chip,
+  IconButton,
 } from '@mui/material';
-import HourglassEmptyIcon from '@mui/icons-material/HourglassEmpty';
+import {
+  HourglassEmpty as HourglassEmptyIcon,
+  Edit as EditIcon,
+  Delete as DeleteIcon,
+  Visibility as VisibilityIcon,
+  AccessTime as AccessTimeIcon,
+} from '@mui/icons-material';
 import { useAuth } from '../context/AuthContext';
 import { chronometersApi } from '../../apis/chronometersApi';
 import subjects from '../../subjects';
@@ -84,6 +94,7 @@ const PaginatedTable = ({ rows, columns, onPauseTimer, onResumeTimer, actualResp
   const handleOpenEditDialog = (row) => {
     setEditRowId(row.id);
     setDescription(row.description);
+    setSubject(row.subject);
     setEditDialogOpen(true);
   };
 
@@ -137,64 +148,167 @@ const PaginatedTable = ({ rows, columns, onPauseTimer, onResumeTimer, actualResp
     const deleteRemaining = getRemainingTime(response.created_at, 24);
 
     return (
-      <>
+      <Box sx={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
         {editRemaining && (
-          <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
             <Button
               variant="contained"
-              color="primary"
+              startIcon={<EditIcon />}
               onClick={() => handleOpenEditDialog(row)}
+              sx={{
+                borderRadius: '8px',
+                padding: '6px 16px',
+                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                fontWeight: '600',
+                fontSize: '13px',
+                textTransform: 'none',
+                boxShadow: '0 2px 8px rgba(102, 126, 234, 0.3)',
+                '&:hover': {
+                  background: 'linear-gradient(135deg, #764ba2 0%, #667eea 100%)',
+                  transform: 'translateY(-1px)',
+                  boxShadow: '0 4px 12px rgba(102, 126, 234, 0.4)',
+                },
+                transition: 'all 0.2s ease',
+              }}
             >
               Modifier
             </Button>
-            <span style={{ fontSize: "12px", color: "gray", display: "flex", alignItems: "center" }}>
-              <HourglassEmptyIcon fontSize="small" style={{ marginRight: "2px" }} />
-              {editRemaining}
-            </span>
-          </div>
+            <Chip
+              icon={<HourglassEmptyIcon sx={{ fontSize: 14 }} />}
+              label={editRemaining}
+              size="small"
+              sx={{
+                backgroundColor: '#e0e7ff',
+                color: '#667eea',
+                fontWeight: '600',
+                fontSize: '11px',
+              }}
+            />
+          </Box>
         )}
         {deleteRemaining && (
-          <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', marginLeft: "8px" }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
             <Button
               variant="contained"
-              color="error"
+              startIcon={<DeleteIcon />}
               onClick={() => handleOpenDeleteDialog(row.id)}
               disabled={CheckItemChrononometerIdInLocalStorage()}
+              sx={{
+                borderRadius: '8px',
+                padding: '6px 16px',
+                background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)',
+                fontWeight: '600',
+                fontSize: '13px',
+                textTransform: 'none',
+                boxShadow: '0 2px 8px rgba(239, 68, 68, 0.3)',
+                '&:hover': {
+                  background: 'linear-gradient(135deg, #dc2626 0%, #b91c1c 100%)',
+                  transform: 'translateY(-1px)',
+                  boxShadow: '0 4px 12px rgba(239, 68, 68, 0.4)',
+                },
+                '&:disabled': {
+                  background: '#e5e7eb',
+                  color: '#9ca3af',
+                },
+                transition: 'all 0.2s ease',
+              }}
             >
               Supprimer
             </Button>
-            <span style={{ fontSize: "12px", color: "gray", display: "flex", alignItems: "center" }}>
-              <HourglassEmptyIcon fontSize="small" style={{ marginRight: "2px" }} />
-              {deleteRemaining}
-            </span>
-          </div>
+            <Chip
+              icon={<HourglassEmptyIcon sx={{ fontSize: 14 }} />}
+              label={deleteRemaining}
+              size="small"
+              sx={{
+                backgroundColor: '#fee2e2',
+                color: '#ef4444',
+                fontWeight: '600',
+                fontSize: '11px',
+              }}
+            />
+          </Box>
         )}
-      </>
+      </Box>
     );
   };
 
   return (
-    <Paper>
+    <Paper
+      sx={{
+        borderRadius: '16px',
+        boxShadow: '0 4px 12px rgba(0, 0, 0, 0.08)',
+        overflow: 'hidden',
+      }}
+    >
       <TableContainer>
         <Table>
           <TableHead>
-            <TableRow>
+            <TableRow
+              sx={{
+                backgroundColor: '#f8f9fa',
+              }}
+            >
               {columns.map((column) => (
-                <TableCell key={column.id}>{column.label}</TableCell>
+                <TableCell
+                  key={column.id}
+                  sx={{
+                    fontWeight: '700',
+                    color: '#1a1a1a',
+                    fontSize: '14px',
+                    borderBottom: '2px solid #e5e7eb',
+                  }}
+                >
+                  {column.label}
+                </TableCell>
               ))}
-              <TableCell>Action</TableCell>
+              <TableCell
+                sx={{
+                  fontWeight: '700',
+                  color: '#1a1a1a',
+                  fontSize: '14px',
+                  borderBottom: '2px solid #e5e7eb',
+                }}
+              >
+                Action
+              </TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => (
-              <TableRow key={row.id}>
+              <TableRow
+                key={row.id}
+                sx={{
+                  '&:hover': {
+                    backgroundColor: '#f8f9fa',
+                  },
+                  transition: 'background-color 0.2s ease',
+                }}
+              >
                 {columns.map((column) => (
-                  <TableCell key={column.id}>
+                  <TableCell
+                    key={column.id}
+                    sx={{
+                      color: '#374151',
+                      fontSize: '13px',
+                      fontWeight: '500',
+                    }}
+                  >
                     {column.id === 'description' ? (
                       <Button
                         variant="contained"
-                        color="secondary"
+                        startIcon={<VisibilityIcon />}
                         onClick={() => handleOpenModal(row[column.id])}
+                        sx={{
+                          borderRadius: '8px',
+                          padding: '6px 16px',
+                          backgroundColor: '#667eea',
+                          fontWeight: '600',
+                          fontSize: '12px',
+                          textTransform: 'none',
+                          '&:hover': {
+                            backgroundColor: '#764ba2',
+                          },
+                        }}
                       >
                         Voir
                       </Button>
@@ -225,71 +339,227 @@ const PaginatedTable = ({ rows, columns, onPauseTimer, onResumeTimer, actualResp
         page={page}
         onPageChange={handleChangePage}
         onRowsPerPageChange={handleChangeRowsPerPage}
+        sx={{
+          borderTop: '1px solid #e5e7eb',
+          '& .MuiTablePagination-select': {
+            borderRadius: '8px',
+          },
+        }}
       />
 
       {/* View dialog */}
-      <Dialog open={viewDialogOpen} onClose={handleCloseModal}>
-        <DialogTitle>Description</DialogTitle>
-        <DialogContent>
-          <p>{selectedDescription}</p>
+      <Dialog
+        open={viewDialogOpen}
+        onClose={handleCloseModal}
+        maxWidth="sm"
+        fullWidth
+        PaperProps={{
+          sx: {
+            borderRadius: '20px',
+            boxShadow: '0 20px 60px rgba(102, 126, 234, 0.25)',
+          },
+        }}
+      >
+        <DialogTitle
+          sx={{
+            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+            color: 'white',
+            padding: '20px 28px',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '12px',
+          }}
+        >
+          <VisibilityIcon />
+          <Typography variant="h6" sx={{ fontWeight: '700' }}>
+            Description
+          </Typography>
+        </DialogTitle>
+        <DialogContent sx={{ padding: '28px' }}>
+          <Typography sx={{ color: '#374151', lineHeight: '1.6' }}>
+            {selectedDescription}
+          </Typography>
         </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseModal} color="primary">
-            Close
+        <DialogActions sx={{ padding: '16px 28px' }}>
+          <Button
+            onClick={handleCloseModal}
+            variant="contained"
+            sx={{
+              borderRadius: '10px',
+              padding: '8px 20px',
+              fontWeight: '700',
+              textTransform: 'none',
+              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+              '&:hover': {
+                background: 'linear-gradient(135deg, #764ba2 0%, #667eea 100%)',
+              },
+            }}
+          >
+            Fermer
           </Button>
         </DialogActions>
       </Dialog>
 
       {/* Edit dialog */}
-      <Dialog open={editDialogOpen} onClose={handleCloseEditDialog}>
-        <DialogTitle>Edit Chronometer</DialogTitle>
-        <DialogContent>
-          <TextField
-            autoFocus
-            margin="dense"
-            label="Description"
-            type="text"
-            fullWidth
-            variant="outlined"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-          />
-          <InputLabel id="subject-label">Matière</InputLabel>
-          <Select
-            labelId="subject-label"
-            id="subject"
-            value={subject}
-            onChange={(e) => setSubject(e.target.value)}
-            label="Matière"
-          >
-            {userSubjects.map((subject, index) => (
-              <MenuItem key={index} value={subject.name}>
-                {subject.name}
-              </MenuItem>
-            ))}
-          </Select>
+      <Dialog
+        open={editDialogOpen}
+        onClose={handleCloseEditDialog}
+        maxWidth="sm"
+        fullWidth
+        PaperProps={{
+          sx: {
+            borderRadius: '20px',
+            boxShadow: '0 20px 60px rgba(102, 126, 234, 0.25)',
+          },
+        }}
+      >
+        <DialogTitle
+          sx={{
+            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+            color: 'white',
+            padding: '20px 28px',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '12px',
+          }}
+        >
+          <EditIcon />
+          <Typography variant="h6" sx={{ fontWeight: '700' }}>
+            Modifier le chronomètre
+          </Typography>
+        </DialogTitle>
+        <DialogContent sx={{ padding: '28px', backgroundColor: '#f8f9fa' }}>
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: '20px', marginTop: '8px' }}>
+            <TextField
+              autoFocus
+              label="Description"
+              type="text"
+              fullWidth
+              variant="outlined"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              sx={{
+                '& .MuiOutlinedInput-root': {
+                  borderRadius: '12px',
+                  backgroundColor: 'white',
+                },
+              }}
+            />
+            <Box>
+              <InputLabel sx={{ marginBottom: '8px', fontWeight: '600', color: '#1a1a1a' }}>
+                Matière
+              </InputLabel>
+              <Select
+                value={subject}
+                onChange={(e) => setSubject(e.target.value)}
+                fullWidth
+                sx={{
+                  borderRadius: '12px',
+                  backgroundColor: 'white',
+                  '& .MuiOutlinedInput-notchedOutline': {
+                    borderColor: '#e5e7eb',
+                  },
+                }}
+              >
+                {userSubjects.map((subject, index) => (
+                  <MenuItem key={index} value={subject.name}>
+                    {subject.name}
+                  </MenuItem>
+                ))}
+              </Select>
+            </Box>
+          </Box>
         </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseEditDialog} color="primary">
-            Cancel
+        <DialogActions sx={{ padding: '16px 28px', backgroundColor: '#f8f9fa' }}>
+          <Button
+            onClick={handleCloseEditDialog}
+            sx={{
+              borderRadius: '10px',
+              padding: '8px 20px',
+              fontWeight: '700',
+              textTransform: 'none',
+            }}
+          >
+            Annuler
           </Button>
-          <Button onClick={handleUpdate} color="primary" variant="contained">
-            Update
+          <Button
+            onClick={handleUpdate}
+            variant="contained"
+            sx={{
+              borderRadius: '10px',
+              padding: '8px 20px',
+              fontWeight: '700',
+              textTransform: 'none',
+              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+              '&:hover': {
+                background: 'linear-gradient(135deg, #764ba2 0%, #667eea 100%)',
+              },
+            }}
+          >
+            Mettre à jour
           </Button>
         </DialogActions>
       </Dialog>
 
       {/* Delete dialog */}
-      <Dialog open={deleteDialogOpen} onClose={handleCloseDeleteDialog}>
-        <DialogTitle>Confirmer la suppression</DialogTitle>
-        <DialogContent>
-          Êtes-vous sûr de vouloir supprimer ce minuteur ?
+      <Dialog
+        open={deleteDialogOpen}
+        onClose={handleCloseDeleteDialog}
+        maxWidth="sm"
+        fullWidth
+        PaperProps={{
+          sx: {
+            borderRadius: '20px',
+            boxShadow: '0 20px 60px rgba(239, 68, 68, 0.25)',
+          },
+        }}
+      >
+        <DialogTitle
+          sx={{
+            background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)',
+            color: 'white',
+            padding: '20px 28px',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '12px',
+          }}
+        >
+          <DeleteIcon />
+          <Typography variant="h6" sx={{ fontWeight: '700' }}>
+            Confirmer la suppression
+          </Typography>
+        </DialogTitle>
+        <DialogContent sx={{ padding: '28px' }}>
+          <Typography sx={{ color: '#374151', lineHeight: '1.6' }}>
+            Êtes-vous sûr de vouloir supprimer ce minuteur ?
+          </Typography>
         </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseDeleteDialog} color="primary">
+        <DialogActions sx={{ padding: '16px 28px' }}>
+          <Button
+            onClick={handleCloseDeleteDialog}
+            sx={{
+              borderRadius: '10px',
+              padding: '8px 20px',
+              fontWeight: '700',
+              textTransform: 'none',
+            }}
+          >
             Annuler
           </Button>
-          <Button onClick={handleDelete} color="error" variant="contained">
+          <Button
+            onClick={handleDelete}
+            variant="contained"
+            sx={{
+              borderRadius: '10px',
+              padding: '8px 20px',
+              fontWeight: '700',
+              textTransform: 'none',
+              background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)',
+              '&:hover': {
+                background: 'linear-gradient(135deg, #dc2626 0%, #b91c1c 100%)',
+              },
+            }}
+          >
             Supprimer
           </Button>
         </DialogActions>

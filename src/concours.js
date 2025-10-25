@@ -8,12 +8,12 @@ const concours = [
         image: tunisia
     },
     {
-        text: "FRANCE",
+        name: "FRANCE",
         link: "france",
         image: french
     },
     {
-        text: "MAROC",
+        name: "MAROC",
         link: "maroc",
         image: morocco
     }
