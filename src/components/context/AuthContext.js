@@ -9,6 +9,7 @@ class AuthProvider extends Component {
     user: null,
     tokenCheckInterval: null,
     hasAgendaReminder: false, // new flag
+    isChronometerOpen: false, // new flag
   };
 
    componentDidMount() {
@@ -104,6 +105,16 @@ class AuthProvider extends Component {
   userLogout = () => {
     let user = localStorage.getItem("user");
     user = JSON.parse(user);
+
+    if(localStorage.getItem("chronometerId")){
+      console.log("Stopping chronometer before logout");
+      this.setState({ isChronometerOpen: true });
+        setTimeout(() => {
+        this.setState({ isChronometerOpen: false });
+      }, 5000);
+      return;
+    }
+
  
       authApi.logout(user);
       localStorage.removeItem("user");
@@ -145,8 +156,8 @@ class AuthProvider extends Component {
 
   render() {
     const { children } = this.props;
-    const { user ,  hasAgendaReminder } = this.state;
-    const { getUser, userIsAuthenticated, userIsAdmin, userLogin, userLogout, userHasRole, isUserAlertedToRenewSubscription,  } =
+    const { user ,  hasAgendaReminder, isChronometerOpen } = this.state;
+    const { getUser, userIsAuthenticated, userIsAdmin, userLogin, userLogout, userHasRole, isUserAlertedToRenewSubscription } =
       this;
 
     return (
@@ -160,7 +171,8 @@ class AuthProvider extends Component {
           userLogout,
           userHasRole,
           isUserAlertedToRenewSubscription,
-          hasAgendaReminder
+          hasAgendaReminder,
+          isChronometerOpen
         }}
       >
         {children}

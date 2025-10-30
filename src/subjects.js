@@ -33,7 +33,7 @@ const subjects = [
     {
         links:"maths",
         name: "Maths",
-        section: ["MP", "PC","PT","BG"],
+        section: ["PC","PT","BG"],
         components: <Content name="Maths"/>,
         image: maths
     },
