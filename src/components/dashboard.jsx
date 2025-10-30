@@ -25,6 +25,14 @@ import NotificationsIcon from '@mui/icons-material/Notifications';
 import EventNoteIcon from '@mui/icons-material/EventNote';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import VerifiedIcon from '@mui/icons-material/Verified';
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import DialogActions from '@mui/material/DialogActions';
+import Button from '@mui/material/Button';
+import DialogContentText from '@mui/material/DialogContentText';
+import TimerIcon from '@mui/icons-material/Timer';
+import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 
 import navigations from '../Navigations';
 import { Outlet, useNavigate } from 'react-router-dom';
@@ -142,6 +150,8 @@ export default function Dashboard() {
   const handleDrawerClose = () => setOpen(false);
   const handleNavigation = (link) => navigate(`/dashboard/${link}`);
   const handleProfileClick = () => navigate('/dashboard/profile');
+
+
 
   // Subscription alert
   useEffect(() => {
@@ -527,6 +537,70 @@ export default function Dashboard() {
           </MuiAlert>
         )}
       </Stack>
+
+      {/* Chronometer Warning Dialog */}
+      <Dialog
+        open={Auth.isChronometerOpen}
+        maxWidth="sm"
+        fullWidth
+        PaperProps={{
+          sx: {
+            borderRadius: '20px',
+            boxShadow: '0 20px 60px rgba(0, 0, 0, 0.3)',
+            overflow: 'hidden',
+          }
+        }}
+      >
+        <DialogTitle 
+          sx={{ 
+            background: 'linear-gradient(135deg, #f59e0b 0%, #ef4444 100%)',
+            color: 'white',
+            padding: '24px',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '12px',
+          }}
+        >
+          <WarningAmberIcon sx={{ fontSize: 32 }} />
+          <Typography variant="h6" sx={{ fontWeight: '700' }}>
+            Chronomètre actif
+          </Typography>
+        </DialogTitle>
+        <DialogContent sx={{ padding: '32px 24px' }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '16px' }}>
+            <Box
+              sx={{
+                width: 60,
+                height: 60,
+                borderRadius: '50%',
+                background: 'linear-gradient(135deg, #f59e0b 0%, #ef4444 100%)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                animation: 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+              }}
+            >
+              <TimerIcon sx={{ fontSize: 32, color: 'white' }} />
+            </Box>
+            <DialogContentText sx={{ fontSize: '16px', color: '#374151', flex: 1 }}>
+              Vous avez un chronomètre en cours d'exécution. Veuillez l'arrêter avant de vous déconnecter.
+            </DialogContentText>
+          </Box>
+          <Box
+            sx={{
+              background: '#fef3c7',
+              border: '2px solid #fbbf24',
+              borderRadius: '12px',
+              padding: '16px',
+              marginTop: '16px',
+            }}
+          >
+            <Typography variant="body2" sx={{ color: '#92400e', fontWeight: '600' }}>
+              💡 Astuce: Rendez-vous dans la section chronomètre pour arrêter votre session en cours.
+            </Typography>
+          </Box>
+        </DialogContent>
+      </Dialog>
 
       <style>{`
         @keyframes slideDown {
