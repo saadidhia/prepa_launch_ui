@@ -44,7 +44,7 @@ export const Services = () => {
   const pricingData = [
     {
       plan: "Un mois",
-      price: "25 Dt",
+      price: "35 Dt",
       features: [
         "Des cours",
         "Des Examens",
@@ -57,7 +57,7 @@ export const Services = () => {
     },
     {
       plan: "Trois mois",
-      price: "70 Dt",
+      price: "100 Dt",
       features: [
         "Des cours",
         "Des Examens",
@@ -71,7 +71,7 @@ export const Services = () => {
     },
     {
       plan: "Six mois",
-      price: "130 Dt",
+      price: "200 Dt",
       features: [
         "Des cours",
         "Des Examens",
@@ -84,7 +84,7 @@ export const Services = () => {
     },
     {
       plan: "Dix mois",
-      price: "210 Dt",
+      price: "300 Dt",
       features: [
         "Des cours",
         "Des Examens",
