@@ -342,7 +342,7 @@
 
             try {
             await candidatsApi.updateCardStatusById(user, movedCard.id, status);
-            console.log('Card status updated successfully');
+           
             } catch (error) {
             console.error('Error updating card status:', error);
             if (cardType === 'created') {

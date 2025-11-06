@@ -49,7 +49,7 @@ export function SignUp() {
       await authApi.signup(user, admin);
       setSuccessMessage('User is created');
     } catch (error) {
-      console.log("moin ",error);
+      
       setErrorMessage("An error occurred while creating the user.");
       handleLogError(error);
     }

@@ -59,7 +59,6 @@ export const Contact = (props) => {
       )
       .then(
         (result) => {
-          console.log(result.text);
           setSuccessMessage("Votre message a été envoyé avec succès");
           clearState();
           e.target.reset();
@@ -68,7 +67,6 @@ export const Contact = (props) => {
           }, 3000);
         },
         (error) => {
-          console.log(error.text);
           setSuccessMessage("Une erreur s'est produite. Veuillez réessayer.");
           setTimeout(() => {
             setSuccessMessage("");
