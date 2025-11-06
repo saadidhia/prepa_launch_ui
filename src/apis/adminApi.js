@@ -35,7 +35,6 @@ function getUsers(admin) {
 }
 
 function createBook(book, admin) {
-  console.log("book2", book)
   return instance.post('/api/books', book, {
     headers: {
       'Authorization': bearerAuth(admin),
@@ -45,7 +44,6 @@ function createBook(book, admin) {
 }
 
 function getBooks(admin){
-  console.log("Books");
   return instance.get('/api/books', {
     headers: {
       'Authorization': bearerAuth(admin),
@@ -56,7 +54,7 @@ function getBooks(admin){
 }
 
 function deleteBook(admin,id){
-  console.log("id Book",id)
+  
   return instance.delete(`/api/books/${id}`, {
     headers: {
       'Authorization': bearerAuth(admin),
@@ -95,7 +93,7 @@ function activateAndExtendUser(admin, userId, subscription) {
 }
 
 function getNotifiedUsers(admin){
-  console.log(admin)
+  
   return instance.get('/api/admin/users/notified',{
     headers: {
       'Authorization': bearerAuth(admin),
@@ -106,8 +104,7 @@ function getNotifiedUsers(admin){
 }
 
 function createMotivation(admin, motivation){
-  console.log(admin)
-  console.log(motivation)
+  
   return instance.post('/api/motivations',motivation,{
     headers: {
       'Authorization': bearerAuth(admin),
@@ -120,7 +117,7 @@ function createMotivation(admin, motivation){
 }
 
 function deleteMotivation(admin,motivationId){
-  console.log("Motiva ",motivationId)
+ 
   instance.delete(`/api/motivations/${motivationId}`,{headers: {
     'Authorization': bearerAuth(admin),
     'Content-type': 'application/json'

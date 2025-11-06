@@ -89,14 +89,14 @@ class AuthProvider extends Component {
       console.log("Agendas fetched for reminder check:", agendas);
       const now = new Date();
 
-      const hasReminder = agendas.data.some((agenda) => {
+      const matchingAgendas = agendas.data.filter((agenda) => {
         const firstReminder = new Date(agenda.remindTime);
         const eventTime = new Date(agenda.eventTime);
-        console.log("Checking agenda:", agenda, "First Reminder:", firstReminder, "Event Time:", eventTime, "Now:", now);
         return now >= firstReminder && now < eventTime;
       });
+      const hasReminder = matchingAgendas.length > 0;
 
-      this.setState({ hasAgendaReminder: hasReminder });
+      this.setState({ hasAgendaReminder: hasReminder,  reminderAgendas: matchingAgendas });
     } catch (error) {
       console.error("Error checking agenda reminder:", error);
     }
@@ -107,7 +107,6 @@ class AuthProvider extends Component {
     user = JSON.parse(user);
 
     if(localStorage.getItem("chronometerId")){
-      console.log("Stopping chronometer before logout");
       this.setState({ isChronometerOpen: true });
         setTimeout(() => {
         this.setState({ isChronometerOpen: false });
@@ -134,7 +133,6 @@ class AuthProvider extends Component {
   userIsAdmin = () => {
     let user = localStorage.getItem("user");
     user = JSON.parse(user);
-    console.log(user);
     if (user.data.rol[0] === "ADMIN") {
       return true;
     }
@@ -156,7 +154,7 @@ class AuthProvider extends Component {
 
   render() {
     const { children } = this.props;
-    const { user ,  hasAgendaReminder, isChronometerOpen } = this.state;
+    const { user ,  hasAgendaReminder, isChronometerOpen, reminderAgendas } = this.state;
     const { getUser, userIsAuthenticated, userIsAdmin, userLogin, userLogout, userHasRole, isUserAlertedToRenewSubscription } =
       this;
 
@@ -172,7 +170,8 @@ class AuthProvider extends Component {
           userHasRole,
           isUserAlertedToRenewSubscription,
           hasAgendaReminder,
-          isChronometerOpen
+          isChronometerOpen,
+          reminderAgendas
         }}
       >
         {children}

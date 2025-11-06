@@ -169,8 +169,18 @@ export default function Dashboard() {
   // Agenda alert
   useEffect(() => {
     if (Auth.hasAgendaReminder) {
-      setAgendaAlertMessage("Vous avez un agenda prévu bientôt !");
-      setAgendaAlertOpen(true);
+      // console.log("agenda "+ Auth.reminderAgendas)
+setAgendaAlertMessage(
+  "Vous avez des agendas prévus bientôt !" + 
+  Auth.reminderAgendas
+    .map(agenda => {
+      const date = new Date(agenda.eventTime);
+      const formattedDate = date.toISOString().split('T')[0]; // returns YYYY-MM-DD
+      return `\n- ${formattedDate}`;
+    })
+    .join('')
+);      
+setAgendaAlertOpen(true);
 
       const timer = setTimeout(() => setAgendaAlertOpen(false), 10000);
       return () => clearTimeout(timer);
