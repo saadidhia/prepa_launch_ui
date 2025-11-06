@@ -16,7 +16,6 @@ export function Content(props) {
             try {
                 const response = await filesApi.getPdfs(user, subFolderName);
                 setPdfFiles(response.data);
-                console.log(".....",response.data)
             } catch (error) {
                 console.error("Error fetching PDFs:", error);
             }

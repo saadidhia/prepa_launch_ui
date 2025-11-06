@@ -21,9 +21,7 @@ export function Motivations() {
   const fetchMotivation = async () => {
 
     try {
-      console.log(user)
       const response = await candidatsApi.getMotivations(user);
-      console.log(response.data);
       setMotivations(response.data.filter(motivation => motivation.description !== null));
     } catch (error) {
       console.error("Error fetching Motivations:", error);

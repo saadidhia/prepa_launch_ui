@@ -36,7 +36,6 @@ const [userToDelete, setUserToDelete] = useState(null); // State to hold the use
   const fetchUsers = async () => {
     try {
       const response = await adminApi.getUsers(admin);
-      console.log("users  "+JSON.stringify(response.data, null, 2));
       setUsers(response.data);
     } catch (error) {
       console.error('Error fetching users:', error);
