@@ -16,6 +16,7 @@ import Chronometer  from './components/user/chronometer'
 import { UsersStat } from './components/admin/UsersStat'
 import { Progression }  from './components/user/Progression'
 import Agenda from './components/user/Agenda'
+import interested  from './components/admin/interested'
 
 const navigations = [
     {
@@ -137,6 +138,12 @@ const navigations = [
         link: "agenda",
         component:  Agenda,
         role: "user"
+    },
+    {
+        text: "Interested",
+        link: "interested",
+        component:  interested,
+        role: "admin"
     }
 
 

@@ -14,6 +14,7 @@ import SmoothScroll from "smooth-scroll";
 import { Routes, Route, BrowserRouter as Router } from "react-router-dom";
 import { Connexion } from './components/connexion';
 import { Profile } from './components/user/Profile'
+import InterestedForm from './components/interestedForm';
 import Dashboard from "./components/dashboard";
 import PrivateRoute from './PrivateRoute';
 import navigations from "./Navigations";
@@ -60,6 +61,7 @@ const App = () => {
             }
           />
           <Route path="/connexion" element={<Connexion />} />
+          <Route path="/interested/form" element={<InterestedForm />} />
           <Route path="/dashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} >
             <Route path="/dashboard/profile" exact element={<Profile />} />
             {navigations.map((navElement, index) => (
