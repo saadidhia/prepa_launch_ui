@@ -111,7 +111,7 @@ export const Services = () => {
     e.preventDefault();
     const message = `Bonjour, je souhaite souscrire au plan ${selectedPlan.plan} (${selectedPlan.price}).
 Nom: ${name}, Téléphone: ${phone}, Email: ${email}, Genre: ${gender}, Niveau: ${level}, Branche: ${branch}`;
-    const whatsappNumber = "+4917684505107";
+    const whatsappNumber = "+21622609381";
     const url = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
     window.open(url, "_blank");
 
