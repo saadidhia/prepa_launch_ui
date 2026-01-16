@@ -16,102 +16,116 @@ import bio_cellelaire from './assets/statics/bio_cellelaire.jpg'
 
 const subjects = [
     { 
-        links: "math1",
-        name: "Math1",
-        section: ["MP"],
-        components: <Content name="Math 1"/>,
+        links: "science",
+        name: "science",
+        section: ["MATH","SCIENCE","LETTER"],
+        components: <Content name="Science"/>,
         image: math1
         
     },
     {
-        links: "math2",
-       name: "Math2",
-       section: ["MP"],
-       components: <Content name="Math2"/>,
+        links: "math",
+       name: "math",
+       section: ["MATH", "SCIENCE","TECH","ECO","INFO","SPORT"],
+       components: <Content name="Math"/>,
        image: math2
     },
     {
-        links:"maths",
-        name: "Maths",
-        section: ["PC","PT","BG"],
-        components: <Content name="Maths"/>,
+        links:"physique",
+        name: "Physique",
+        section: ["MATH","SCIENCE","TECH","INFO","SPORT"],
+        components: <Content name="Physique"/>,
         image: maths
     },
     { 
-        links:"physique",
-        name: "Physique",
-        section: ["MP", "PC","PT","BG"],
+        links:"philosophie",
+        name: "Philosophie",
+        section: ["MATH", "SCIENCE","TECH","ECO","INFO","SPORT","LETTER"],
         components : <Content/>,
         image: physique
 
     },
     {
-        links: "chimie",
-        name: "Chimie",
-        section: ["MP", "PC","PT","BG"],
+        links: "Francais",
+        name: "Francais",
+        section: ["MATH", "SCIENCE","TECH","ECO","INFO","SPORT","LETTER"],
         components: <Content/>,
         image: chimie
     },
     { 
-        links: "sta",
-        name:"STA",
-        section: ["MP","PC","PT"],
+        links: "Anglais",
+        name:"Anglais",
+        section: ["MATH", "SCIENCE","TECH","ECO","INFO","SPORT","LETTER"],
         components: <Content/>,
         image: sta
     },
     {
-        links: "info",
-        name: "INFO",
-        section: ["MP", "PC","PT","BG"],
+        links: "Arabe",
+        name: "Arabe",
+        section: ["MATH", "SCIENCE","TECH","ECO","INFO","SPORT","LETTER"],
         components: <Content/>,
         image: info
     },
     {
-        links: "anglais",
-        name:"Anglais",
-        section: ["MP","PC","PT","BG"],
+        links: "Informatique",
+        name:"Informatique",
+        section: ["MATH", "SCIENCE","TECH","ECO","SPORT","LETTER"],
         components: <Content/>,
         image: anglais
     },
     {
-        links: "francais",
-        name: "Francais",
-        section: ["MP","PC","PT","BG"],
+        links: "Histoire_Geographie",
+        name: "Histoire Geographie",
+        section: ["ECO","LETTER"],
         components: <Content/>,
         image: francais
     },
     {
-        links: "cfm",
-        name: "CFM",
-        section: ["PT"],
+        links: "Pensee_islamique",
+        name: "Pensée islamique",
+        section: ["LETTER"],
         components: <Content/>,
         image:"dd"
     },
     {
-        links: "geologie",
-        name: "Geologie",
-        section: ["BG"],
+        links: "Algorithmes",
+        name: "Algorithmes",
+        section: ["INFO"],
         components: <Content/>,
         image: geologie
     },
-    {  links: "bio.animal",
-       name: "BioAnimale",
-       section:["BG"],
+    {  links: "Bases_de_donnees",
+       name: "Bases de données",
+       section:["INFO"],
        components: <Content/>,
        image: bio_animale
         
     },
     {
-        links: "bio.vegetale",
-        name: "Biovegetale",
-        section:["BG"],
+        links: "technique",
+        name: "Technique",
+        section:["TECH"],
         components: <Content/>,
         image: bio_vegetable
     },
     {
-        links: "bio.cellelaire",
-        name: "Biocellelaire",
-        section: ["BG"],
+        links: "sport",
+        name: "sport",
+        section: ["MATH", "SCIENCE","TECH","ECO","INFO","SPORT","LETTER"],
+        components: <Content/>,
+        image: bio_cellelaire
+    },
+     {
+        links: "economie",
+        name: "Economie",
+        section: ["ECO"],
+        components: <Content/>,
+        image: bio_cellelaire
+    },
+    {
+        links: "gestion",
+        name: "Gestion",
+        section: ["ECO"],
         components: <Content/>,
         image: bio_cellelaire
     }

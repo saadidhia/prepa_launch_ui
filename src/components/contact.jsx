@@ -59,7 +59,7 @@ export const Contact = (props) => {
       )
       .then(
         (result) => {
-          setSuccessMessage("Votre message a été envoyé avec succès");
+          setSuccessMessage("تم إرسال رسالتك بنجاح");
           clearState();
           e.target.reset();
           setTimeout(() => {
@@ -67,7 +67,7 @@ export const Contact = (props) => {
           }, 3000);
         },
         (error) => {
-          setSuccessMessage("Une erreur s'est produite. Veuillez réessayer.");
+          setSuccessMessage("حدث خطأ. يرجى المحاولة مرة أخرى.");
           setTimeout(() => {
             setSuccessMessage("");
           }, 3000);
@@ -76,7 +76,7 @@ export const Contact = (props) => {
   };
 
   return (
-    <Box>
+    <Box sx={{ direction: "rtl" }}>
       {/* Contact Section */}
       <Box
         id="contact"
@@ -109,7 +109,7 @@ export const Contact = (props) => {
                       backgroundClip: "text",
                     }}
                   >
-                    ENVOYEZ VOTRE MESSAGE
+                    أرسل رسالتك
                   </Typography>
                   <Typography
                     variant="body1"
@@ -119,7 +119,7 @@ export const Contact = (props) => {
                       lineHeight: 1.6,
                     }}
                   >
-                    Veuillez remplir le formulaire ci-dessous pour nous envoyer un e-mail, et nous vous répondrons dans les plus brefs délais.
+                    يرجى ملء النموذج أدناه لإرسال بريد إلكتروني إلينا، وسنرد عليك في أقرب وقت ممكن.
                   </Typography>
                 </Box>
 
@@ -143,8 +143,8 @@ export const Contact = (props) => {
                         fullWidth
                         id="name"
                         name="name"
-                        label="Nom"
-                        placeholder="Votre nom"
+                        label="الاسم"
+                        placeholder="اسمك"
                         required
                         value={name}
                         onChange={handleChange}
@@ -163,8 +163,8 @@ export const Contact = (props) => {
                         type="email"
                         id="email"
                         name="email"
-                        label="Email"
-                        placeholder="votre@email.com"
+                        label="البريد الإلكتروني"
+                        placeholder="your@email.com"
                         required
                         value={email}
                         onChange={handleChange}
@@ -183,7 +183,7 @@ export const Contact = (props) => {
                         type="tel"
                         id="phone"
                         name="phone"
-                        label="Numéro WhatsApp"
+                        label="رقم واتساب"
                         placeholder="+216 55555555"
                         required
                         value={phone}
@@ -204,8 +204,8 @@ export const Contact = (props) => {
                         rows={4}
                         id="message"
                         name="message"
-                        label="Message"
-                        placeholder="Votre message..."
+                        label="الرسالة"
+                        placeholder="رسالتك..."
                         required
                         value={message}
                         onChange={handleChange}
@@ -221,7 +221,7 @@ export const Contact = (props) => {
                     {successMessage && (
                       <Grid item xs={12}>
                         <Alert
-                          severity={successMessage.includes("succès") ? "success" : "error"}
+                          severity={successMessage.includes("نجاح") ? "success" : "error"}
                           sx={{
                             borderRadius: "12px",
                             animation: "slideDown 0.4s ease-out",
@@ -257,7 +257,7 @@ export const Contact = (props) => {
                           transition: "all 0.3s ease",
                         }}
                       >
-                        ENVOYER
+                        إرسال
                       </Button>
                     </Grid>
                   </Grid>
@@ -295,7 +295,7 @@ export const Contact = (props) => {
                       backgroundClip: "text",
                     }}
                   >
-                    Contact Info
+                    معلومات الاتصال
                   </Typography>
 
                   <List sx={{ padding: 0 }}>
@@ -322,8 +322,8 @@ export const Contact = (props) => {
                         </Box>
                       </ListItemIcon>
                       <ListItemText
-                        primary="Address"
-                        secondary={props.data ? props.data.address : "loading"}
+                        primary="العنوان"
+                        secondary={props.data ? props.data.address : "جاري التحميل"}
                         primaryTypographyProps={{
                           sx: {
                             fontWeight: "700",
@@ -365,8 +365,8 @@ export const Contact = (props) => {
                         </Box>
                       </ListItemIcon>
                       <ListItemText
-                        primary="Phone"
-                        secondary={props.data ? props.data.phone : "loading"}
+                        primary="الهاتف"
+                        secondary={props.data ? props.data.phone : "جاري التحميل"}
                         primaryTypographyProps={{
                           sx: {
                             fontWeight: "700",
@@ -380,6 +380,8 @@ export const Contact = (props) => {
                             color: "#6b7280",
                             fontSize: "14px",
                             lineHeight: 1.6,
+                            direction: "ltr",
+                            textAlign: "right",
                           },
                         }}
                       />
@@ -408,8 +410,8 @@ export const Contact = (props) => {
                         </Box>
                       </ListItemIcon>
                       <ListItemText
-                        primary="Email"
-                        secondary={props.data ? props.data.email : "loading"}
+                        primary="البريد الإلكتروني"
+                        secondary={props.data ? props.data.email : "جاري التحميل"}
                         primaryTypographyProps={{
                           sx: {
                             fontWeight: "700",
@@ -423,6 +425,8 @@ export const Contact = (props) => {
                             color: "#6b7280",
                             fontSize: "14px",
                             lineHeight: 1.6,
+                            direction: "ltr",
+                            textAlign: "right",
                           },
                         }}
                       />
@@ -448,7 +452,7 @@ export const Contact = (props) => {
                       marginBottom: "16px",
                     }}
                   >
-                    Suivez-nous
+                    تابعنا
                   </Typography>
                   <Box
                     sx={{
@@ -553,7 +557,7 @@ export const Contact = (props) => {
               fontSize: "14px",
             }}
           >
-            &copy; 2023 Dhia Saadi Design by{" "}
+            &copy; 2023 ضياء السعدي - تصميم{" "}
             <Box
               component="a"
               href="https://www.facebook.com/dhiasaady20"
@@ -568,7 +572,7 @@ export const Contact = (props) => {
                 },
               }}
             >
-              Dhia Saadi
+              ضياء السعدي
             </Box>
           </Typography>
         </Container>

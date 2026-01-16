@@ -44,7 +44,7 @@ export function Profile() {
             setLevel(profileData.level);
             setNumberPhone(profileData.numberPhone);
             setNewNumberPhone(profileData.numberPhone);
-            setGender(profileData.gender === "FEMALE" ? "Femme" : "Homme");
+            setGender(profileData.gender === "FEMALE" ? "أنثى" : "ذكر");
     
             await fetchSubscriptions();
         } catch (error) {
@@ -71,7 +71,7 @@ export function Profile() {
             setSuccessMessage('');
 
             if (newNumberPhone === numberPhone) {
-                setErrorMessage("Le même numéro est inséré. Aucune modification n'a été effectuée.");
+                setErrorMessage("نفس الرقم مدرج. لم يتم إجراء أي تعديل.");
                 setTimeout(() => {
                     setErrorMessage('');
                 }, 3000);
@@ -80,21 +80,21 @@ export function Profile() {
             } 
 
             if (!/^\d{8}$/.test(newNumberPhone)) {
-                setErrorMessage("Le numéro de téléphone doit contenir exactement 8 chiffres.");
+                setErrorMessage("يجب أن يحتوي رقم الهاتف على 8 أرقام بالضبط.");
                 return;
             }
 
             const response = await candidatsApi.updateNumberPhone(user, newNumberPhone);
             setNumberPhone(newNumberPhone);
             setIsEditingPhone(false);
-            setSuccessMessage("Le numéro de téléphone a été mis à jour avec succès !");
+            setSuccessMessage("تم تحديث رقم الهاتف بنجاح!");
 
             setTimeout(() => {
                 setSuccessMessage('');
             }, 3000);
         } catch (error) {
             console.error('Error updating phone number:', error);
-            setErrorMessage("Impossible de mettre à jour le numéro de téléphone. Veuillez réessayer.");
+            setErrorMessage("تعذر تحديث رقم الهاتف. يرجى المحاولة مرة أخرى.");
         }
     };
 
@@ -110,6 +110,7 @@ export function Profile() {
             padding: '24px',
             maxWidth: '1200px',
             margin: '0 auto',
+            direction: 'rtl',
         }}>
             {/* Profile Header Card */}
             <Card sx={{ 
@@ -130,7 +131,7 @@ export function Profile() {
                     <Box sx={{
                         position: 'absolute',
                         top: '-20px',
-                        right: '-20px',
+                        left: '-20px',
                         width: '100px',
                         height: '100px',
                         borderRadius: '50%',
@@ -143,7 +144,7 @@ export function Profile() {
                     {/* Avatar */}
                     <Box sx={{ display: 'flex', justifyContent: 'center', marginBottom: '16px' }}>
                         <Avatar
-                            src={gender === 'Femme' ? femaleImage : maleImage}
+                            src={gender === 'أنثى' ? femaleImage : maleImage}
                             sx={{
                                 width: 120,
                                 height: 120,
@@ -196,9 +197,9 @@ export function Profile() {
                                 </Box>
                                 <Box sx={{ flex: 1 }}>
                                     <Typography variant="caption" sx={{ color: '#6b7280', fontWeight: '600', display: 'block', marginBottom: '4px' }}>
-                                        Email
+                                        البريد الإلكتروني
                                     </Typography>
-                                    <Typography variant="body2" sx={{ color: '#1a1a1a', fontWeight: '600' }}>
+                                    <Typography variant="body2" sx={{ color: '#1a1a1a', fontWeight: '600', direction: 'ltr', textAlign: 'right' }}>
                                         {email}
                                     </Typography>
                                 </Box>
@@ -233,7 +234,7 @@ export function Profile() {
                                 </Box>
                                 <Box sx={{ flex: 1 }}>
                                     <Typography variant="caption" sx={{ color: '#6b7280', fontWeight: '600', display: 'block', marginBottom: '4px' }}>
-                                        Genre
+                                        الجنس
                                     </Typography>
                                     <Typography variant="body2" sx={{ color: '#1a1a1a', fontWeight: '600' }}>
                                         {gender}
@@ -270,7 +271,7 @@ export function Profile() {
                                 </Box>
                                 <Box sx={{ flex: 1 }}>
                                     <Typography variant="caption" sx={{ color: '#6b7280', fontWeight: '600', display: 'block', marginBottom: '4px' }}>
-                                        Niveau
+                                        المستوى
                                     </Typography>
                                     <Typography variant="body2" sx={{ color: '#1a1a1a', fontWeight: '600' }}>
                                         {level}
@@ -307,7 +308,7 @@ export function Profile() {
                                 </Box>
                                 <Box sx={{ flex: 1 }}>
                                     <Typography variant="caption" sx={{ color: '#6b7280', fontWeight: '600', display: 'block', marginBottom: '4px' }}>
-                                        Branche
+                                        الشعبة
                                     </Typography>
                                     <Typography variant="body2" sx={{ color: '#1a1a1a', fontWeight: '600' }}>
                                         {field}
@@ -344,7 +345,7 @@ export function Profile() {
                                 </Box>
                                 <Box sx={{ flex: 1 }}>
                                     <Typography variant="caption" sx={{ color: '#6b7280', fontWeight: '600', display: 'block', marginBottom: '4px' }}>
-                                        Numéro de téléphone
+                                        رقم الهاتف
                                     </Typography>
                                     {isEditingPhone ? (
                                         <TextField
@@ -354,6 +355,7 @@ export function Profile() {
                                             sx={{
                                                 '& .MuiOutlinedInput-root': {
                                                     borderRadius: '8px',
+                                                    direction: 'ltr',
                                                     '& fieldset': {
                                                         borderColor: '#e5e7eb',
                                                     },
@@ -367,7 +369,7 @@ export function Profile() {
                                             }}
                                         />
                                     ) : (
-                                        <Typography variant="body2" sx={{ color: '#1a1a1a', fontWeight: '600' }}>
+                                        <Typography variant="body2" sx={{ color: '#1a1a1a', fontWeight: '600', direction: 'ltr', textAlign: 'right' }}>
                                             {numberPhone}
                                         </Typography>
                                     )}
@@ -476,7 +478,7 @@ export function Profile() {
                             gap: '8px',
                         }}
                     >
-                        Mes Abonnements
+                        اشتراكاتي
                         <Chip 
                             label={subscriptions.length}
                             sx={{
@@ -496,10 +498,10 @@ export function Profile() {
                                 <TableRow sx={{ 
                                     background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
                                 }}>
-                                    <TableCell sx={{ color: 'white', fontWeight: '700', fontSize: '14px' }}>Mois</TableCell>
-                                    <TableCell sx={{ color: 'white', fontWeight: '700', fontSize: '14px' }}>Date de début</TableCell>
-                                    <TableCell sx={{ color: 'white', fontWeight: '700', fontSize: '14px' }}>Date d'expiration</TableCell>
-                                    <TableCell sx={{ color: 'white', fontWeight: '700', fontSize: '14px' }}>Prix</TableCell>
+                                    <TableCell sx={{ color: 'white', fontWeight: '700', fontSize: '14px' }}>الأشهر</TableCell>
+                                    <TableCell sx={{ color: 'white', fontWeight: '700', fontSize: '14px' }}>تاريخ البداية</TableCell>
+                                    <TableCell sx={{ color: 'white', fontWeight: '700', fontSize: '14px' }}>تاريخ الانتهاء</TableCell>
+                                    <TableCell sx={{ color: 'white', fontWeight: '700', fontSize: '14px' }}>السعر</TableCell>
                                 </TableRow>
                             </TableHead>
                             <TableBody>
@@ -514,11 +516,11 @@ export function Profile() {
                                         }}
                                     >
                                         <TableCell sx={{ fontWeight: '600', color: '#374151' }}>{sub.duration}</TableCell>
-                                        <TableCell sx={{ color: '#6b7280' }}>{sub.startDate}</TableCell>
-                                        <TableCell sx={{ color: '#6b7280' }}>{sub.expireDate}</TableCell>
+                                        <TableCell sx={{ color: '#6b7280', direction: 'ltr', textAlign: 'right' }}>{sub.startDate}</TableCell>
+                                        <TableCell sx={{ color: '#6b7280', direction: 'ltr', textAlign: 'right' }}>{sub.expireDate}</TableCell>
                                         <TableCell>
                                             <Chip 
-                                                label={`${sub.price} Dt`}
+                                                label={`${sub.price} دت`}
                                                 sx={{
                                                     background: 'linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%)',
                                                     color: '#667eea',

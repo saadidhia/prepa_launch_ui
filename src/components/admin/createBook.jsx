@@ -95,10 +95,10 @@ export function CreateBook() {
                                     className="form-check-input"
                                     type="checkbox"
                                     id="premiereCheckbox"
-                                    value="PREMIERE"
+                                    value="TROISIEME"
                                 />
                                 <label className="form-check-label" htmlFor="premiereCheckbox">
-                                    PREMIERE
+                                    TROISIEME
                                 </label>
                             </div>
                             <div className="form-check">
@@ -107,10 +107,10 @@ export function CreateBook() {
                                     className="form-check-input"
                                     type="checkbox"
                                     id="deuxiemeCheckbox"
-                                    value="DEUXIEME"
+                                    value="BAC"
                                 />
                                 <label className="form-check-label" htmlFor="secondaireCheckbox">
-                                    DEUXIEME
+                                    BAC
                                 </label>
                             </div>
                         </div>
@@ -123,10 +123,10 @@ export function CreateBook() {
                                     className="form-check-input"
                                     type="checkbox"
                                     id="pcCheckbox"
-                                    value="PC"
+                                    value="SCIENCE"
                                 />
                                 <label className="form-check-label" htmlFor="pcCheckbox">
-                                    PC
+                                    SCIENCE
                                 </label>
                             </div>
                             <div className="form-check">
@@ -135,10 +135,10 @@ export function CreateBook() {
                                     className="form-check-input"
                                     type="checkbox"
                                     id="mpCheckbox"
-                                    value="MP"
+                                    value="MATH"
                                 />
                                 <label className="form-check-label" htmlFor="mpCheckbox">
-                                    MP
+                                    MATH
                                 </label>
                             </div>
                             <div className="form-check">
@@ -147,10 +147,10 @@ export function CreateBook() {
                                     className="form-check-input"
                                     type="checkbox"
                                     id="ptCheckbox"
-                                    value="PT"
+                                    value="TECH"
                                 />
                                 <label className="form-check-label" htmlFor="ptCheckbox">
-                                    PT
+                                    TECH
                                 </label>
                             </div>
                             <div className="form-check">
@@ -159,10 +159,10 @@ export function CreateBook() {
                                     className="form-check-input"
                                     type="checkbox"
                                     id="bgCheckbox"
-                                    value="BG"
+                                    value="INFO"
                                 />
                                 <label className="form-check-label" htmlFor="bgCheckbox">
-                                    BG
+                                    INFO
                                 </label>
                             </div>
                         </div>

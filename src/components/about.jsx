@@ -118,7 +118,7 @@ export const About = (props) => {
                   color: "#1a1a1a",
                 }}
               >
-                À Propos de Nous
+                من نحن
               </Typography>
 
               {/* Paragraph */}

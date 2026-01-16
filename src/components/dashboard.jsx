@@ -222,7 +222,7 @@ setAgendaAlertOpen(true);
                   letterSpacing: '0.5px',
                 }}
               >
-                Time4Prepa
+                Grintta
               </Typography>
             </div>
             <div className="right-content" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
@@ -467,7 +467,7 @@ setAgendaAlertOpen(true);
                 fontWeight: '600',
               }}
             >
-              © 2025 Time4Prepa. All rights reserved.
+              © 2025 Grintta. All rights reserved.
             </Typography>
           </Box>
         </Drawer>

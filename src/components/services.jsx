@@ -43,56 +43,56 @@ export const Services = () => {
 
   const pricingData = [
     {
-      plan: "Un mois",
-      price: "35 Dt",
+      plan: "شهر واحد",
+      price: "35 دت",
       features: [
-        "Des cours",
-        "Des Examens",
-        "Des Series (Monastir, Tunis, Manar)",
-        "Concours (Tunisie, France, Maroc)",
-        "Suivez votre temps consacré à la préparation",
-        "Gérez vos notes sous forme de résumé ou de règles",
-        "Contrôlez-vous grâce à une statistique",
+        "دروس",
+        "امتحانات",
+        "سلاسل (المنستير، تونس، منار)",
+        "مسابقات (تونس، فرنسا، المغرب)",
+        "تتبع وقت التحضير الخاص بك",
+        "إدارة ملاحظاتك في شكل ملخصات أو قواعد",
+        "راقب تقدمك من خلال الإحصائيات",
       ],
     },
     {
-      plan: "Trois mois",
-      price: "100 Dt",
+      plan: "ثلاثة أشهر",
+      price: "100 دت",
       features: [
-        "Des cours",
-        "Des Examens",
-        "Des Series (Monastir, Tunis, Manar)",
-        "Concours (Tunisie, France, Maroc)",
-        "Suivez votre temps consacré à la préparation",
-        "Gérez vos notes sous forme de résumé ou de règles",
-        "Contrôlez-vous grâce à une statistique",
+        "دروس",
+        "امتحانات",
+        "سلاسل (المنستير، تونس، منار)",
+        "مسابقات (تونس، فرنسا، المغرب)",
+        "تتبع وقت التحضير الخاص بك",
+        "إدارة ملاحظاتك في شكل ملخصات أو قواعد",
+        "راقب تقدمك من خلال الإحصائيات",
       ],
       popular: true,
     },
     {
-      plan: "Six mois",
-      price: "200 Dt",
+      plan: "ستة أشهر",
+      price: "200 دت",
       features: [
-        "Des cours",
-        "Des Examens",
-        "Des Series (Monastir, Tunis, Manar)",
-        "Concours (Tunisie, France, Maroc)",
-        "Suivez votre temps consacré à la préparation",
-        "Gérez vos notes sous forme de résumé ou de règles",
-        "Contrôlez-vous grâce à une statistique",
+        "دروس",
+        "امتحانات",
+        "سلاسل (المنستير، تونس، منار)",
+        "مسابقات (تونس، فرنسا، المغرب)",
+        "تتبع وقت التحضير الخاص بك",
+        "إدارة ملاحظاتك في شكل ملخصات أو قواعد",
+        "راقب تقدمك من خلال الإحصائيات",
       ],
     },
     {
-      plan: "Dix mois",
-      price: "300 Dt",
+      plan: "عشرة أشهر",
+      price: "300 دت",
       features: [
-        "Des cours",
-        "Des Examens",
-        "Des Series (Monastir, Tunis, Manar)",
-        "Concours (Tunisie, France, Maroc)",
-        "Suivez votre temps consacré à la préparation",
-        "Gérez vos notes sous forme de résumé ou de règles",
-        "Contrôlez-vous grâce à une statistique",
+        "دروس",
+        "امتحانات",
+        "سلاسل (المنستير، تونس، منار)",
+        "مسابقات (تونس، فرنسا، المغرب)",
+        "تتبع وقت التحضير الخاص بك",
+        "إدارة ملاحظاتك في شكل ملخصات أو قواعد",
+        "راقب تقدمك من خلال الإحصائيات",
       ],
     },
   ];
@@ -109,8 +109,8 @@ export const Services = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const message = `Bonjour, je souhaite souscrire au plan ${selectedPlan.plan} (${selectedPlan.price}).
-Nom: ${name}, Téléphone: ${phone}, Email: ${email}, Genre: ${gender}, Niveau: ${level}, Branche: ${branch}`;
+    const message = `مرحبا، أود الاشتراك في خطة ${selectedPlan.plan} (${selectedPlan.price}).
+الاسم: ${name}, الهاتف: ${phone}, البريد الإلكتروني: ${email}, الجنس: ${gender}, المستوى: ${level}, الشعبة: ${branch}`;
     const whatsappNumber = "+21622609381";
     const url = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
     window.open(url, "_blank");
@@ -132,6 +132,7 @@ Nom: ${name}, Téléphone: ${phone}, Email: ${email}, Genre: ${gender}, Niveau: 
         padding: isMobile ? "60px 0" : "100px 0",
         background: "linear-gradient(180deg, #f8f9fa 0%, #ffffff 100%)",
         position: "relative",
+        direction: "rtl", // Added for RTL support
       }}
     >
       <Container maxWidth="lg">
@@ -156,7 +157,7 @@ Nom: ${name}, Téléphone: ${phone}, Email: ${email}, Genre: ${gender}, Niveau: 
               backgroundClip: "text",
             }}
           >
-            Les Abonnements
+            الاشتراكات
           </Typography>
           <Typography
             variant="body1"
@@ -168,7 +169,7 @@ Nom: ${name}, Téléphone: ${phone}, Email: ${email}, Genre: ${gender}, Niveau: 
               lineHeight: 1.6,
             }}
           >
-            Choisissez un plan qui correspond à vos besoins. Chaque plan offre des durées flexibles et des avantages uniques pour vous aider à réussir.
+            اختر الخطة التي تناسب احتياجاتك. كل خطة توفر مدة مرنة ومزايا فريدة لمساعدتك على النجاح.
           </Typography>
         </Box>
 
@@ -198,7 +199,7 @@ Nom: ${name}, Téléphone: ${phone}, Email: ${email}, Genre: ${gender}, Niveau: 
                 {plan.popular && (
                   <Chip
                     icon={<PremiumIcon sx={{ fontSize: 16 }} />}
-                    label="Populaire"
+                    label="الأكثر شعبية"
                     sx={{
                       position: "absolute",
                       top: "-12px",
@@ -283,7 +284,7 @@ Nom: ${name}, Téléphone: ${phone}, Email: ${email}, Genre: ${gender}, Niveau: 
                               fontSize: "13px",
                               fontWeight: "500",
                               lineHeight: 1.5,
-                              textAlign: "left",
+                              textAlign: "right",
                             },
                           }}
                         />
@@ -317,7 +318,7 @@ Nom: ${name}, Téléphone: ${phone}, Email: ${email}, Genre: ${gender}, Niveau: 
                       transition: "all 0.3s ease",
                     }}
                   >
-                    Sélectionner un plan
+                    اختر الخطة
                   </Button>
                 </CardContent>
               </Card>
@@ -335,6 +336,7 @@ Nom: ${name}, Téléphone: ${phone}, Email: ${email}, Genre: ${gender}, Niveau: 
             sx: {
               borderRadius: "24px",
               boxShadow: "0 20px 60px rgba(102, 126, 234, 0.3)",
+              direction: "rtl",
             },
           }}
         >
@@ -350,11 +352,11 @@ Nom: ${name}, Téléphone: ${phone}, Email: ${email}, Genre: ${gender}, Niveau: 
           >
             <Box>
               <Typography variant="h5" sx={{ fontWeight: "700", marginBottom: "4px" }}>
-                Inscription
+                التسجيل
               </Typography>
               {selectedPlan && (
                 <Typography variant="body2" sx={{ opacity: 0.9 }}>
-                  Plan: {selectedPlan.plan} ({selectedPlan.price})
+                  الخطة: {selectedPlan.plan} ({selectedPlan.price})
                 </Typography>
               )}
             </Box>
@@ -384,12 +386,12 @@ Nom: ${name}, Téléphone: ${phone}, Email: ${email}, Genre: ${gender}, Niveau: 
                 {/* Name */}
                 <TextField
                   fullWidth
-                  label="Votre nom"
+                  label="اسمك"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   required
                   InputProps={{
-                    startAdornment: <PersonIcon sx={{ color: "#667eea", marginRight: "12px" }} />,
+                    startAdornment: <PersonIcon sx={{ color: "#667eea", marginLeft: "12px" }} />,
                   }}
                   sx={{
                     "& .MuiOutlinedInput-root": {
@@ -402,12 +404,12 @@ Nom: ${name}, Téléphone: ${phone}, Email: ${email}, Genre: ${gender}, Niveau: 
                 {/* Phone */}
                 <TextField
                   fullWidth
-                  label="Votre téléphone"
+                  label="رقم هاتفك"
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
                   required
                   InputProps={{
-                    startAdornment: <PhoneIcon sx={{ color: "#667eea", marginRight: "12px" }} />,
+                    startAdornment: <PhoneIcon sx={{ color: "#667eea", marginLeft: "12px" }} />,
                   }}
                   sx={{
                     "& .MuiOutlinedInput-root": {
@@ -421,12 +423,12 @@ Nom: ${name}, Téléphone: ${phone}, Email: ${email}, Genre: ${gender}, Niveau: 
                 <TextField
                   fullWidth
                   type="email"
-                  label="Votre email"
+                  label="بريدك الإلكتروني"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
                   InputProps={{
-                    startAdornment: <EmailIcon sx={{ color: "#667eea", marginRight: "12px" }} />,
+                    startAdornment: <EmailIcon sx={{ color: "#667eea", marginLeft: "12px" }} />,
                   }}
                   sx={{
                     "& .MuiOutlinedInput-root": {
@@ -438,57 +440,60 @@ Nom: ${name}, Téléphone: ${phone}, Email: ${email}, Genre: ${gender}, Niveau: 
 
                 {/* Gender */}
                 <FormControl fullWidth required>
-                  <InputLabel>Sélectionnez le genre</InputLabel>
+                  <InputLabel>اختر الجنس</InputLabel>
                   <Select
                     value={gender}
                     onChange={(e) => setGender(e.target.value)}
-                    label="Sélectionnez le genre"
-                    startAdornment={<GenderIcon sx={{ color: "#667eea", marginRight: "12px" }} />}
+                    label="اختر الجنس"
+                    startAdornment={<GenderIcon sx={{ color: "#667eea", marginLeft: "12px" }} />}
                     sx={{
                       borderRadius: "12px",
                       backgroundColor: "white",
                     }}
                   >
-                    <MenuItem value="Homme">Homme</MenuItem>
-                    <MenuItem value="Femme">Femme</MenuItem>
+                    <MenuItem value="ذكر">ذكر</MenuItem>
+                    <MenuItem value="أنثى">أنثى</MenuItem>
                   </Select>
                 </FormControl>
 
                 {/* Level */}
                 <FormControl fullWidth required>
-                  <InputLabel>Sélectionnez le niveau</InputLabel>
+                  <InputLabel>اختر المستوى</InputLabel>
                   <Select
                     value={level}
                     onChange={(e) => setLevel(e.target.value)}
-                    label="Sélectionnez le niveau"
-                    startAdornment={<SchoolIcon sx={{ color: "#667eea", marginRight: "12px" }} />}
+                    label="اختر المستوى"
+                    startAdornment={<SchoolIcon sx={{ color: "#667eea", marginLeft: "12px" }} />}
                     sx={{
                       borderRadius: "12px",
                       backgroundColor: "white",
                     }}
                   >
-                    <MenuItem value="Premiere">Première</MenuItem>
-                    <MenuItem value="Deuxieme">Deuxième</MenuItem>
+                    <MenuItem value="السنة الثالثة">السنة الثالثة</MenuItem>
+                    <MenuItem value="الباكالوريا">الباكالوريا</MenuItem>
                   </Select>
                 </FormControl>
 
                 {/* Branch */}
                 <FormControl fullWidth required>
-                  <InputLabel>Sélectionnez la branche</InputLabel>
+                  <InputLabel>اختر الشعبة</InputLabel>
                   <Select
                     value={branch}
                     onChange={(e) => setBranch(e.target.value)}
-                    label="Sélectionnez la branche"
-                    startAdornment={<BookIcon sx={{ color: "#667eea", marginRight: "12px" }} />}
+                    label="اختر الشعبة"
+                    startAdornment={<BookIcon sx={{ color: "#667eea", marginLeft: "12px" }} />}
                     sx={{
                       borderRadius: "12px",
                       backgroundColor: "white",
                     }}
                   >
-                    <MenuItem value="MP">MP</MenuItem>
-                    <MenuItem value="PC">PC</MenuItem>
-                    <MenuItem value="PT">PT</MenuItem>
-                    <MenuItem value="BG">BG</MenuItem>
+                    <MenuItem value="رياضيات">رياضيات</MenuItem>
+                    <MenuItem value="علوم">علوم</MenuItem>
+                    <MenuItem value="تقنية">تقنية</MenuItem>
+                    <MenuItem value="إعلامية">إعلامية</MenuItem>
+                    <MenuItem value="اقتصاد">اقتصاد</MenuItem>
+                    <MenuItem value="آداب">آداب</MenuItem>
+                    <MenuItem value="رياضة">رياضة</MenuItem>
                   </Select>
                 </FormControl>
               </Box>
@@ -514,7 +519,7 @@ Nom: ${name}, Téléphone: ${phone}, Email: ${email}, Genre: ${gender}, Niveau: 
                   },
                 }}
               >
-                Annuler
+                إلغاء
               </Button>
               <Button
                 type="submit"
@@ -532,7 +537,7 @@ Nom: ${name}, Téléphone: ${phone}, Email: ${email}, Genre: ${gender}, Niveau: 
                   },
                 }}
               >
-                Envoyer à WhatsApp
+                إرسال عبر واتساب
               </Button>
             </DialogActions>
           </form>

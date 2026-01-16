@@ -9,12 +9,13 @@ export function Content(props) {
     const Auth = useAuth();
     const user = Auth.getUser();
     const location = useLocation();
-    const subFolderName = location.state?.subFolderName;
+    const subFolderName = location.state?.subFolderName ?? 'books';
 
     useEffect(() => {
         const fetchPdfs = async () => {
             try {
                 const response = await filesApi.getPdfs(user, subFolderName);
+                console.log("subfolderName:", subFolderName);
                 setPdfFiles(response.data);
             } catch (error) {
                 console.error("Error fetching PDFs:", error);
@@ -26,7 +27,7 @@ export function Content(props) {
     return (
         <div style={{ textAlign: 'center', padding: '20px' }}>
             <h1 style={{ fontSize: '2.5em', fontWeight: 'bold', margin: '20px 0' }}>
-                {subFolderName.split("/").pop()}
+                
             </h1>
             <div className="pdf-container">
                 {pdfFiles.length > 0 ? (

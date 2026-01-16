@@ -102,6 +102,7 @@ const App = () => {
                 element={<PrivateRoute requiredRole="USER">{subject.components}</PrivateRoute>}
               />
             ))}
+            
 
             {subjects.map((subject, index) => (
               <Route

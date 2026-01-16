@@ -27,6 +27,7 @@ export const Team = (props) => {
         padding: isMobile ? "60px 0" : "100px 0",
         background: "white",
         position: "relative",
+        direction: "rtl", // Added for RTL support
       }}
     >
       <Container maxWidth="lg">
@@ -53,7 +54,7 @@ export const Team = (props) => {
               backgroundClip: "text",
             }}
           >
-            Rencontrer l'équipe
+            تعرف على الفريق
           </Typography>
           <Typography
             variant="body1"
@@ -64,7 +65,7 @@ export const Team = (props) => {
               marginBottom: isMobile ? "40px" : "0",
             }}
           >
-            Découvrez notre équipe talentueuse et passionnée qui travaille avec vous pour atteindre vos objectifs. Rencontrez les visages derrière notre centre.
+            اكتشف فريقنا الموهوب والشغوف الذي يعمل معك لتحقيق أهدافك. تعرف على الوجوه وراء مركزنا.
           </Typography>
         </Box>
 
@@ -320,7 +321,7 @@ export const Team = (props) => {
                       fontWeight: "600",
                     }}
                   >
-                    Loading...
+                    جاري التحميل...
                   </Typography>
                 </Box>
               </Grid>}

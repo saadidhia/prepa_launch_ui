@@ -41,14 +41,14 @@ export const Navigation = (props) => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const navItems = [
-    { label: "Features", href: "#features" },
-    { label: "About", href: "#about" },
-    { label: "Services", href: "#services" },
-    { label: "Livres", href: "#livres" },
-    { label: "Testimonials", href: "#testimonials" },
-    { label: "Team", href: "#team" },
-    { label: "Contact", href: "#contact" },
+const navItems = [
+    { label: "الميزات", href: "#features" },
+    { label: "من نحن", href: "#about" },
+    { label: "الاشتراكات", href: "#services" },
+    { label: "الكتب", href: "#livres" },
+    { label: "الشهادات", href: "#testimonials" },
+    { label: "الفريق", href: "#team" },
+    { label: "اتصل بنا", href: "#contact" },
   ];
 
   const handleNavClick = (href) => {
@@ -91,7 +91,7 @@ export const Navigation = (props) => {
             letterSpacing: "1px",
           }}
         >
-          TIME4PREPA
+          Grintta
         </Typography>
         <IconButton onClick={handleDrawerToggle} sx={{ color: "white" }}>
           <CloseIcon />
@@ -152,7 +152,7 @@ export const Navigation = (props) => {
               transition: "all 0.3s ease",
             }}
           >
-            Connexion
+            دخول
           </Button>
         </ListItem>
       </List>
@@ -204,7 +204,7 @@ export const Navigation = (props) => {
                 },
               }}
             >
-              TIME4PREPA
+              GRINTTA
             </Typography>
 
             {/* Desktop Navigation */}
@@ -257,7 +257,7 @@ export const Navigation = (props) => {
                     transition: "all 0.3s ease",
                   }}
                 >
-                  Connexion
+                  دخول
                 </Button>
               </Box>
             )}

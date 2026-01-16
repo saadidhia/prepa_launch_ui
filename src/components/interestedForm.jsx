@@ -140,7 +140,7 @@ const InterestedForm = () => {
                 }} 
               />
               
-              <h2 className="brand-name">TIME4PREPA</h2>
+              <h2 className="brand-name">GRINTTA</h2>
               <p className="brand-tagline">Classes Préparatoires</p>
             </div>
 
@@ -191,7 +191,7 @@ const InterestedForm = () => {
         {/* Right Side - Form */}
         <div className="form-section">
           <div className="form-content">
-            <h1 className="form-title">Rejoignez Time4Prepa</h1>
+            <h1 className="form-title">Rejoignez Grintta</h1>
             <p className="form-subtitle">
               Inscrivez-vous pour accéder à tous nos cours et ressources
             </p>
@@ -293,8 +293,8 @@ const InterestedForm = () => {
                     disabled={loading}
                   >
                     <option value="">Sélectionner...</option>
-                    <option value="premiere">Première année</option>
-                    <option value="deuxieme">Deuxième année</option>
+                    <option value="troisieme">troisieme année</option>
+                    <option value="bac">bac</option>
                   </select>
                   {errors.level && <span className="error-message">{errors.level}</span>}
                 </div>
@@ -310,10 +310,13 @@ const InterestedForm = () => {
                     disabled={loading}
                   >
                     <option value="">Sélectionner...</option>
-                    <option value="MP">MP - Maths-Physique</option>
-                    <option value="PC">PC - Physique-Chimie</option>
-                    <option value="PT">PT - Physique-Technologie</option>
-                    <option value="BG">BG - Biologie-Géologie</option>
+                    <option value="SCIENCE">SCIENCE - SECTION-SCIENCE</option>
+                    <option value="MATH">MATH - SECTION MATH</option>
+                    <option value="INFO">INFO - SECTION INFO</option>
+                    <option value="TECH">TECH - SECTION TECH</option>
+                    <option value="ECO">ECO - SECTION ECO</option>
+                    <option value="LETTER">LETTER - SECTION LETTER</option>
+                    <option value="SPORT">SPORT - SECTION SPORT</option>
                   </select>
                   {errors.field && <span className="error-message">{errors.field}</span>}
                 </div>

@@ -12,7 +12,7 @@ export function SignUp() {
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
-  const [level, setLevel] = useState("PREMIERE");
+  const [level, setLevel] = useState("TROISIEME");
   const [field, setField] = useState("MP");
   const [numberPhone, setNumberPhone] = useState("");
   const [gender, setGender] = useState("MALE");
@@ -111,17 +111,20 @@ export function SignUp() {
           <div className="form-group mt-3">
             <label>Level</label>
             <select className="form-control mt-1" onChange={(e) => setLevel(e.target.value)} value={level}>
-              <option value="PREMIERE">Premiere</option>
-              <option value="DEUXIEME">Deuxieme</option>
+              <option value="troisieme">troisieme</option>
+              <option value="bac">bac</option>
             </select>
           </div>
           <div className="form-group mt-3">
             <label>Field</label>
             <select className="form-control mt-1" onChange={(e) => setField(e.target.value)} value={field}>
-              <option value="MP">Math Physique</option>
-              <option value="PC">Physique Chimie</option>
-              <option value="PT">Physique Technique</option>
-              <option value="BG">Biologie Geologie</option>
+              <option value="MATH">SECTION MATH</option>
+              <option value="SCIENCE">SECTION SCIENCE</option>
+              <option value="TECH">SECTION TECHNIQUE</option>
+              <option value="ECO">SECTION ECONOMIE</option>
+              <option value="LETTER">SECTION LETTER</option>
+              <option value="SPORT">SECTION SPORT</option>
+
             </select>
           </div>
           <div className="form-group mt-3">
