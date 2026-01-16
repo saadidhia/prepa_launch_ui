@@ -89,7 +89,7 @@ export function Connexion() {
             <div style={{ textAlign: "center", marginBottom: "40px" }}>
               <img 
                 src={logo} 
-                alt="Prepa Launch Logo" 
+                alt="Grintta Logo" 
                 style={{ 
                   width: "280px", 
                   height: "auto", 

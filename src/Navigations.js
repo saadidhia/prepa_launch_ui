@@ -17,136 +17,138 @@ import { UsersStat } from './components/admin/UsersStat'
 import { Progression }  from './components/user/Progression'
 import Agenda from './components/user/Agenda'
 import interested  from './components/admin/interested'
+import { BooksGrintta }from './components/user/BooksGrintta'
+import { Content } from './components/user/subjects/Content'
+
 
 const navigations = [
+     {
+        text: "كتب جرينتا",
+        link: "books",
+        component: Content,
+        role: "user"
+    },
     {
-        text: "Cours",
+        text: "دروس",
         link: "cours",
         component: Cours,
         role: "user"
     },
     {
-        text: "Series",
+        text: "سلاسل",
         link: "series",
         component: Series,
         role: "user"
     },
     {
-        text: "Exams",
+        text: "امتحانات",
         link: "exams",
         component: Exams,
         role: "user"
     },
     {
-        text: "Resumes",
+        text: "ملخصات",
         link: "resumes",
         component: Resume,
         role: "user"
     },
-    {
-        text: "Concours",
+   /* {
+        text: "مسابقات",
         link: "Concours",
         component: Concours,
         role: "user"
-
-    },
+    },*/
     {
-        text: "Notes",
+        text: "ملاحظات",
         link: "notes",
         component: Notes,
         role: "user"
     },
-   /* {
-        text: "Motivation",
+    /* {
+        text: "تحفيز",
         link: "motivation",
         component: Motivations,
         role: "user"
     }, */
 
-
     {
-        text: "users",
+        text: "المستخدمون",
         link: "users",
         component: Users,
         role: "admin"
     },
     {
-        text: "Register",
+        text: "تسجيل",
         link: "register",
         component: SignUp,
         role: "admin"
     },
     {
-        text: "NotifCandidates",
+        text: "المرشحون المُبلّغون",
         link: "NotifiedCandidates",
         component: NotifCandidates,
         role: "admin"
     },
     {
-        text: "write motivation",
+        text: "كتابة تحفيز",
         link: "CreateMotivation",
         component: CreateMotivation,
         role: "admin"
-
     },
     {
-        text: "Motivation mananegement",
+        text: "إدارة التحفيز",
         link: "motivation-admin",
         component: Motivations,
         role: "admin"
     },
     {
-        text: "Archive Cards",
+        text: "بطاقات الأرشيف",
         link: "archive_cards",
         component: ArchiveCards,
         role: "admin"
     },
     {
-        text: "Book",
+        text: "كتاب",
         link: "book",
         component: CreateBook,
         role: "admin"
     },
     {
-        text: "Books",
+        text: "الكتب",
         link: "books",
         component: Books,
         role: "admin"
     },
     {
-        text: "Chronometer",
+        text: "مؤقت",
         link: "chronometer",
-        component:  Chronometer,
+        component: Chronometer,
         role: "user"
     },
     {
-        text: "Statics",
+        text: "إحصائيات",
         link: "statics",
-        component:  UsersStat,
+        component: UsersStat,
         role: "admin"
-        
     },
     {
-        text: "Progression",
+        text: "التقدم",
         link: "progression",
-        component:  Progression,
+        component: Progression,
         role: "user"
-        
     },
     {
-        text: "Agenda",
+        text: "أجندة",
         link: "agenda",
-        component:  Agenda,
+        component: Agenda,
         role: "user"
     },
     {
-        text: "Interested",
+        text: "المهتمون",
         link: "interested",
-        component:  interested,
+        component: interested,
         role: "admin"
     }
-
-
 ];
 
 export default navigations

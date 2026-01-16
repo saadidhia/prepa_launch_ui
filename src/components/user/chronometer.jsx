@@ -35,6 +35,7 @@ import {
   Tooltip,
   ResponsiveContainer,
   Cell,
+  ReferenceLine,
 } from "recharts";
 
 const columns = [
@@ -170,13 +171,16 @@ const Chronometer = () => {
   // Custom tooltip
   const CustomTooltip = ({ active, payload }) => {
     if (active && payload && payload.length) {
+      const hours = parseFloat(payload[0].value);
+      const isAboveTarget = hours >= 2;
+      
       return (
         <Paper
           sx={{
             padding: '12px 16px',
             borderRadius: '12px',
             boxShadow: '0 8px 24px rgba(0, 0, 0, 0.15)',
-            border: '2px solid #667eea',
+            border: `2px solid ${isAboveTarget ? '#10b981' : '#667eea'}`,
           }}
         >
           <Typography sx={{ fontWeight: '700', color: '#1a1a1a', marginBottom: '4px' }}>
@@ -185,6 +189,15 @@ const Chronometer = () => {
           <Typography sx={{ color: '#6b7280', fontSize: '14px' }}>
             Temps: {payload[0].value} heures
           </Typography>
+          {isAboveTarget ? (
+            <Typography sx={{ color: '#10b981', fontSize: '12px', fontWeight: '600', marginTop: '4px' }}>
+              ✓ Objectif atteint
+            </Typography>
+          ) : (
+            <Typography sx={{ color: '#f59e0b', fontSize: '12px', fontWeight: '600', marginTop: '4px' }}>
+              {(2 - hours).toFixed(2)}h restantes
+            </Typography>
+          )}
         </Paper>
       );
     }
@@ -441,7 +454,7 @@ const Chronometer = () => {
           }}
         >
           <BarChartIcon sx={{ color: 'white', fontSize: 28 }} />
-          <Box>
+          <Box sx={{ flex: 1 }}>
             <Typography
               variant="h6"
               sx={{ color: 'white', fontWeight: '700', fontSize: '18px' }}
@@ -455,6 +468,16 @@ const Chronometer = () => {
               Visualisation de votre activité quotidienne
             </Typography>
           </Box>
+          <Chip
+            label="Objectif: 2h/jour"
+            sx={{
+              backgroundColor: 'rgba(255, 255, 255, 0.25)',
+              color: 'white',
+              fontWeight: '700',
+              backdropFilter: 'blur(10px)',
+              fontSize: '12px',
+            }}
+          />
         </Box>
 
         <CardContent sx={{ padding: '32px' }}>
@@ -477,7 +500,28 @@ const Chronometer = () => {
                   tick={{ fill: '#6b7280', fontSize: 12, fontWeight: 600 }}
                 />
                 <Tooltip content={<CustomTooltip />} />
-                <Bar dataKey="hours" fill="url(#colorBar)" radius={[8, 8, 0, 0]} />
+                <ReferenceLine 
+                  y={2} 
+                  stroke="#10b981" 
+                  strokeWidth={2.5}
+                  strokeDasharray="8 4"
+                  label={{ 
+                    value: 'Objectif: 2h', 
+                    position: 'right',
+                    fill: '#10b981',
+                    fontSize: 13,
+                    fontWeight: 700,
+                    offset: 10
+                  }}
+                />
+                <Bar dataKey="hours" fill="url(#colorBar)" radius={[8, 8, 0, 0]}>
+                  {chartData.map((entry, index) => (
+                    <Cell 
+                      key={`cell-${index}`}
+                      fill={parseFloat(entry.hours) >= 2 ? "url(#colorBarGreen)" : "url(#colorBar)"}
+                    />
+                  ))}
+                </Bar>
               </BarChart>
             </ResponsiveContainer>
           ) : (

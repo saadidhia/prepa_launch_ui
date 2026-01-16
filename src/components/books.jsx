@@ -19,13 +19,12 @@ export const Books = (props) => {
     , []);
 
   return (
-    <div id="livres" className="text-center">
+    <div id="livres" className="text-center" style={{ direction: "rtl" }}>
       <div className="container">
         <div className="section-title">
-          <h2>Livres disponibles</h2>
+          <h2>الكتب المتوفرة</h2>
           <p>
-
-            Explorez notre collection de livres disponibles pour apprendre ! Parcourez nos titres et passez commande dès maintenant pour trouver votre prochain livre d'apprentissage.
+            استكشف مجموعتنا من الكتب المتاحة للتعلم! تصفح عناويننا واطلب الآن للعثور على كتابك التعليمي التالي.
           </p>
         </div>
         <div className="row">
@@ -50,7 +49,7 @@ export const Books = (props) => {
                   />
                 </div>
               ))
-              : "Loading..."}
+              : "جاري التحميل..."}
           </div>
         </div>
       </div>

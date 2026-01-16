@@ -102,10 +102,13 @@ const Interested = () => {
 
   const getFieldLabel = (field) => {
     const labels = {
-      'MP': 'Maths-Physique',
-      'PC': 'Physique-Chimie',
-      'PT': 'Physique-Technologie',
-      'BG': 'Biologie-Géologie'
+      'MATH': 'SECTION MATH',
+      'SCIENCE': 'SECTION SCIENCE',
+      'TECH': 'SECTION TECHNIQUE',
+      'INFO': 'SECTION INFORMATIQUE',
+      'ECO': 'SECTION ECONOMIE',
+      'LETTER': 'SECTION LETTER',
+      'SPORT': 'SECTION SPORT'
     };
     return labels[field] || field;
   };
@@ -191,10 +194,12 @@ const Interested = () => {
               className="filter-select"
             >
               <option value="ALL">Toutes les filières</option>
-              <option value="MP">MP</option>
-              <option value="PC">PC</option>
-              <option value="PT">PT</option>
-              <option value="BG">BG</option>
+              <option value="MATH">SECTION MATH</option>
+              <option value="SCIENCE">SECTION SCIENCE</option>
+              <option value="TECH">SECTION TECHNIQUE</option>
+              <option value="ECO">SECTION ECONOMIE</option>
+              <option value="LETTER">SECTION LETTER</option>
+              <option value="SPORT">SECTION SPORT</option>
             </select>
 
             <select
@@ -203,8 +208,8 @@ const Interested = () => {
               className="filter-select"
             >
               <option value="ALL">Tous les niveaux</option>
-              <option value="PREMIERE">Première année</option>
-              <option value="DEUXIEME">Deuxième année</option>
+              <option value="TROISIEME">Troisieme année</option>
+              <option value="BAC">Bac</option>
             </select>
           </div>
         </div>
