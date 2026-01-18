@@ -12,6 +12,7 @@ import SchoolIcon from '@mui/icons-material/School';
 import WorkIcon from '@mui/icons-material/Work';
 import WcIcon from '@mui/icons-material/Wc';
 import VerifiedIcon from '@mui/icons-material/Verified';
+import ClassIcon from '@mui/icons-material/Class';
 import femaleImage from '../../assets/statics/female.jpg';
 import maleImage from '../../assets/statics/male.jpg';
 
@@ -28,6 +29,7 @@ export function Profile() {
     const [errorMessage, setErrorMessage] = useState('');
     const [successMessage, setSuccessMessage] = useState('');
     const [subscriptions, setSubscriptions] = useState([]);
+    const [option, setOption] = useState('');
 
     const Auth = useAuth();
     const user = Auth.getUser();
@@ -44,6 +46,7 @@ export function Profile() {
             setLevel(profileData.level);
             setNumberPhone(profileData.numberPhone);
             setNewNumberPhone(profileData.numberPhone);
+            setOption(profileData.option);
             setGender(profileData.gender === "FEMALE" ? "أنثى" : "ذكر");
     
             await fetchSubscriptions();
@@ -280,6 +283,43 @@ export function Profile() {
                             </Box>
                         </Grid>
 
+                        {/* Option */}
+                        <Grid item xs={12} md={6}>
+                            <Box sx={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '12px',
+                                padding: '16px',
+                                borderRadius: '16px',
+                                background: 'linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%)',
+                                border: '2px solid #f3f4f6',
+                                transition: 'all 0.3s ease',
+                                '&:hover': {
+                                    transform: 'translateY(-2px)',
+                                    boxShadow: '0 4px 12px rgba(102, 126, 234, 0.1)',
+                                }
+                            }}>
+                                <Box sx={{
+                                    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                                    borderRadius: '12px',
+                                    padding: '12px',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                }}>
+                                    <ClassIcon sx={{ color: 'white', fontSize: 24 }} />
+                                </Box>
+                                <Box sx={{ flex: 1 }}>
+                                    <Typography variant="caption" sx={{ color: '#6b7280', fontWeight: '600', display: 'block', marginBottom: '4px' }}>
+                                        المادة الإختيارية
+                                    </Typography>
+                                    <Typography variant="body2" sx={{ color: '#1a1a1a', fontWeight: '600' }}>
+                                        {option}
+                                    </Typography>
+                                </Box>
+                            </Box>
+                        </Grid>
+
                         {/* Field */}
                         <Grid item xs={12} md={6}>
                             <Box sx={{
@@ -318,7 +358,7 @@ export function Profile() {
                         </Grid>
 
                         {/* Phone Number */}
-                        <Grid item xs={12}>
+                        <Grid item xs={12} md={6}>
                             <Box sx={{
                                 display: 'flex',
                                 alignItems: 'center',

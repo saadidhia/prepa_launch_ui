@@ -1,4 +1,4 @@
-import french from './assets/statics/french.png'
+//import french from './assets/statics/french.png'
 import tunisia from './assets/statics/tunisia.png'
 import morocco from './assets/statics/morocco.png'
 const concours = [
@@ -10,7 +10,7 @@ const concours = [
     {
         name: "FRANCE",
         link: "france",
-        image: french
+        image: "french"
     },
     {
         name: "MAROC",

@@ -8,10 +8,11 @@ import subjects from '../../subjects';
 export function Cours() {
   const Auth = useAuth();
   const user = Auth.getUser();
+  const option = user.data.option
   const navigate = useNavigate();
   const filteredCourses = subjects.filter(course => course.section.includes(user.data.field));
 
-  useEffect(() => {  }, []);
+  useEffect(() => {  console.log("his option"+option)}, []);
 
   return (
     <Container maxWidth="xl" sx={{ paddingY: '32px' }}>
@@ -42,7 +43,7 @@ export function Cours() {
           Découvrez vos cours disponibles
         </Typography>
         <Chip 
-          label={`${filteredCourses.length} cours disponibles`}
+          label={`${filteredCourses.length + 1} cours disponibles`}
           sx={{
             marginTop: '16px',
             background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
@@ -54,7 +55,7 @@ export function Cours() {
         />
       </Box>
 
-      {/* Courses Grid */}
+      {/* Courses Grid - Combined with Option */}
       <Grid container spacing={3}>
         {filteredCourses.map((course, index) => (
           <Grid item xs={12} sm={6} md={4} lg={3} key={index}>

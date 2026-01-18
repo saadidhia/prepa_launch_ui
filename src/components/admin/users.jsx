@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import {
   Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, TextField,
-  Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Collapse, IconButton, Select, MenuItem, FormControl, InputLabel
+  Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Collapse, IconButton, Select, MenuItem, FormControl, InputLabel,
+  Tab
 } from '@mui/material';
 import { adminApi } from '../../apis/adminApi';
 import { useAuth } from '../context/AuthContext';
@@ -37,6 +38,7 @@ const [userToDelete, setUserToDelete] = useState(null); // State to hold the use
     try {
       const response = await adminApi.getUsers(admin);
       setUsers(response.data);
+      console.log('Fetched users:', response.data);
     } catch (error) {
       console.error('Error fetching users:', error);
     }
@@ -165,6 +167,7 @@ const handleSubmitDelete = async () => {
               <TableCell>Gender</TableCell>
               <TableCell>Niveau</TableCell>
               <TableCell>Branch</TableCell>
+              <TableCell>Option</TableCell>
               <TableCell>Phone</TableCell>
               <TableCell>Role</TableCell>
               <TableCell>Action</TableCell>
@@ -188,6 +191,7 @@ const handleSubmitDelete = async () => {
                   <TableCell>{user.gender}</TableCell>
                   <TableCell>{user.level}</TableCell>
                   <TableCell>{user.field}</TableCell>
+                  <TableCell>{user.option}</TableCell>
                   <TableCell>{user.numberPhone}</TableCell>
                   <TableCell>{user.role}</TableCell>
                   <TableCell>
