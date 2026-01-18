@@ -20,12 +20,13 @@ export function SignUp() {
   const [duration, setDuration] = useState("ONE");
   const [startDate, setStartDate] = useState("");
   const [price, setPrice] = useState("");
+  const [option, setOption] = useState("ALLEMAND");
   const [successMessage, setSuccessMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!(username && password && name && email && level && field && numberPhone && gender && role)) {
+    if (!(username && password && name && email && level && field && numberPhone && gender && role && option)) {
       return;
     }
 
@@ -39,6 +40,7 @@ export function SignUp() {
       numberPhone,
       gender,
       role,
+      option,
       subscriptionDto: {
         duration,
         startDate
@@ -125,6 +127,18 @@ export function SignUp() {
               <option value="LETTER">SECTION LETTER</option>
               <option value="SPORT">SECTION SPORT</option>
 
+            </select>
+
+          </div>
+           <div className="form-group mt-3">
+            <label>Option</label>
+            <select className="form-control mt-1" onChange={(e) => setOption(e.target.value)} value={option}>
+              <option value="ALLEMAND">Allemand</option>
+              <option value="ESPAGNOL">Espagnol</option>
+              <option value="ITALIEN">Italien</option>
+              <option value="TURC">Turc</option>
+              <option value="CHINOIS">Chinois</option>
+              <option value="DESSIN">Dessin</option>
             </select>
           </div>
           <div className="form-group mt-3">

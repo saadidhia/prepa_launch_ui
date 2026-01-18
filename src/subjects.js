@@ -1,17 +1,21 @@
 import { Content } from './components/user/subjects/Content'
-import math1 from './assets/statics/math1.jpg'
-import math2 from './assets/statics/math2.jpg'
-import maths from './assets/statics/maths.jpg'
-import physique from './assets/statics/physique.jpg'
-import chimie from './assets/statics/chimie.jpg'
-import sta from './assets/statics/sta.jpg'
-import info from './assets/statics/info.jpg'
-import anglais from './assets/statics/english.jpg'
-import francais from './assets/statics/francais.jpg'
-import geologie from './assets/statics/geologie.jpg'
-import bio_animale from './assets/statics/bio_animale.jpg'
-import bio_vegetable from './assets/statics/bio_vegetable.jpg'
-import bio_cellelaire from './assets/statics/bio_cellelaire.jpg'
+import science from './assets/statics/science.png'
+import math from './assets/statics/math.png'
+import physique from './assets/statics/physique.png'
+import philo from './assets/statics/philo.png'
+import francais from './assets/statics/Francais.png'
+import anglais from './assets/statics/anglais.png'
+import arabe from './assets/statics/arabe.png'
+import informatique from './assets/statics/informatique.jpg'
+import histoire_geo from './assets/statics/histoire_geo.jpg'
+import pensee_islamique from './assets/statics/pensee_islamique.jpg'
+import algo from './assets/statics/algo.jpg'
+import economie from './assets/statics/economie.jpg'
+import gestion from './assets/statics/gestion.jpg'
+import base_de_donnee from './assets/statics/base_de_donnee.jpeg'
+import tech from './assets/statics/tech.jpeg'
+import sport from './assets/statics/sport.jpeg'
+import option from './assets/statics/option.jpeg'
 
 
 const subjects = [
@@ -20,7 +24,7 @@ const subjects = [
         name: "science",
         section: ["MATH","SCIENCE","LETTER"],
         components: <Content name="Science"/>,
-        image: math1
+        image: science
         
     },
     {
@@ -28,21 +32,21 @@ const subjects = [
        name: "math",
        section: ["MATH", "SCIENCE","TECH","ECO","INFO","SPORT"],
        components: <Content name="Math"/>,
-       image: math2
+       image: math
     },
     {
         links:"physique",
         name: "Physique",
         section: ["MATH","SCIENCE","TECH","INFO","SPORT"],
         components: <Content name="Physique"/>,
-        image: maths
+        image: physique
     },
     { 
         links:"philosophie",
         name: "Philosophie",
         section: ["MATH", "SCIENCE","TECH","ECO","INFO","SPORT","LETTER"],
         components : <Content/>,
-        image: physique
+        image: philo
 
     },
     {
@@ -50,55 +54,55 @@ const subjects = [
         name: "Francais",
         section: ["MATH", "SCIENCE","TECH","ECO","INFO","SPORT","LETTER"],
         components: <Content/>,
-        image: chimie
+        image: francais
     },
     { 
         links: "Anglais",
         name:"Anglais",
         section: ["MATH", "SCIENCE","TECH","ECO","INFO","SPORT","LETTER"],
         components: <Content/>,
-        image: sta
+        image: anglais
     },
     {
         links: "Arabe",
         name: "Arabe",
         section: ["MATH", "SCIENCE","TECH","ECO","INFO","SPORT","LETTER"],
         components: <Content/>,
-        image: info
+        image: arabe
     },
     {
         links: "Informatique",
         name:"Informatique",
         section: ["MATH", "SCIENCE","TECH","ECO","SPORT","LETTER"],
         components: <Content/>,
-        image: anglais
+        image: informatique
     },
     {
         links: "Histoire_Geographie",
         name: "Histoire Geographie",
         section: ["ECO","LETTER"],
         components: <Content/>,
-        image: francais
+        image: histoire_geo
     },
     {
         links: "Pensee_islamique",
         name: "Pensée islamique",
         section: ["LETTER"],
         components: <Content/>,
-        image:"dd"
+        image: pensee_islamique
     },
     {
         links: "Algorithmes",
         name: "Algorithmes",
         section: ["INFO"],
         components: <Content/>,
-        image: geologie
+        image: algo
     },
     {  links: "Bases_de_donnees",
        name: "Bases de données",
        section:["INFO"],
        components: <Content/>,
-       image: bio_animale
+       image: base_de_donnee
         
     },
     {
@@ -106,28 +110,35 @@ const subjects = [
         name: "Technique",
         section:["TECH"],
         components: <Content/>,
-        image: bio_vegetable
+        image: tech
     },
     {
         links: "sport",
         name: "sport",
         section: ["MATH", "SCIENCE","TECH","ECO","INFO","SPORT","LETTER"],
         components: <Content/>,
-        image: bio_cellelaire
+        image: sport
     },
      {
         links: "economie",
         name: "Economie",
         section: ["ECO"],
         components: <Content/>,
-        image: bio_cellelaire
+        image: economie
     },
     {
         links: "gestion",
         name: "Gestion",
         section: ["ECO"],
         components: <Content/>,
-        image: bio_cellelaire
+        image: gestion
+    },
+    {
+        links: "option",
+        name: "Option",
+        section: ["ECO","SCIENCE","LETTER","TECH","INFO","MATH","SPORT"],
+        components: <Content/>,
+        image: option
     }
 
 
