@@ -15,7 +15,6 @@ export function Content(props) {
         const fetchPdfs = async () => {
             try {
                 const response = await filesApi.getPdfs(user, subFolderName);
-                console.log("subfolderName:", subFolderName);
                 setPdfFiles(response.data);
             } catch (error) {
                 console.error("Error fetching PDFs:", error);
