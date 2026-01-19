@@ -12,7 +12,7 @@ export function Cours() {
   const navigate = useNavigate();
   const filteredCourses = subjects.filter(course => course.section.includes(user.data.field));
 
-  useEffect(() => {  console.log("his option"+option)}, []);
+  useEffect(() => {  }, []);
 
   return (
     <Container maxWidth="xl" sx={{ paddingY: '32px' }}>

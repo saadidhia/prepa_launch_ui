@@ -12,8 +12,8 @@ export function SignUp() {
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
-  const [level, setLevel] = useState("TROISIEME");
-  const [field, setField] = useState("MP");
+  const [level, setLevel] = useState("BAC");
+  const [field, setField] = useState("MATH");
   const [numberPhone, setNumberPhone] = useState("");
   const [gender, setGender] = useState("MALE");
   const [role, setRole] = useState("USER");
