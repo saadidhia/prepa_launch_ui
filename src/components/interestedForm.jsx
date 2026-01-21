@@ -6,6 +6,7 @@ import logo from "../assets/logo/logo.png";
 export const instance = axios.create({
   baseURL: process.env.REACT_APP_API
 })
+
 const InterestedForm = () => {
   const [formData, setFormData] = useState({
     email: '',
@@ -16,8 +17,11 @@ const InterestedForm = () => {
     level: '',
     gender: '',
     message: '',
-    duration: 'ONE'
+    option: 'ALLEMAND'
   });
+
+  const [invoicePhoto, setInvoicePhoto] = useState(null);
+  const [invoicePreview, setInvoicePreview] = useState(null);
 
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
@@ -42,6 +46,58 @@ const InterestedForm = () => {
     }
   };
 
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    
+    if (file) {
+      // Validate file type
+      const validTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+      if (!validTypes.includes(file.type)) {
+        setErrors(prev => ({
+          ...prev,
+          invoice: 'Veuillez télécharger une image (JPEG, JPG ou PNG)'
+        }));
+        return;
+      }
+
+      // Validate file size (max 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        setErrors(prev => ({
+          ...prev,
+          invoice: 'La taille du fichier ne doit pas dépasser 5 MB'
+        }));
+        return;
+      }
+
+      setInvoicePhoto(file);
+      
+      // Create preview
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setInvoicePreview(reader.result);
+      };
+      reader.readAsDataURL(file);
+
+      // Clear error
+      if (errors.invoice) {
+        setErrors(prev => ({
+          ...prev,
+          invoice: ''
+        }));
+      }
+    }
+  };
+
+  const removeInvoicePhoto = () => {
+    setInvoicePhoto(null);
+    setInvoicePreview(null);
+    // Reset file input
+    const fileInput = document.getElementById('invoice');
+    if (fileInput) {
+      fileInput.value = '';
+    }
+  };
+
   const validateForm = () => {
     const newErrors = {};
     
@@ -52,6 +108,7 @@ const InterestedForm = () => {
     if (!formData.level) newErrors.level = 'Le niveau est requis';
     if (!formData.field) newErrors.field = 'La filière est requise';
     if (!formData.gender) newErrors.gender = 'Le genre est requis';
+    if (!invoicePhoto) newErrors.invoice = 'La photo de facture est requise';
     
     return newErrors;
   };
@@ -65,22 +122,32 @@ const InterestedForm = () => {
       setSubmitStatus(null);
       
       try {
-        // Convert to match API format
+        // Create FormData object
+        const formDataToSend = new FormData();
+        
+        // Add JSON data as a blob
         const apiData = {
           email: formData.email,
           name: formData.name,
-          whatsappPhone: formData.whatsappPhone || formData.phone, // Use phone as fallback
+          whatsappPhone: formData.whatsappPhone || formData.phone,
           phone: formData.phone,
           field: formData.field,
           level: formData.level.toUpperCase(),
           gender: formData.gender === 'Homme' ? 'MALE' : 'FEMALE',
           message: formData.message || '',
-          duration: formData.duration
+          option: formData.option
         };
 
-        const response = await instance.post('/api/v1/interested/create', apiData, {
+        formDataToSend.append('data', new Blob([JSON.stringify(apiData)], {
+          type: 'application/json'
+        }));
+
+        // Add invoice photo
+        formDataToSend.append('invoice', invoicePhoto);
+
+        const response = await instance.post('/api/v1/interested/create', formDataToSend, {
           headers: {
-            'Content-Type': 'application/json',
+            'Content-Type': 'multipart/form-data',
           }
         });
 
@@ -99,8 +166,10 @@ const InterestedForm = () => {
             level: '',
             gender: '',
             message: '',
-            duration: 'ONE'
+            option: 'ALLEMAND'
           });
+          setInvoicePhoto(null);
+          setInvoicePreview(null);
           
           // Show success message for 5 seconds
           setTimeout(() => {
@@ -354,22 +423,63 @@ const InterestedForm = () => {
                 </div>
 
                 <div className="form-group">
-                  <label htmlFor="duration">Durée d'abonnement *</label>
+                  <label htmlFor="option">Option*</label>
                   <select
-                    id="duration"
-                    name="duration"
-                    value={formData.duration}
+                    id="option"
+                    name="option"
+                    value={formData.option}
                     onChange={handleChange}
-                    className={errors.duration ? 'error' : ''}
+                    className={errors.option ? 'error' : ''}
                     disabled={loading}
                   >
-                    <option value="ONE">1 mois</option>
-                    <option value="THREE">3 mois</option>
-                    <option value="SIX">6 mois</option>
-                    <option value="TEN">10 mois</option>
+                    <option value="ALLEMAND">Allemand</option>
+                    <option value="ESPAGNOL">Espagnole</option>
+                    <option value="ITALIEN">Italien</option>
+                    <option value="TURC">Turc</option>
+                    <option value="CHINOIS">Chinois</option>
+                    <option value="DESSIN">Dessin</option>
+
                   </select>
-                  {errors.duration && <span className="error-message">{errors.duration}</span>}
+                  {errors.option && <span className="error-message">{errors.option}</span>}
                 </div>
+              </div>
+
+              {/* Invoice Photo Upload */}
+              <div className="form-group">
+                <label htmlFor="invoice">Photo de la facture *</label>
+                <div className="file-upload-container">
+                  <input
+                    type="file"
+                    id="invoice"
+                    name="invoice"
+                    accept="image/jpeg,image/jpg,image/png"
+                    onChange={handleFileChange}
+                    className="file-input"
+                    disabled={loading}
+                    style={{ display: 'none' }}
+                  />
+                  
+                  {!invoicePreview ? (
+                    <label htmlFor="invoice" className="file-upload-label">
+                      <div className="upload-icon">📷</div>
+                      <span>Cliquez pour télécharger la facture</span>
+                      <small>JPEG, JPG ou PNG (Max 5 MB)</small>
+                    </label>
+                  ) : (
+                    <div className="file-preview">
+                      <img src={invoicePreview} alt="Invoice preview" className="preview-image" />
+                      <button
+                        type="button"
+                        onClick={removeInvoicePhoto}
+                        className="remove-file-btn"
+                        disabled={loading}
+                      >
+                        ✕ Supprimer
+                      </button>
+                    </div>
+                  )}
+                </div>
+                {errors.invoice && <span className="error-message">{errors.invoice}</span>}
               </div>
 
               {/* Message */}

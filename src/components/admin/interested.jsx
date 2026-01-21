@@ -8,6 +8,7 @@ import { bearerAuth } from '../../apis/AuthApi';
 export const instance = axios.create({
   baseURL: process.env.REACT_APP_API
 })
+
 const Interested = () => {
   const [interestedList, setInterestedList] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -15,8 +16,11 @@ const Interested = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterField, setFilterField] = useState('ALL');
   const [filterLevel, setFilterLevel] = useState('ALL');
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [showImageModal, setShowImageModal] = useState(false);
+  
   const Auth = useAuth();
-    const admin = Auth.getUser();
+  const admin = Auth.getUser();
 
   useEffect(() => {
     fetchInterestedList();
@@ -37,7 +41,6 @@ const Interested = () => {
         throw new Error('Failed to fetch data');
       }
       console.log('Interested list fetched:', response.data);
-     // const data = await response.json();
       setInterestedList(response.data);
       setError(null);
     } catch (err) {
@@ -67,13 +70,12 @@ const Interested = () => {
           }
         });
       } else if (field === 'subscribed') {
-        // TODO: Add endpoint for subscribed toggle if different from check
-         await instance.patch(`/api/v1/interested/subscribe/${id}`, {}, {
-           headers: {
-             'Authorization': bearerAuth(admin),
-             'Content-type': 'application/json'
-           }
-         });
+        await instance.patch(`/api/v1/interested/subscribe/${id}`, {}, {
+          headers: {
+            'Authorization': bearerAuth(admin),
+            'Content-type': 'application/json'
+          }
+        });
       }
 
     } catch (err) {
@@ -81,6 +83,20 @@ const Interested = () => {
       // Revert on error
       fetchInterestedList();
     }
+  };
+
+  const handleImageClick = (imageUrl) => {
+  // Remove leading slash from imageUrl if present and construct proper URL
+  const cleanUrl = imageUrl.startsWith('/') ? imageUrl.substring(1) : imageUrl;
+  const fullUrl = `${process.env.REACT_APP_API}/${cleanUrl}`;
+  setSelectedImage(fullUrl);
+  setShowImageModal(true);
+};
+
+
+  const closeImageModal = () => {
+    setShowImageModal(false);
+    setSelectedImage(null);
   };
 
   const formatDate = (dateString) => {
@@ -113,14 +129,23 @@ const Interested = () => {
     return labels[field] || field;
   };
 
-  const getDurationLabel = (duration) => {
+  const getOptionLabel = (option) => {
     const labels = {
-      'ONE': '1 mois',
-      'THREE': '3 mois',
-      'SIX': '6 mois',
-      'TEN': '10 mois'
+      'ALLEMAND': 'Allemand',
+      'ESPAGNOL': 'Espagnole',
+      'ITALIEN': 'Italien',
+      'TURC': 'Turc',
+      'CHINOIS': 'Chinois',
+      'DESSIN': 'Dessin'
     };
-    return labels[duration] || duration;
+    return labels[option] || option;
+  };
+
+  const getInvoiceFileName = (url) => {
+    if (!url) return null;
+    const parts = url.split('/');
+    const fileName = parts[parts.length - 1];
+    return fileName.length > 20 ? fileName.substring(0, 20) + '...' : fileName;
   };
 
   // Filter logic
@@ -228,7 +253,8 @@ const Interested = () => {
               <th>Filière</th>
               <th>Niveau</th>
               <th>Genre</th>
-              <th>Durée</th>
+              <th>Option</th>
+              <th>Facture</th>
               <th>Vérifié</th>
               <th>Abonné</th>
               <th>Message</th>
@@ -237,7 +263,7 @@ const Interested = () => {
           <tbody>
             {filteredList.length === 0 ? (
               <tr>
-                <td colSpan="13" className="empty-state">
+                <td colSpan="14" className="empty-state">
                   <span className="empty-icon">📭</span>
                   <p>Aucun résultat trouvé</p>
                 </td>
@@ -269,8 +295,21 @@ const Interested = () => {
                     </span>
                   </td>
                   <td className="duration-cell">
-                    {getDurationLabel(person.duration)}
+                    {getOptionLabel(person.option)}
                   </td>
+                  <td className="invoice-cell">
+  {person.invoicePhotoUrl ? (
+    <button
+      className="invoice-button"
+      onClick={() => handleImageClick(person.invoicePhotoUrl)}
+      title="Cliquez pour voir la facture"
+    >
+      📄 {getInvoiceFileName(person.invoicePhotoUrl)}
+    </button>
+  ) : (
+    <span className="no-invoice">Aucune</span>
+  )}
+</td>
                   <td className="toggle-cell">
                     <button
                       className={`toggle-button ${person.checked ? 'active' : ''}`}
@@ -309,6 +348,32 @@ const Interested = () => {
           </tbody>
         </table>
       </div>
+
+      {/* Image Modal */}
+      {showImageModal && (
+        <div className="image-modal-overlay" onClick={closeImageModal}>
+          <div className="image-modal-content" onClick={(e) => e.stopPropagation()}>
+            <button className="modal-close-button" onClick={closeImageModal}>
+              ✕
+            </button>
+            <img 
+              src={selectedImage} 
+              alt="Facture" 
+              className="modal-image"
+            />
+            <div className="modal-actions">
+              <a 
+                href={selectedImage} 
+                download 
+                className="download-button"
+                onClick={(e) => e.stopPropagation()}
+              >
+                📥 Télécharger
+              </a>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
