@@ -26,7 +26,7 @@ export function SignUp() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!(username && password && name && email && level && field && numberPhone && gender && role && option)) {
+    if (!(username && password && name && email && level && field && numberPhone && gender && role && option && price)) {
       return;
     }
 
@@ -42,8 +42,7 @@ export function SignUp() {
       role,
       option,
       subscriptionDto: {
-        duration,
-        startDate
+        price
       }
     };
 
@@ -160,29 +159,18 @@ export function SignUp() {
             </select>
           </div>
 
-          {/* Subscription Fields */}
           <div className="form-group mt-3">
-            <label>Subscription Duration</label>
-            <select
-              className="form-control mt-1"
-              value={duration}
-              onChange={(e) => setDuration(e.target.value)}
-            >
-              <option value="ONE">One</option>
-              <option value="THREE">Three</option>
-              <option value="SIX">Six</option>
-              <option value="TEN">Ten</option>
-            </select>
-          </div>
-          <div className="form-group mt-3">
-            <label>Subscription Start Date</label>
-            <input
-              type="date"
-              className="form-control mt-1"
-              value={startDate}
-              onChange={(e) => setStartDate(e.target.value)}
-            />
-          </div>
+  <label>Subscription Price</label>
+  <input
+    type="number"
+    className="form-control mt-1"
+    value={price}
+    onChange={(e) => setPrice(e.target.value)}
+    min="0"
+    step="0.01"
+    placeholder="Enter price"
+  />
+</div>
 
           <div className="d-grid gap-2 mt-3">
             <button type="submit" className="btn btn-primary">
