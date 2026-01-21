@@ -538,7 +538,6 @@ export function Profile() {
                                 <TableRow sx={{ 
                                     background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
                                 }}>
-                                    <TableCell sx={{ color: 'white', fontWeight: '700', fontSize: '14px' }}>الأشهر</TableCell>
                                     <TableCell sx={{ color: 'white', fontWeight: '700', fontSize: '14px' }}>تاريخ البداية</TableCell>
                                     <TableCell sx={{ color: 'white', fontWeight: '700', fontSize: '14px' }}>تاريخ الانتهاء</TableCell>
                                     <TableCell sx={{ color: 'white', fontWeight: '700', fontSize: '14px' }}>السعر</TableCell>
@@ -555,7 +554,7 @@ export function Profile() {
                                             transition: 'background-color 0.3s ease',
                                         }}
                                     >
-                                        <TableCell sx={{ fontWeight: '600', color: '#374151' }}>{sub.duration}</TableCell>
+                                      
                                         <TableCell sx={{ color: '#6b7280', direction: 'ltr', textAlign: 'right' }}>{sub.startDate}</TableCell>
                                         <TableCell sx={{ color: '#6b7280', direction: 'ltr', textAlign: 'right' }}>{sub.expireDate}</TableCell>
                                         <TableCell>
