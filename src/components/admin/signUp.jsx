@@ -122,6 +122,7 @@ export function SignUp() {
               <option value="MATH">SECTION MATH</option>
               <option value="SCIENCE">SECTION SCIENCE</option>
               <option value="TECH">SECTION TECHNIQUE</option>
+              <option value="INFO">SECTION INFORMATIQUE</option>
               <option value="ECO">SECTION ECONOMIE</option>
               <option value="LETTER">SECTION LETTER</option>
               <option value="SPORT">SECTION SPORT</option>
