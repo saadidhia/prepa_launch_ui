@@ -106,8 +106,8 @@ export const Header = (props) => {
               display: "inline-flex",
               alignItems: "center",
               justifyContent: "center",
-              width: 80,
-              height: 80,
+              width: 90,
+              height: 90,
               borderRadius: "50%",
               background: "rgba(255, 255, 255, 0.15)",
               backdropFilter: "blur(10px)",
@@ -116,7 +116,7 @@ export const Header = (props) => {
               animation: "pulse 2s ease-in-out infinite",
             }}
           >
-            <SchoolIcon sx={{ fontSize: 40, color: "white" }} />
+            <SchoolIcon sx={{ fontSize: 60, color: "white" }} />
           </Box>
 
           {/* Title */}
@@ -126,7 +126,7 @@ export const Header = (props) => {
             sx={{
               color: "white",
               fontWeight: "700",
-              fontSize: isMobile ? "36px" : "56px",
+              fontSize: isMobile ? "62px" : "82px",
               lineHeight: 1.2,
               marginBottom: "24px",
               textShadow: "0 4px 20px rgba(0, 0, 0, 0.3)",
@@ -141,7 +141,7 @@ export const Header = (props) => {
             variant={isMobile ? "body1" : "h5"}
             sx={{
               color: "rgba(255, 255, 255, 0.95)",
-              fontSize: isMobile ? "16px" : "20px",
+              fontSize: isMobile ? "24px" : "28px",
               lineHeight: 1.6,
               marginBottom: "40px",
               maxWidth: "800px",

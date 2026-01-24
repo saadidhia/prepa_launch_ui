@@ -157,7 +157,7 @@ export const Services = () => {
               backgroundClip: "text",
             }}
           >
-            الاشتراكات
+            عروضنا
           </Typography>
           <Typography
             variant="body1"
