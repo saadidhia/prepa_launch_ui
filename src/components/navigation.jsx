@@ -42,11 +42,11 @@ export const Navigation = (props) => {
   }, []);
 
 const navItems = [
-    { label: "الميزات", href: "#features" },
-    { label: "من نحن", href: "#about" },
-    { label: "الاشتراكات", href: "#services" },
+    { label: "ماذا نقدم ؟", href: "#features" },
+    { label: "من نحن ؟", href: "#about" },
+    { label: "عروضنا", href: "#services" },
     { label: "الكتب", href: "#livres" },
-    { label: "الشهادات", href: "#testimonials" },
+    { label: "آراء المشتركين", href: "#testimonials" },
     { label: "الفريق", href: "#team" },
     { label: "اتصل بنا", href: "#contact" },
   ];
@@ -204,7 +204,7 @@ const navItems = [
                 },
               }}
             >
-              GRINTTA
+              Grintta Academy
             </Typography>
 
             {/* Desktop Navigation */}

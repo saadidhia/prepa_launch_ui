@@ -106,7 +106,7 @@ export function Connexion() {
                   marginTop: "8px"
                 }}
               >
-                Bienvenue
+                مرحباً
               </Typography>
               <Typography 
                 variant="body2" 
@@ -116,7 +116,7 @@ export function Connexion() {
                   marginTop: "4px"
                 }}
               >
-                Connectez-vous à votre compte
+                قم بتسجيل الدخول إلى حسابك
               </Typography>
             </div>
 
@@ -128,7 +128,7 @@ export function Connexion() {
                 display: "block",
                 marginBottom: "8px"
               }}>
-                Nom d'utilisateur
+                إسم المستخدم
               </label>
               <input
                 onChange={(e) => setUsername(e.target.value)}
@@ -167,7 +167,7 @@ export function Connexion() {
                 display: "block",
                 marginBottom: "8px"
               }}>
-                Mot de passe
+                كلمة السر
               </label>
               <div style={{ position: "relative" }}>
                 <input
@@ -275,7 +275,7 @@ export function Connexion() {
                 e.target.style.boxShadow = "0 4px 12px rgba(102, 126, 234, 0.4)";
               }}
             >
-              {isLoading ? <CircularProgress size={24} style={{ color: "white" }} /> : "Se connecter"}
+              {isLoading ? <CircularProgress size={24} style={{ color: "white" }} /> : "تسجيل الدخول"}
             </button>
           </form>
         </div>
