@@ -5,7 +5,7 @@ on:
     branches:
       - master
       - qa
-      - prod   # أضفنا prod
+      - prod
 
 jobs:
   build:
@@ -28,7 +28,9 @@ jobs:
         npm install -g env-cmd
     
     - name: Build frontend
-      run: npm run build-dev
+      run: npm run build-prod
+
+
 
     - name: Upload build artifact
       uses: actions/upload-artifact@v4
