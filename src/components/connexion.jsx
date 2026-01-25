@@ -28,7 +28,7 @@ export function Connexion() {
     const user = { username: username, password: password };
 
     if (!(username && password)) {
-      setIsError("Username and password are required");
+      setIsError("يُرجى إدخال اسم المستخدم وكلمة المرور");
       return;
     }
 

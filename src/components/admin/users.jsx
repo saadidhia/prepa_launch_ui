@@ -231,7 +231,6 @@ const handleSubmitDelete = async () => {
                         <TableHead>
                           <TableRow>
                             <TableCell>Start Date</TableCell>
-                            <TableCell>Duration</TableCell>
                             <TableCell>End Date</TableCell>
                             <TableCell>Price</TableCell>
                           </TableRow>
@@ -240,7 +239,6 @@ const handleSubmitDelete = async () => {
                           {user.subscriptions.map((subscription) => (
                             <TableRow key={subscription.id}>
                               <TableCell>{subscription.startDate}</TableCell>
-                              <TableCell>{subscription.duration}</TableCell>
                               <TableCell>{subscription.expireDate}</TableCell>
                               <TableCell>{subscription.price} Dt</TableCell>
                             </TableRow>

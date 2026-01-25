@@ -353,28 +353,7 @@ setAgendaAlertOpen(true);
                 >
                   {user.data.preferred_username}
                 </Typography>
-                <Box
-                  sx={{
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    backgroundColor: 'rgba(255, 255, 255, 0.25)',
-                    padding: '2px 8px',
-                    borderRadius: '10px',
-                  }}
-                >
-                  <Typography 
-                    variant="caption" 
-                    sx={{ 
-                      fontWeight: '600', 
-                      color: 'white',
-                      fontSize: '9px',
-                      letterSpacing: '0.3px',
-                      textTransform: 'uppercase',
-                    }}
-                  >
-                    {user.data.rol[0]}
-                  </Typography>
-                </Box>
+                
               </Box>
             </Box>
 
