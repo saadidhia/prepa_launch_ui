@@ -109,7 +109,7 @@ export const Contact = (props) => {
                       backgroundClip: "text",
                     }}
                   >
-                    أرسل رسالتك
+                    تواصل معنا
                   </Typography>
                   <Typography
                     variant="body1"
@@ -557,23 +557,8 @@ export const Contact = (props) => {
               fontSize: "14px",
             }}
           >
-            &copy; 2023 ضياء السعدي - تصميم{" "}
-            <Box
-              component="a"
-              href="https://www.facebook.com/dhiasaady20"
-              target="_blank"
-              rel="nofollow noopener noreferrer"
-              sx={{
-                color: "#667eea",
-                textDecoration: "none",
-                fontWeight: "600",
-                "&:hover": {
-                  textDecoration: "underline",
-                },
-              }}
-            >
-              ضياء السعدي
-            </Box>
+            &copy; designed by Dhia saadi 2025 -{" "}
+            
           </Typography>
         </Container>
       </Box>

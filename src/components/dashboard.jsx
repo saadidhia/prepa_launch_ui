@@ -380,7 +380,7 @@ setAgendaAlertOpen(true);
                     display: 'block',
                   }}
                 >
-                  Expire le
+                  ينتهي الاشتراك في
                 </Typography>
                 <Typography 
                   variant="body2" 
@@ -396,37 +396,52 @@ setAgendaAlertOpen(true);
             </Box>
           </Box>
 
-          {/* Navigation Section */}
-          <Box sx={{ padding: '0 16px', flexGrow: 1 }}>
-            <Typography 
-              variant="overline" 
-              sx={{ 
-                color: '#9ca3af', 
-                fontWeight: '700', 
-                fontSize: '10px',
-                letterSpacing: '1px',
-                paddingLeft: '4px',
-                marginBottom: '12px',
-                display: 'block',
-              }}
-            >
-              MENU
-            </Typography>
-            <List sx={{ padding: 0 }}>
-              {user.data.rol[0] === "ADMIN"
-                ? navigations.filter(n => n.role === "admin").map((item, index) => (
-                    <ListItem key={index} disablePadding sx={{ marginBottom: '6px' }}>
-                      <MenuItem item={item} handleNavigation={handleNavigation} />
-                    </ListItem>
-                  ))
-                : navigations.filter(n => n.role === "user").map((item, index) => (
-                    <ListItem key={index} disablePadding sx={{ marginBottom: '6px' }}>
-                      <MenuItem item={item} handleNavigation={handleNavigation} />
-                    </ListItem>
-                  ))
+{/* Navigation Section */}
+<Box sx={{ padding: '0 16px', flexGrow: 1 }}>
+  
+  <List sx={{ padding: 0 }}>
+    {user.data.rol[0] === "ADMIN"
+      ? navigations.filter(n => n.role === "admin").map((item, index) => (
+          <ListItem 
+            key={index} 
+            disablePadding 
+            sx={{ 
+              marginBottom: '6px',
+              '& button': {
+                justifyContent: 'center',
+              },
+              '& span, & p, & div': {
+                fontSize: '20px !important',
+                fontWeight: '600 !important',
+                textAlign: 'center !important',
               }
-            </List>
-          </Box>
+            }}
+          >
+            <MenuItem item={item} handleNavigation={handleNavigation} />
+          </ListItem>
+        ))
+      : navigations.filter(n => n.role === "user").map((item, index) => (
+          <ListItem 
+            key={index} 
+            disablePadding 
+            sx={{ 
+              marginBottom: '3px',
+              '& button': {
+                justifyContent: 'center',
+              },
+              '& span, & p, & div': {
+                fontSize: '20px !important',
+                fontWeight: '600 !important',
+                textAlign: 'center !important',
+              }
+            }}
+          >
+            <MenuItem item={item} handleNavigation={handleNavigation} />
+          </ListItem>
+        ))
+    }
+  </List>
+</Box>
 
           {/* Footer */}
           <Box 
