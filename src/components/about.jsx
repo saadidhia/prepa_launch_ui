@@ -157,7 +157,7 @@ export const About = (props) => {
                     backgroundClip: "text",
                   }}
                 >
-                  Pourquoi Nous Choisir ?
+                علاش احنا؟
                 </Typography>
 
                 <Grid container spacing={2}>

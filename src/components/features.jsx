@@ -86,7 +86,7 @@ export const Features = (props) => {
               backgroundClip: "text",
             }}
           >
-            الميزات
+           ماذا نقدم
           </Typography>
           <Box
             sx={{

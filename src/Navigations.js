@@ -23,31 +23,31 @@ import { Content } from './components/user/subjects/Content'
 
 const navigations = [
      {
-        text: "كتب جرينتا",
+        text: "GRINTTA كُتب",
         link: "books",
         component: Content,
         role: "user"
     },
     {
-        text: "دروس",
+        text: "الدروس",
         link: "cours",
         component: Cours,
         role: "user"
     },
     {
-        text: "سلاسل",
+        text: "تمارين",
         link: "series",
         component: Series,
         role: "user"
     },
     {
-        text: "امتحانات",
+        text: "الإمتحانات",
         link: "exams",
         component: Exams,
         role: "user"
     },
     {
-        text: "ملخصات",
+        text: "الملاحظات",
         link: "resumes",
         component: Resume,
         role: "user"
@@ -59,7 +59,7 @@ const navigations = [
         role: "user"
     },*/
     {
-        text: "ملاحظات",
+        text: "ملاحظاتي",
         link: "notes",
         component: Notes,
         role: "user"
@@ -120,7 +120,7 @@ const navigations = [
         role: "admin"
     },
     {
-        text: "مؤقت",
+        text: "وقت التركيز",
         link: "chronometer",
         component: Chronometer,
         role: "user"
@@ -132,13 +132,13 @@ const navigations = [
         role: "admin"
     },
     {
-        text: "التقدم",
+        text: "تقدمك الدراسي",
         link: "progression",
         component: Progression,
         role: "user"
     },
     {
-        text: "أجندة",
+        text: "مواعيد الإمتحانات",
         link: "agenda",
         component: Agenda,
         role: "user"
