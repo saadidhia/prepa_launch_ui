@@ -40,59 +40,19 @@ import {
 export const Services = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+  const isTablet = useMediaQuery(theme.breakpoints.down("lg"));
 
   const pricingData = [
     {
-      plan: "شهر واحد",
-      price: "35 دت",
+      plan: "سنة دراسية كاملة",
+      price: "متاح حاليا للمتحصلين على كتاب Grintta بالباكالوريا 2026",
       features: [
         "دروس",
         "امتحانات",
-        "سلاسل (المنستير، تونس، منار)",
-        "مسابقات (تونس، فرنسا، المغرب)",
+        "ملخصات",
+        "تحفيز",
         "تتبع وقت التحضير الخاص بك",
-        "إدارة ملاحظاتك في شكل ملخصات أو قواعد",
-        "راقب تقدمك من خلال الإحصائيات",
-      ],
-    },
-    {
-      plan: "ثلاثة أشهر",
-      price: "100 دت",
-      features: [
-        "دروس",
-        "امتحانات",
-        "سلاسل (المنستير، تونس، منار)",
-        "مسابقات (تونس، فرنسا، المغرب)",
-        "تتبع وقت التحضير الخاص بك",
-        "إدارة ملاحظاتك في شكل ملخصات أو قواعد",
-        "راقب تقدمك من خلال الإحصائيات",
-      ],
-      popular: true,
-    },
-    {
-      plan: "ستة أشهر",
-      price: "200 دت",
-      features: [
-        "دروس",
-        "امتحانات",
-        "سلاسل (المنستير، تونس، منار)",
-        "مسابقات (تونس، فرنسا، المغرب)",
-        "تتبع وقت التحضير الخاص بك",
-        "إدارة ملاحظاتك في شكل ملخصات أو قواعد",
-        "راقب تقدمك من خلال الإحصائيات",
-      ],
-    },
-    {
-      plan: "عشرة أشهر",
-      price: "300 دت",
-      features: [
-        "دروس",
-        "امتحانات",
-        "سلاسل (المنستير، تونس، منار)",
-        "مسابقات (تونس، فرنسا، المغرب)",
-        "تتبع وقت التحضير الخاص بك",
-        "إدارة ملاحظاتك في شكل ملخصات أو قواعد",
-        "راقب تقدمك من خلال الإحصائيات",
+        "إدارة ملاحظاتك في شكل ملخصات أو قواعد", 
       ],
     },
   ];
@@ -132,7 +92,7 @@ export const Services = () => {
         padding: isMobile ? "60px 0" : "100px 0",
         background: "linear-gradient(180deg, #f8f9fa 0%, #ffffff 100%)",
         position: "relative",
-        direction: "rtl", // Added for RTL support
+        direction: "rtl",
       }}
     >
       <Container maxWidth="lg">
@@ -169,55 +129,59 @@ export const Services = () => {
               lineHeight: 1.6,
             }}
           >
-            اختر الخطة التي تناسب احتياجاتك. كل خطة توفر مدة مرنة ومزايا فريدة لمساعدتك على النجاح.
           </Typography>
         </Box>
 
-        {/* Pricing Cards */}
-        <Grid container spacing={isMobile ? 3 : 4}>
-          {pricingData.map((plan, index) => (
-            <Grid item xs={12} sm={6} md={3} key={index}>
+        {/* Centered Pricing Card */}
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <Box
+            sx={{
+              width: "100%",
+              maxWidth: isMobile ? "100%" : isTablet ? "500px" : "600px",
+            }}
+          >
+            {pricingData.map((plan, index) => (
               <Card
+                key={index}
                 sx={{
-                  height: "100%",
                   borderRadius: "24px",
-                  boxShadow: plan.popular
-                    ? "0 12px 40px rgba(102, 126, 234, 0.25)"
-                    : "0 4px 20px rgba(0, 0, 0, 0.08)",
-                  border: plan.popular
-                    ? "3px solid #667eea"
-                    : "2px solid #e5e7eb",
+                  boxShadow: "0 12px 40px rgba(102, 126, 234, 0.25)",
+                  border: "3px solid #667eea",
                   position: "relative",
                   transition: "all 0.4s cubic-bezier(0.4, 0, 0.2, 1)",
-                  animation: `fadeInUp 0.8s ease-out ${index * 0.1}s both`,
+                  animation: `fadeInUp 0.8s ease-out`,
                   "&:hover": {
                     transform: "translateY(-12px)",
                     boxShadow: "0 16px 48px rgba(102, 126, 234, 0.3)",
                   },
                 }}
               >
-                {plan.popular && (
-                  <Chip
-                    icon={<PremiumIcon sx={{ fontSize: 16 }} />}
-                    label="الأكثر شعبية"
-                    sx={{
-                      position: "absolute",
-                      top: "-12px",
-                      left: "50%",
-                      transform: "translateX(-50%)",
-                      background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-                      color: "white",
-                      fontWeight: "700",
-                      fontSize: "12px",
-                      padding: "16px 8px",
-                      zIndex: 1,
-                    }}
-                  />
-                )}
+                <Chip
+                  icon={<PremiumIcon sx={{ fontSize: isMobile ? 14 : 18 }} />}
+                  label="الأكثر شعبية"
+                  sx={{
+                    position: "absolute",
+                    top: "-12px",
+                    left: "50%",
+                    transform: "translateX(-50%)",
+                    background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                    color: "white",
+                    fontWeight: "700",
+                    fontSize: isMobile ? "11px" : "14px",
+                    padding: isMobile ? "14px 6px" : "18px 10px",
+                    zIndex: 1,
+                  }}
+                />
 
                 <CardContent
                   sx={{
-                    padding: isMobile ? "28px 20px" : "32px 24px",
+                    padding: isMobile ? "36px 24px" : isTablet ? "48px 36px" : "56px 48px",
                     textAlign: "center",
                   }}
                 >
@@ -226,9 +190,9 @@ export const Services = () => {
                     variant="h5"
                     sx={{
                       fontWeight: "700",
-                      fontSize: isMobile ? "20px" : "22px",
+                      fontSize: isMobile ? "24px" : isTablet ? "28px" : "32px",
                       color: "#1a1a1a",
-                      marginBottom: "12px",
+                      marginBottom: isMobile ? "16px" : "20px",
                     }}
                   >
                     {plan.plan}
@@ -237,8 +201,8 @@ export const Services = () => {
                   {/* Price */}
                   <Box
                     sx={{
-                      marginBottom: "24px",
-                      padding: "16px",
+                      marginBottom: isMobile ? "28px" : "36px",
+                      padding: isMobile ? "20px" : isTablet ? "24px" : "28px",
                       background: "linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%)",
                       borderRadius: "16px",
                     }}
@@ -247,11 +211,12 @@ export const Services = () => {
                       variant="h3"
                       sx={{
                         fontWeight: "700",
-                        fontSize: isMobile ? "32px" : "36px",
+                        fontSize: isMobile ? "16px" : isTablet ? "18px" : "20px",
                         background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
                         WebkitBackgroundClip: "text",
                         WebkitTextFillColor: "transparent",
                         backgroundClip: "text",
+                        lineHeight: 1.6,
                       }}
                     >
                       {plan.price}
@@ -259,20 +224,20 @@ export const Services = () => {
                   </Box>
 
                   {/* Features List */}
-                  <List sx={{ padding: 0, marginBottom: "24px" }}>
+                  <List sx={{ padding: 0, marginBottom: isMobile ? "28px" : "36px" }}>
                     {plan.features.map((feature, i) => (
                       <ListItem
                         key={i}
                         sx={{
-                          padding: "8px 0",
+                          padding: isMobile ? "10px 0" : "12px 0",
                           alignItems: "flex-start",
                         }}
                       >
-                        <ListItemIcon sx={{ minWidth: "32px", marginTop: "2px" }}>
+                        <ListItemIcon sx={{ minWidth: isMobile ? "36px" : "40px", marginTop: "2px" }}>
                           <CheckCircleIcon
                             sx={{
                               color: "#10b981",
-                              fontSize: 18,
+                              fontSize: isMobile ? 20 : 24,
                             }}
                           />
                         </ListItemIcon>
@@ -281,9 +246,9 @@ export const Services = () => {
                           primaryTypographyProps={{
                             sx: {
                               color: "#374151",
-                              fontSize: "13px",
+                              fontSize: isMobile ? "15px" : isTablet ? "16px" : "17px",
                               fontWeight: "500",
-                              lineHeight: 1.5,
+                              lineHeight: 1.6,
                               textAlign: "right",
                             },
                           }}
@@ -292,26 +257,23 @@ export const Services = () => {
                     ))}
                   </List>
 
-                  {/* Select Button */}
+                  {/* Select Button 
                   <Button
                     fullWidth
                     variant="contained"
                     onClick={() => handleSelectPlan(plan)}
+                    
                     sx={{
-                      padding: "12px 24px",
+                      padding: isMobile ? "14px 28px" : isTablet ? "16px 32px" : "18px 36px",
                       borderRadius: "12px",
-                      background: plan.popular
-                        ? "linear-gradient(135deg, #667eea 0%, #764ba2 100%)"
-                        : "#1a1a1a",
+                      background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
                       color: "white",
                       fontWeight: "700",
-                      fontSize: "14px",
+                      fontSize: isMobile ? "16px" : isTablet ? "17px" : "18px",
                       textTransform: "none",
                       boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
                       "&:hover": {
-                        background: plan.popular
-                          ? "linear-gradient(135deg, #764ba2 0%, #667eea 100%)"
-                          : "#374151",
+                        background: "linear-gradient(135deg, #764ba2 0%, #667eea 100%)",
                         transform: "translateY(-2px)",
                         boxShadow: "0 6px 16px rgba(0, 0, 0, 0.2)",
                       },
@@ -319,12 +281,12 @@ export const Services = () => {
                     }}
                   >
                     اختر الخطة
-                  </Button>
+                  </Button>  */}
                 </CardContent>
               </Card>
-            </Grid>
-          ))}
-        </Grid>
+            ))}
+          </Box>
+        </Box>
 
         {/* Modal Form */}
         <Dialog
