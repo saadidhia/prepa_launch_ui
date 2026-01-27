@@ -119,21 +119,30 @@ export const Header = (props) => {
             <SchoolIcon sx={{ fontSize: 60, color: "white" }} />
           </Box>
 
-          {/* Title */}
+          {/* Title - Fixed RTL/LTR Handling */}
           <Typography
             variant={isMobile ? "h3" : "h1"}
             component="h1"
             sx={{
               color: "white",
               fontWeight: "700",
-              fontSize: isMobile ? "62px" : "82px",
-              lineHeight: 1.2,
+              fontSize: isMobile ? "48px" : "82px",
+              lineHeight: 1.3,
               marginBottom: "24px",
               textShadow: "0 4px 20px rgba(0, 0, 0, 0.3)",
               animation: "fadeInUp 1s ease-out 0.2s both",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              gap: isMobile ? "8px" : "12px",
             }}
           >
-            {props.data ? props.data.title : "Loading"}
+            <Box component="span" sx={{ direction: "rtl", display: "block" }}>
+              نجاحك يبدا ب
+            </Box>
+            <Box component="span" sx={{ direction: "ltr", display: "block" }}>
+              Grintta Academy
+            </Box>
           </Typography>
 
           {/* Paragraph */}
@@ -141,13 +150,14 @@ export const Header = (props) => {
             variant={isMobile ? "body1" : "h5"}
             sx={{
               color: "rgba(255, 255, 255, 0.95)",
-              fontSize: isMobile ? "24px" : "28px",
+              fontSize: isMobile ? "20px" : "28px",
               lineHeight: 1.6,
               marginBottom: "40px",
               maxWidth: "800px",
               margin: "0 auto 40px",
               textShadow: "0 2px 10px rgba(0, 0, 0, 0.2)",
               animation: "fadeInUp 1s ease-out 0.4s both",
+              direction: "rtl",
             }}
           >
             {props.data ? props.data.paragraph : "Loading"}
