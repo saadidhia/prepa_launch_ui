@@ -16,7 +16,6 @@ import {
   Close as CloseIcon,
   PictureAsPdf as PdfIcon,
   Fullscreen as FullscreenIcon,
-  Download as DownloadIcon,
 } from '@mui/icons-material';
 
 export function PdfViewer({ pdf, expiryMinutes = 10 }) {
@@ -128,6 +127,7 @@ export function PdfViewer({ pdf, expiryMinutes = 10 }) {
         onClick={toggleModal}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
+        onContextMenu={(e) => e.preventDefault()}
         sx={{
           position: 'relative',
           borderRadius: '20px',
@@ -199,8 +199,9 @@ export function PdfViewer({ pdf, expiryMinutes = 10 }) {
         {/* PDF Preview */}
         <Box
           component="iframe"
-          src={`${presignedUrl}#toolbar=0`}
+          src={`${presignedUrl}#toolbar=0&navpanes=0&scrollbar=0`}
           title={fileName}
+          onContextMenu={(e) => e.preventDefault()}
           sx={{
             width: '100%',
             height: '700px',
@@ -296,22 +297,6 @@ export function PdfViewer({ pdf, expiryMinutes = 10 }) {
           </Box>
 
           <Box sx={{ display: 'flex', gap: '8px' }}>
-            <Tooltip title="Télécharger">
-              <IconButton
-                component="a"
-                href={presignedUrl}
-                download
-                sx={{
-                  color: 'white',
-                  '&:hover': {
-                    backgroundColor: 'rgba(255, 255, 255, 0.2)',
-                  },
-                }}
-              >
-                <DownloadIcon />
-              </IconButton>
-            </Tooltip>
-
             <Tooltip title="Fermer">
               <IconButton
                 onClick={toggleModal}
@@ -334,12 +319,33 @@ export function PdfViewer({ pdf, expiryMinutes = 10 }) {
             padding: 0,
             height: 'calc(100% - 64px)',
             background: '#f8f9fa',
+            position: 'relative',
           }}
         >
+          {/* Watermark Overlay */}
+          <Box
+            sx={{
+              position: 'absolute',
+              top: '50%',
+              left: '50%',
+              transform: 'translate(-50%, -50%) rotate(-45deg)',
+              fontSize: '80px',
+              fontWeight: '900',
+              color: 'rgba(102, 126, 234, 0.08)',
+              pointerEvents: 'none',
+              userSelect: 'none',
+              zIndex: 1,
+              whiteSpace: 'nowrap',
+            }}
+          >
+            CONFIDENTIEL
+          </Box>
+
           <Box
             component="iframe"
-            src={`${presignedUrl}#toolbar=0`}
+            src={`${presignedUrl}#toolbar=0&navpanes=0&scrollbar=0`}
             title="PDF Viewer"
+            onContextMenu={(e) => e.preventDefault()}
             sx={{
               width: '100%',
               height: '100%',
