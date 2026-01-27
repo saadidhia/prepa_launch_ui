@@ -322,24 +322,91 @@ export function PdfViewer({ pdf, expiryMinutes = 10 }) {
             position: 'relative',
           }}
         >
-          {/* Watermark Overlay */}
+          {/* Multiple Watermark Overlays for Better Visibility */}
+          
+          {/* Center Watermark - Large */}
           <Box
             sx={{
               position: 'absolute',
               top: '50%',
               left: '50%',
               transform: 'translate(-50%, -50%) rotate(-45deg)',
-              fontSize: '80px',
+              fontSize: '120px',
               fontWeight: '900',
-              color: 'rgba(102, 126, 234, 0.08)',
+              color: 'rgba(102, 126, 234, 0.15)',
               pointerEvents: 'none',
               userSelect: 'none',
               zIndex: 1,
               whiteSpace: 'nowrap',
+              textShadow: '2px 2px 4px rgba(0, 0, 0, 0.1)',
+              letterSpacing: '8px',
             }}
           >
             CONFIDENTIEL
           </Box>
+
+          {/* Top Watermark */}
+          <Box
+            sx={{
+              position: 'absolute',
+              top: '20%',
+              left: '50%',
+              transform: 'translate(-50%, -50%) rotate(-45deg)',
+              fontSize: '80px',
+              fontWeight: '900',
+              color: 'rgba(102, 126, 234, 0.12)',
+              pointerEvents: 'none',
+              userSelect: 'none',
+              zIndex: 1,
+              whiteSpace: 'nowrap',
+              letterSpacing: '6px',
+            }}
+          >
+            CONFIDENTIEL
+          </Box>
+
+          {/* Bottom Watermark */}
+          <Box
+            sx={{
+              position: 'absolute',
+              bottom: '20%',
+              left: '50%',
+              transform: 'translate(-50%, 50%) rotate(-45deg)',
+              fontSize: '80px',
+              fontWeight: '900',
+              color: 'rgba(102, 126, 234, 0.12)',
+              pointerEvents: 'none',
+              userSelect: 'none',
+              zIndex: 1,
+              whiteSpace: 'nowrap',
+              letterSpacing: '6px',
+            }}
+          >
+            CONFIDENTIEL
+          </Box>
+
+          {/* User Email Watermark - Bottom Right */}
+          {user?.email && (
+            <Box
+              sx={{
+                position: 'absolute',
+                bottom: '40px',
+                right: '40px',
+                fontSize: '14px',
+                fontWeight: '700',
+                color: 'rgba(102, 126, 234, 0.4)',
+                backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                padding: '8px 16px',
+                borderRadius: '8px',
+                pointerEvents: 'none',
+                userSelect: 'none',
+                zIndex: 1,
+                border: '2px solid rgba(102, 126, 234, 0.3)',
+              }}
+            >
+              {user.email}
+            </Box>
+          )}
 
           <Box
             component="iframe"
