@@ -17,6 +17,7 @@ import {
   PictureAsPdf as PdfIcon,
   Fullscreen as FullscreenIcon,
 } from '@mui/icons-material';
+import { PDFDocument, rgb, degrees, StandardFonts } from 'pdf-lib';
 
 export function PdfViewer({ pdf, expiryMinutes = 10 }) {
   const Auth = useAuth();
@@ -28,46 +29,139 @@ export function PdfViewer({ pdf, expiryMinutes = 10 }) {
   const [error, setError] = useState(null);
 
   const fileName = pdf.split('/').pop();
-  const storageKey = `pdfUrl_${pdf}`;
+
+  // Get user email from localStorage
+  const getUserEmail = () => {
+    try {
+      const userFromStorage = localStorage.getItem('user');
+      if (userFromStorage) {
+        const parsedUser = JSON.parse(userFromStorage);
+        const email = parsedUser.data?.email || parsedUser.email;
+        console.log('✅ Email found in localStorage:', email);
+        return email || 'Unknown User';
+      }
+      return user?.email || 'Unknown User';
+    } catch (err) {
+      console.error('Error getting user email:', err);
+      return 'Unknown User';
+    }
+  };
+
+  const addWatermarkToPdf = async (pdfUrl, userEmail) => {
+    console.log('Adding watermark with email:', userEmail);
+    
+    const response = await fetch(pdfUrl, {
+      mode: 'cors',
+      credentials: 'omit'
+    });
+    
+    if (!response.ok) {
+      throw new Error(`Failed to fetch PDF: ${response.status}`);
+    }
+    
+    const pdfBuffer = await response.arrayBuffer();
+    const pdfDoc = await PDFDocument.load(pdfBuffer);
+    const pages = pdfDoc.getPages();
+    const font = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
+
+    for (let i = 0; i < pages.length; i++) {
+      const page = pages[i];
+      const { width, height } = page.getSize();
+
+      // Big center watermark - USER EMAIL (rotated)
+      page.drawText(userEmail, {
+        x: width / 2 - 100,
+        y: height / 2,
+        size: 40,
+        font: font,
+        color: rgb(1, 0, 0), // Red for visibility
+        opacity: 0.3,
+        rotate: degrees(-45),
+      });
+
+      // Top watermark - USER EMAIL
+      page.drawText(userEmail, {
+        x: 100,
+        y: height - 50,
+        size: 16,
+        font: font,
+        color: rgb(1, 0, 0),
+        opacity: 0.4,
+      });
+
+      // Bottom left - User email
+      page.drawText(`User: ${userEmail}`, {
+        x: 50,
+        y: 30,
+        size: 10,
+        font: font,
+        color: rgb(0, 0, 0),
+        opacity: 0.8,
+      });
+
+      // Bottom right - Timestamp
+      const timestamp = new Date().toLocaleString('fr-FR');
+      page.drawText(`Date: ${timestamp}`, {
+        x: width - 200,
+        y: 30,
+        size: 10,
+        font: font,
+        color: rgb(0, 0, 0),
+        opacity: 0.8,
+      });
+    }
+
+    const watermarkedPdfBytes = await pdfDoc.save();
+    const blob = new Blob([watermarkedPdfBytes], { type: 'application/pdf' });
+    return URL.createObjectURL(blob);
+  };
 
   useEffect(() => {
-    const fetchPresignedUrl = async () => {
+    let isMounted = true;
+
+    const fetchAndWatermarkPdf = async () => {
       setLoading(true);
+      setError(null);
 
       try {
-        // Check sessionStorage for cached URL
-        const cachedData = sessionStorage.getItem(storageKey);
-        if (cachedData) {
-          const { url, expiry } = JSON.parse(cachedData);
-          if (Date.now() < expiry) {
-            setPresignedUrl(url);
-            setLoading(false);
-            return; // still valid, no need to fetch
-          }
-        }
-
-        // Fetch new pre-signed URL
+        const userEmail = getUserEmail();
+        console.log('🔵 User email from localStorage:', userEmail);
+        console.log('🔵 Fetching PDF:', pdf);
+        
         const response = await filesApi.presignedUrl(user, pdf, expiryMinutes);
+        
         if (response.status !== 200) {
           throw new Error(`Failed to get presigned URL (${response.status})`);
         }
 
-        const url = await response.data;
+        const originalUrl = response.data;
+        console.log('✅ Got presigned URL');
 
-        // Save to sessionStorage with expiry timestamp
-        const expiryTime = Date.now() + expiryMinutes * 60 * 1000; // in ms
-        sessionStorage.setItem(storageKey, JSON.stringify({ url, expiry: expiryTime }));
-
-        setPresignedUrl(url);
+        const watermarkedUrl = await addWatermarkToPdf(originalUrl, userEmail);
+        
+        if (isMounted) {
+          console.log('✅ Watermarked PDF with email:', userEmail);
+          setPresignedUrl(watermarkedUrl);
+        }
+        
       } catch (err) {
-        setError(err.message);
+        console.error('❌ Error:', err);
+        if (isMounted) {
+          setError(`Erreur: ${err.message}`);
+        }
       } finally {
-        setLoading(false);
+        if (isMounted) {
+          setLoading(false);
+        }
       }
     };
 
-    fetchPresignedUrl();
-  }, [pdf, expiryMinutes, storageKey, user]);
+    fetchAndWatermarkPdf();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [pdf, expiryMinutes]);
 
   const toggleModal = () => setShowModal(!showModal);
 
@@ -98,7 +192,7 @@ export function PdfViewer({ pdf, expiryMinutes = 10 }) {
             fontSize: '14px',
           }}
         >
-          Chargement du PDF...
+          Ajout des watermarks...
         </Typography>
       </Box>
     );
@@ -122,7 +216,6 @@ export function PdfViewer({ pdf, expiryMinutes = 10 }) {
 
   return (
     <>
-      {/* PDF Preview Card */}
       <Box
         onClick={toggleModal}
         onMouseEnter={() => setIsHovered(true)}
@@ -144,7 +237,6 @@ export function PdfViewer({ pdf, expiryMinutes = 10 }) {
           },
         }}
       >
-        {/* Hover Overlay */}
         <Box
           sx={{
             position: 'absolute',
@@ -167,8 +259,6 @@ export function PdfViewer({ pdf, expiryMinutes = 10 }) {
               flexDirection: 'column',
               alignItems: 'center',
               gap: '12px',
-              transform: isHovered ? 'translateY(0)' : 'translateY(20px)',
-              transition: 'transform 0.3s ease',
             }}
           >
             <Box
@@ -196,7 +286,6 @@ export function PdfViewer({ pdf, expiryMinutes = 10 }) {
           </Box>
         </Box>
 
-        {/* PDF Preview */}
         <Box
           component="iframe"
           src={`${presignedUrl}#toolbar=0&navpanes=0&scrollbar=0`}
@@ -210,7 +299,6 @@ export function PdfViewer({ pdf, expiryMinutes = 10 }) {
           }}
         />
 
-        {/* File Name Bar */}
         <Box
           sx={{
             padding: '16px 20px',
@@ -228,7 +316,6 @@ export function PdfViewer({ pdf, expiryMinutes = 10 }) {
             sx={{
               color: isHovered ? 'white' : '#667eea',
               fontSize: 24,
-              transition: 'color 0.3s ease',
             }}
           />
           <Typography
@@ -237,26 +324,23 @@ export function PdfViewer({ pdf, expiryMinutes = 10 }) {
               fontSize: '15px',
               color: isHovered ? 'white' : '#1a1a1a',
               flex: 1,
-              transition: 'color 0.3s ease',
             }}
           >
             {fileName}
           </Typography>
           <Chip
-            label="PDF"
+            label="PROTÉGÉ"
             size="small"
             sx={{
               backgroundColor: isHovered ? 'rgba(255, 255, 255, 0.2)' : 'rgba(102, 126, 234, 0.1)',
               color: isHovered ? 'white' : '#667eea',
               fontWeight: '700',
               fontSize: '11px',
-              transition: 'all 0.3s ease',
             }}
           />
         </Box>
       </Box>
 
-      {/* Full Screen Modal */}
       <Dialog
         open={showModal}
         onClose={toggleModal}
@@ -272,7 +356,6 @@ export function PdfViewer({ pdf, expiryMinutes = 10 }) {
           },
         }}
       >
-        {/* Modal Header */}
         <Box
           sx={{
             background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
@@ -313,101 +396,13 @@ export function PdfViewer({ pdf, expiryMinutes = 10 }) {
           </Box>
         </Box>
 
-        {/* Modal Content */}
         <DialogContent
           sx={{
             padding: 0,
             height: 'calc(100% - 64px)',
             background: '#f8f9fa',
-            position: 'relative',
           }}
         >
-          {/* Multiple Watermark Overlays for Better Visibility */}
-          
-          {/* Center Watermark - Large */}
-          <Box
-            sx={{
-              position: 'absolute',
-              top: '50%',
-              left: '50%',
-              transform: 'translate(-50%, -50%) rotate(-45deg)',
-              fontSize: '120px',
-              fontWeight: '900',
-              color: 'rgba(102, 126, 234, 0.15)',
-              pointerEvents: 'none',
-              userSelect: 'none',
-              zIndex: 1,
-              whiteSpace: 'nowrap',
-              textShadow: '2px 2px 4px rgba(0, 0, 0, 0.1)',
-              letterSpacing: '8px',
-            }}
-          >
-            CONFIDENTIEL
-          </Box>
-
-          {/* Top Watermark */}
-          <Box
-            sx={{
-              position: 'absolute',
-              top: '20%',
-              left: '50%',
-              transform: 'translate(-50%, -50%) rotate(-45deg)',
-              fontSize: '80px',
-              fontWeight: '900',
-              color: 'rgba(102, 126, 234, 0.12)',
-              pointerEvents: 'none',
-              userSelect: 'none',
-              zIndex: 1,
-              whiteSpace: 'nowrap',
-              letterSpacing: '6px',
-            }}
-          >
-            CONFIDENTIEL
-          </Box>
-
-          {/* Bottom Watermark */}
-          <Box
-            sx={{
-              position: 'absolute',
-              bottom: '20%',
-              left: '50%',
-              transform: 'translate(-50%, 50%) rotate(-45deg)',
-              fontSize: '80px',
-              fontWeight: '900',
-              color: 'rgba(102, 126, 234, 0.12)',
-              pointerEvents: 'none',
-              userSelect: 'none',
-              zIndex: 1,
-              whiteSpace: 'nowrap',
-              letterSpacing: '6px',
-            }}
-          >
-            CONFIDENTIEL
-          </Box>
-
-          {/* User Email Watermark - Bottom Right */}
-          {user?.email && (
-            <Box
-              sx={{
-                position: 'absolute',
-                bottom: '40px',
-                right: '40px',
-                fontSize: '14px',
-                fontWeight: '700',
-                color: 'rgba(102, 126, 234, 0.4)',
-                backgroundColor: 'rgba(255, 255, 255, 0.9)',
-                padding: '8px 16px',
-                borderRadius: '8px',
-                pointerEvents: 'none',
-                userSelect: 'none',
-                zIndex: 1,
-                border: '2px solid rgba(102, 126, 234, 0.3)',
-              }}
-            >
-              {user.email}
-            </Box>
-          )}
-
           <Box
             component="iframe"
             src={`${presignedUrl}#toolbar=0&navpanes=0&scrollbar=0`}

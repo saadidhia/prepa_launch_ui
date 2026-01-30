@@ -19,6 +19,7 @@
     "fingerprintjs": "^0.5.3",
     "fingerprintjs2": "^2.1.4",
     "lucide-react": "^0.548.0",
+    "pdf-lib": "^1.17.1",
     "pdfjs-dist": "^4.7.76",
     "react": "^17.0.1",
     "react-beautiful-dnd": "^13.1.1",

@@ -308,7 +308,7 @@ export const Header = (props) => {
             }
           }
         `}
-      </style>
+       </style>
     </Box>
   );
 };
