@@ -41,7 +41,7 @@ export const Navigation = (props) => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-const navItems = [
+  const navItems = [
     { label: "ماذا نقدم ؟", href: "#features" },
     { label: "من نحن ؟", href: "#about" },
     { label: "عروضنا", href: "#services" },
@@ -188,7 +188,7 @@ const navItems = [
               href="#page-top"
               sx={{
                 fontWeight: "700",
-                fontSize: "24px",
+                fontSize: isMobile ? "18px" : "24px",
                 letterSpacing: "1px",
                 background: scrolled
                   ? "linear-gradient(135deg, #667eea 0%, #764ba2 100%)"
@@ -262,22 +262,50 @@ const navItems = [
               </Box>
             )}
 
-            {/* Mobile Menu Button */}
+            {/* Mobile Login Button and Menu */}
             {isMobile && (
-              <IconButton
-                edge="start"
-                onClick={handleDrawerToggle}
-                sx={{
-                  color: scrolled ? "#667eea" : "white",
-                  "&:hover": {
-                    backgroundColor: scrolled
-                      ? "rgba(102, 126, 234, 0.1)"
-                      : "rgba(255, 255, 255, 0.15)",
-                  },
-                }}
-              >
-                <MenuIcon sx={{ fontSize: 28 }} />
-              </IconButton>
+              <Box sx={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                {/* Mobile Login Button */}
+                <Button
+                  component="a"
+                  href="/connexion"
+                  size="small"
+                  startIcon={<LoginIcon />}
+                  sx={{
+                    padding: "6px 16px",
+                    borderRadius: "8px",
+                    background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                    color: "white",
+                    fontWeight: "700",
+                    fontSize: "13px",
+                    textTransform: "none",
+                    minWidth: "auto",
+                    boxShadow: "0 2px 8px rgba(102, 126, 234, 0.3)",
+                    "&:hover": {
+                      background: "linear-gradient(135deg, #764ba2 0%, #667eea 100%)",
+                      transform: "translateY(-1px)",
+                      boxShadow: "0 4px 12px rgba(102, 126, 234, 0.4)",
+                    },
+                    transition: "all 0.3s ease",
+                  }}
+                >
+                  دخول
+                </Button>
+
+                {/* Mobile Menu Icon */}
+                <IconButton
+                  edge="start"
+                  onClick={handleDrawerToggle}
+                  sx={{
+                    color: "#000000",
+                    "&:hover": {
+                      backgroundColor: "rgba(0, 0, 0, 0.08)",
+                    },
+                  }}
+                >
+                  <MenuIcon sx={{ fontSize: 28 }} />
+                </IconButton>
+              </Box>
             )}
           </Toolbar>
         </Container>
