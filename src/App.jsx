@@ -98,7 +98,7 @@ const App = () => {
               <Route
                 key={index}
                 exact
-                path={`/dashboard/exams/ds/${subject.links}`}
+                path={`/dashboard/exams/controle/${subject.links}`}
                 element={<PrivateRoute requiredRole="USER">{subject.components}</PrivateRoute>}
               />
             ))}
@@ -108,7 +108,7 @@ const App = () => {
               <Route
                 key={index}
                 exact
-                path={`/dashboard/exams/exam/${subject.links}`}
+                path={`/dashboard/exams/synthese/${subject.links}`}
                 element={<PrivateRoute requiredRole="USER">{subject.components}</PrivateRoute>}
               />
             ))}

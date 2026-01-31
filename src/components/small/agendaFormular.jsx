@@ -116,9 +116,8 @@ export default function AgendaFormular({ onClose, onSave }) {
 
   const getTypeColor = (type) => {
     switch (type) {
-      case 'DS': return '#8b5cf6';
-      case 'EXAMEN': return '#ec4899';
-      case 'TP': return '#14b8a6';
+      case 'CONTROLE': return '#8b5cf6';
+      case 'SYNTHESE': return '#ec4899';
       case 'OTHER': return '#64748b';
       default: return '#94a3b8';
     }
@@ -295,9 +294,8 @@ export default function AgendaFormular({ onClose, onSave }) {
                   }}
                 >
                   <MenuItem value="" disabled>Sélectionner un type</MenuItem>
-                  <MenuItem value="DS">DS</MenuItem>
-                  <MenuItem value="EXAMEN">EXAMEN</MenuItem>
-                  <MenuItem value="TP">TP</MenuItem>
+                  <MenuItem value="CONTROLE">CONTROLE</MenuItem>
+                  <MenuItem value="SYNTHESE">SYNTHESE</MenuItem>
                   <MenuItem value="OTHER">AUTRE</MenuItem>
                 </Select>
               </Box>

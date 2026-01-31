@@ -46,7 +46,7 @@ const navigations = [
         component: Exams,
         role: "user"
     },
-    {
+   /* {
         text: "الملاحظات",
         link: "resumes",
         component: Resume,
@@ -120,7 +120,7 @@ const navigations = [
         role: "admin"
     },
     {
-        text: "وقت التركيز",
+        text: "مؤقت التركيز",
         link: "chronometer",
         component: Chronometer,
         role: "user"
