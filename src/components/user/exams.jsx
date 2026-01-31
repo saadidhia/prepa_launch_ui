@@ -53,7 +53,7 @@ export function Exams() {
             fontWeight: '500',
           }}
         >
-          Accédez aux DS et examens par matière
+          Accédez aux Controles et syntheses par matière
         </Typography>
       </Box>
 
@@ -140,15 +140,15 @@ export function Exams() {
 
               {/* Action Buttons */}
               <Box sx={{ display: 'flex', gap: '12px' }}>
-                {/* DS Button */}
+                {/* CONTROLE Button */}
                 <Button
                   variant="contained"
                   fullWidth
                   startIcon={<AssignmentIcon />}
                   endIcon={<ArrowForwardIcon />}
                   onClick={() =>
-                    navigate(`/dashboard/exams/ds/${course.links}`, {
-                      state: { subFolderName: `exams/ds/${course.links}` },
+                    navigate(`/dashboard/exams/controle/${course.links}`, {
+                      state: { subFolderName: `exams/controle/${course.links}` },
                     })
                   }
                   sx={{
@@ -169,7 +169,7 @@ export function Exams() {
                     },
                   }}
                 >
-                  DS
+                  CONTROLE
                 </Button>
 
                 {/* EXAMS Button */}
@@ -179,8 +179,8 @@ export function Exams() {
                   startIcon={<ExamIcon />}
                   endIcon={<ArrowForwardIcon />}
                   onClick={() =>
-                    navigate(`/dashboard/exams/exam/${course.links}`, {
-                      state: { subFolderName: `exams/exam/${course.links}` },
+                    navigate(`/dashboard/exams/synthese/${course.links}`, {
+                      state: { subFolderName: `exams/synthese/${course.links}` },
                     })
                   }
                   sx={{
@@ -201,7 +201,7 @@ export function Exams() {
                     },
                   }}
                 >
-                  EXAMS
+                  SYNTHESE
                 </Button>
               </Box>
 
@@ -223,7 +223,7 @@ export function Exams() {
                   variant="body2"
                   sx={{ color: '#6b7280', fontSize: '12px', fontWeight: '500' }}
                 >
-                  Choisissez entre DS ou Examens
+                  Choisissez entre Controle ou Synthese
                 </Typography>
               </Box>
             </CardContent>
