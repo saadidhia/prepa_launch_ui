@@ -5,7 +5,7 @@ import manar from "./assets/statics/manar.jpg"
 import sfax from "./assets/statics/sfax.jpg"
 import sousse from "./assets/statics/sousse.png"
 import kairaouen from "./assets/statics/kairaouen.jpg"
-
+/*
 const points = [
     { 
         link: "ipeit",
@@ -37,4 +37,4 @@ const points = [
         image: kairaouen
     }
 ]
-export default points;
+export default points;*/
