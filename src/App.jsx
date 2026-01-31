@@ -19,7 +19,7 @@ import Dashboard from "./components/dashboard";
 import PrivateRoute from './PrivateRoute';
 import navigations from "./Navigations";
 import subjects from "./subjects"
-import points from "./points"
+//import points from "./points"
 import concours from "./concours"
 
 import "./App.css";
@@ -83,12 +83,12 @@ const App = () => {
                 element={<PrivateRoute requiredRole="USER">{subject.components}</PrivateRoute>}
               />
             ))}
-            {points.map((point) =>
+            {subjects.map((point) =>
               subjects.map((subject, index) => (
                 <Route
-                  key={`${point.links}-${index}`}
+                  key={index}
                   exact
-                  path={`/dashboard/series/${point.link}/${subject.links}`}
+                  path={`/dashboard/series/${subject.links}`}
                   element={<PrivateRoute requiredRole="USER">{subject.components}</PrivateRoute>}
                 />
               ))
