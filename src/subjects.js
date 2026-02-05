@@ -16,6 +16,7 @@ import base_de_donnee from './assets/statics/base_de_donnee.jpeg'
 import tech from './assets/statics/tech.jpeg'
 import sport from './assets/statics/sport.jpeg'
 import option from './assets/statics/option.jpeg'
+//import sti from './assets/statics/sti.jpg'
 
 
 const subjects = [
@@ -104,6 +105,14 @@ const subjects = [
        components: <Content/>,
        image: base_de_donnee
         
+    },
+    {
+        links: "sti",
+       name: "STI",
+       section:["INFO"],
+       components: <Content/>,
+       image: informatique
+
     },
     {
         links: "technique",
