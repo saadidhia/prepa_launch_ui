@@ -111,7 +111,7 @@ const subjects = [
        name: "STI",
        section:["INFO"],
        components: <Content/>,
-       image: sti
+       image: informatique
 
     },
     {
