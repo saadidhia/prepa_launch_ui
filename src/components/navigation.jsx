@@ -182,30 +182,62 @@ export const Navigation = (props) => {
               padding: "10px 0",
             }}
           >
-            {/* Logo */}
-            <Typography
-              component="a"
-              href="#page-top"
-              sx={{
-                fontWeight: "700",
-                fontSize: isMobile ? "18px" : "24px",
-                letterSpacing: "1px",
-                background: scrolled
-                  ? "linear-gradient(135deg, #667eea 0%, #764ba2 100%)"
-                  : "white",
-                WebkitBackgroundClip: "text",
-                WebkitTextFillColor: "transparent",
-                backgroundClip: "text",
-                textDecoration: "none",
-                cursor: "pointer",
-                transition: "all 0.3s ease",
-                "&:hover": {
-                  transform: "scale(1.05)",
-                },
-              }}
-            >
-              Grintta Academy
-            </Typography>
+            {/* Logo and Mobile Login Container */}
+            <Box sx={{ display: "flex", alignItems: "center", gap: isMobile ? "16px" : "0" }}>
+              {/* Logo */}
+              <Typography
+                component="a"
+                href="#page-top"
+                sx={{
+                  fontWeight: "700",
+                  fontSize: isMobile ? "18px" : "24px",
+                  letterSpacing: "1px",
+                  background: scrolled
+                    ? "linear-gradient(135deg, #667eea 0%, #764ba2 100%)"
+                    : "white",
+                  WebkitBackgroundClip: "text",
+                  WebkitTextFillColor: "transparent",
+                  backgroundClip: "text",
+                  textDecoration: "none",
+                  cursor: "pointer",
+                  transition: "all 0.3s ease",
+                  "&:hover": {
+                    transform: "scale(1.05)",
+                  },
+                }}
+              >
+                Grintta Academy
+              </Typography>
+
+              {/* Mobile Login Button - positioned right next to logo */}
+              {isMobile && (
+                <Button
+                  component="a"
+                  href="/connexion"
+                  size="small"
+                  startIcon={<LoginIcon />}
+                  sx={{
+                    padding: "6px 16px",
+                    borderRadius: "8px",
+                    background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                    color: "white",
+                    fontWeight: "700",
+                    fontSize: "13px",
+                    textTransform: "none",
+                    minWidth: "auto",
+                    boxShadow: "0 2px 8px rgba(102, 126, 234, 0.3)",
+                    "&:hover": {
+                      background: "linear-gradient(135deg, #764ba2 0%, #667eea 100%)",
+                      transform: "translateY(-1px)",
+                      boxShadow: "0 4px 12px rgba(102, 126, 234, 0.4)",
+                    },
+                    transition: "all 0.3s ease",
+                  }}
+                >
+                  دخول
+                </Button>
+              )}
+            </Box>
 
             {/* Desktop Navigation */}
             {!isMobile && (
@@ -262,50 +294,20 @@ export const Navigation = (props) => {
               </Box>
             )}
 
-            {/* Mobile Login Button and Menu */}
+            {/* Mobile Menu Icon */}
             {isMobile && (
-              <Box sx={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                {/* Mobile Login Button */}
-                <Button
-                  component="a"
-                  href="/connexion"
-                  size="small"
-                  startIcon={<LoginIcon />}
-                  sx={{
-                    padding: "6px 16px",
-                    borderRadius: "8px",
-                    background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-                    color: "white",
-                    fontWeight: "700",
-                    fontSize: "13px",
-                    textTransform: "none",
-                    minWidth: "auto",
-                    boxShadow: "0 2px 8px rgba(102, 126, 234, 0.3)",
-                    "&:hover": {
-                      background: "linear-gradient(135deg, #764ba2 0%, #667eea 100%)",
-                      transform: "translateY(-1px)",
-                      boxShadow: "0 4px 12px rgba(102, 126, 234, 0.4)",
-                    },
-                    transition: "all 0.3s ease",
-                  }}
-                >
-                  دخول
-                </Button>
-
-                {/* Mobile Menu Icon */}
-                <IconButton
-                  edge="start"
-                  onClick={handleDrawerToggle}
-                  sx={{
-                    color: "#000000",
-                    "&:hover": {
-                      backgroundColor: "rgba(0, 0, 0, 0.08)",
-                    },
-                  }}
-                >
-                  <MenuIcon sx={{ fontSize: 28 }} />
-                </IconButton>
-              </Box>
+              <IconButton
+                edge="start"
+                onClick={handleDrawerToggle}
+                sx={{
+                  color: "#000000",
+                  "&:hover": {
+                    backgroundColor: "rgba(0, 0, 0, 0.08)",
+                  },
+                }}
+              >
+                <MenuIcon sx={{ fontSize: 28 }} />
+              </IconButton>
             )}
           </Toolbar>
         </Container>
