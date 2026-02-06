@@ -30,25 +30,10 @@ export function PdfViewer({ pdf, expiryMinutes = 10 }) {
 
   const fileName = pdf.split('/').pop();
 
-  // Get user email from localStorage
-  const getUserEmail = () => {
-    try {
-      const userFromStorage = localStorage.getItem('user');
-      if (userFromStorage) {
-        const parsedUser = JSON.parse(userFromStorage);
-        const email = parsedUser.data?.email || parsedUser.email;
-        console.log('✅ Email found in localStorage:', email);
-        return email || 'Unknown User';
-      }
-      return user?.email || 'Unknown User';
-    } catch (err) {
-      console.error('Error getting user email:', err);
-      return 'Unknown User';
-    }
-  };
 
-  const addWatermarkToPdf = async (pdfUrl, userEmail) => {
-    console.log('Adding watermark with email:', userEmail);
+
+  const addWatermarkToPdf = async (pdfUrl, userEmail, userPhone) => {
+    console.log('Adding watermark with email:', userEmail, 'and phone:', userPhone);
     
     const response = await fetch(pdfUrl, {
       mode: 'cors',
@@ -74,41 +59,36 @@ export function PdfViewer({ pdf, expiryMinutes = 10 }) {
         y: height / 2,
         size: 40,
         font: font,
-        color: rgb(1, 0, 0), // Red for visibility
-        opacity: 0.3,
+        color: rgb(0.6, 0.6, 0.6),
+        opacity: 0.4,
+        rotate: degrees(-45),
+      });
+      // Big center watermark - USER PHONE (rotated)
+      page.drawText(String(userPhone), {
+        x: width / 2 - 100,
+        y: height / 2 - 50,
+        size: 40,
+        font: font,
+        color: rgb(0.6, 0.6, 0.6),
+        opacity: 0.4,
         rotate: degrees(-45),
       });
 
-      // Top watermark - USER EMAIL
-      page.drawText(userEmail, {
-        x: 100,
-        y: height - 50,
-        size: 16,
+      page.drawText("grinttaacademy.com", {
+        x: width / 2 - 100,
+        y: height / 2 - 100,
+        size: 40,
         font: font,
-        color: rgb(1, 0, 0),
+        color: rgb(0.6, 0.6, 0.6),
         opacity: 0.4,
+        rotate: degrees(-45),
       });
 
-      // Bottom left - User email
-      page.drawText(`User: ${userEmail}`, {
-        x: 50,
-        y: 30,
-        size: 10,
-        font: font,
-        color: rgb(0, 0, 0),
-        opacity: 0.8,
-      });
+     
 
-      // Bottom right - Timestamp
-      const timestamp = new Date().toLocaleString('fr-FR');
-      page.drawText(`Date: ${timestamp}`, {
-        x: width - 200,
-        y: 30,
-        size: 10,
-        font: font,
-        color: rgb(0, 0, 0),
-        opacity: 0.8,
-      });
+    
+
+     
     }
 
     const watermarkedPdfBytes = await pdfDoc.save();
@@ -124,10 +104,10 @@ export function PdfViewer({ pdf, expiryMinutes = 10 }) {
       setError(null);
 
       try {
-        const userEmail = getUserEmail();
-        console.log('🔵 User email from localStorage:', userEmail);
-        console.log('🔵 Fetching PDF:', pdf);
-        
+        const userEmail = user.data.email;
+        const numberPhone = user.data.phone;
+   
+        console.log("phone ", numberPhone, userEmail);
         const response = await filesApi.presignedUrl(user, pdf, expiryMinutes);
         
         if (response.status !== 200) {
@@ -137,7 +117,7 @@ export function PdfViewer({ pdf, expiryMinutes = 10 }) {
         const originalUrl = response.data;
         console.log('✅ Got presigned URL');
 
-        const watermarkedUrl = await addWatermarkToPdf(originalUrl, userEmail);
+        const watermarkedUrl = await addWatermarkToPdf(originalUrl, userEmail, numberPhone);
         
         if (isMounted) {
           console.log('✅ Watermarked PDF with email:', userEmail);
