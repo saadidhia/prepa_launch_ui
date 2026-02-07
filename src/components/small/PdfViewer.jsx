@@ -30,8 +30,6 @@ export function PdfViewer({ pdf, expiryMinutes = 10 }) {
 
   const fileName = pdf.split('/').pop();
 
-
-
   const addWatermarkToPdf = async (pdfUrl, userEmail, userPhone) => {
     console.log('Adding watermark with email:', userEmail, 'and phone:', userPhone);
     
@@ -63,6 +61,7 @@ export function PdfViewer({ pdf, expiryMinutes = 10 }) {
         opacity: 0.4,
         rotate: degrees(-45),
       });
+      
       // Big center watermark - USER PHONE (rotated)
       page.drawText(String(userPhone), {
         x: width / 2 - 100,
@@ -83,12 +82,6 @@ export function PdfViewer({ pdf, expiryMinutes = 10 }) {
         opacity: 0.4,
         rotate: degrees(-45),
       });
-
-     
-
-    
-
-     
     }
 
     const watermarkedPdfBytes = await pdfDoc.save();
@@ -267,8 +260,9 @@ export function PdfViewer({ pdf, expiryMinutes = 10 }) {
         </Box>
 
         <Box
-          component="iframe"
-          src={`${presignedUrl}#toolbar=0&navpanes=0&scrollbar=0`}
+          component="embed"
+          src={presignedUrl}
+          type="application/pdf"
           title={fileName}
           onContextMenu={(e) => e.preventDefault()}
           sx={{
@@ -276,6 +270,20 @@ export function PdfViewer({ pdf, expiryMinutes = 10 }) {
             height: '700px',
             border: 'none',
             display: 'block',
+          }}
+        />
+        
+        {/* Fallback object for browsers that don't support embed */}
+        <Box
+          component="object"
+          data={presignedUrl}
+          type="application/pdf"
+          onContextMenu={(e) => e.preventDefault()}
+          sx={{
+            width: '100%',
+            height: '700px',
+            border: 'none',
+            display: 'none',
           }}
         />
 
@@ -345,7 +353,7 @@ export function PdfViewer({ pdf, expiryMinutes = 10 }) {
             justifyContent: 'space-between',
           }}
         >
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: '12px', flex: 1 }}>
             <PdfIcon sx={{ color: 'white', fontSize: 28 }} />
             <Typography
               variant="h6"
@@ -353,6 +361,9 @@ export function PdfViewer({ pdf, expiryMinutes = 10 }) {
                 color: 'white',
                 fontWeight: '700',
                 fontSize: '16px',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                whiteSpace: 'nowrap',
               }}
             >
               {fileName}
@@ -381,11 +392,13 @@ export function PdfViewer({ pdf, expiryMinutes = 10 }) {
             padding: 0,
             height: 'calc(100% - 64px)',
             background: '#f8f9fa',
+            overflow: 'hidden',
           }}
         >
           <Box
-            component="iframe"
+            component="embed"
             src={`${presignedUrl}#toolbar=0&navpanes=0&scrollbar=0`}
+            type="application/pdf"
             title="PDF Viewer"
             onContextMenu={(e) => e.preventDefault()}
             sx={{
