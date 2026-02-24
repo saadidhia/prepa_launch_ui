@@ -36,7 +36,7 @@ export function Content(props) {
                         </div>
                     ))
                 ) : (
-                    <p>No PDF files available</p>
+                    <p>سيتم إضافة الملفات قريبًا .</p>
                 )}
             </div>
             <style jsx>{`
