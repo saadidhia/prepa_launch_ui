@@ -47,13 +47,13 @@ export default function FiltreNotes({
             variant="h6"
             sx={{ color: 'white', fontWeight: '700', fontSize: '18px' }}
           >
-            Filtres & Actions
+             الفلاتر والإجراءات
           </Typography>
           <Typography
             variant="body2"
             sx={{ color: 'rgba(255, 255, 255, 0.9)', fontSize: '13px' }}
           >
-            Créez et filtrez vos notes par matière et contexte
+            صنّف ملاحظاتك حسب المادة والسياق
           </Typography>
         </Box>
         <Button
@@ -78,7 +78,7 @@ export default function FiltreNotes({
             transition: 'all 0.3s ease',
           }}
         >
-          Créer une note
+          إضافة ملاحظة
         </Button>
       </Box>
 
@@ -99,7 +99,7 @@ export default function FiltreNotes({
                 variant="subtitle1"
                 sx={{ fontWeight: '700', color: '#1a1a1a', fontSize: '15px' }}
               >
-                Filtrer par matière
+                تصفية حسب المادة
               </Typography>
               {selectedSubjects.size > 0 && (
                 <Chip
@@ -170,7 +170,7 @@ export default function FiltreNotes({
                 variant="subtitle1"
                 sx={{ fontWeight: '700', color: '#1a1a1a', fontSize: '15px' }}
               >
-                Filtrer par contexte
+                 تصفية حسب السياق
               </Typography>
               {selectedContexts.size > 0 && (
                 <Chip
@@ -244,7 +244,7 @@ export default function FiltreNotes({
                 variant="body2"
                 sx={{ color: '#6b7280', fontSize: '13px', fontWeight: '500' }}
               >
-                Aucun filtre actif - Toutes les notes sont affichées
+                لا توجد فلاتر مفعّلة - جميع الملاحظات معروضة
               </Typography>
             </Box>
           )}

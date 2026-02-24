@@ -460,7 +460,7 @@ export function Notes() {
         >
           <FunctionsIcon sx={{ fontSize: 28 }} />
           <Typography variant="h6" sx={{ fontWeight: '700' }}>
-            Insérer des symboles mathématiques
+            إدراج رموز رياضية
           </Typography>
         </DialogTitle>
         <DialogContent sx={{ padding: '28px' }}>
@@ -683,7 +683,7 @@ export function Notes() {
             backgroundClip: 'text',
           }}
         >
-          Mes Notes
+          ملاحظاتي
         </Typography>
         <Typography
           variant="body1"
@@ -694,7 +694,7 @@ export function Notes() {
             marginBottom: '24px',
           }}
         >
-          Organisez vos notes avec le système Kanban
+          اكتب ملاحظات أو ملخصات لكل مادة
         </Typography>
       </Box>
 
@@ -735,13 +735,13 @@ export function Notes() {
           }}
         >
           <Typography variant="h5" sx={{ fontWeight: '700' }}>
-            {openEdit ? 'Éditer la note' : 'Créer une nouvelle note'}
+            {openEdit ? 'تعديل الملاحظة' : 'إضافة ملاحظة جديدة'}
           </Typography>
         </DialogTitle>
         <DialogContent sx={{ padding: '32px', backgroundColor: '#f8f9fa' }}>
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: '20px', marginTop: '8px' }}>
             <TextField
-              label="Title"
+              label="عنوان الملاحظة"
               fullWidth
               value={title}
               onChange={(e) => {
@@ -779,7 +779,7 @@ export function Notes() {
                 },
               }}
             >
-              Insérer des symboles
+              إدراج رموز رياضية
             </Button>
 
             <Box>
@@ -796,7 +796,7 @@ export function Notes() {
 
             <Box>
               <InputLabel sx={{ marginBottom: '8px', fontWeight: '600', color: '#1a1a1a' }}>
-                Sujet
+                المادة
               </InputLabel>
               <Select
                 value={subject}
@@ -820,7 +820,7 @@ export function Notes() {
 
             <Box>
               <InputLabel sx={{ marginBottom: '8px', fontWeight: '600', color: '#1a1a1a' }}>
-                Context
+                السياق
               </InputLabel>
               <Select
                 value={context}
@@ -853,7 +853,7 @@ export function Notes() {
               textTransform: 'none',
             }}
           >
-            Annuler
+            إلغاء
           </Button>
           <Button
             onClick={togglePreview}
@@ -867,7 +867,7 @@ export function Notes() {
               color: '#667eea',
             }}
           >
-            Aperçu du basculeur
+            معاينة 
           </Button>
           <Button
             onClick={handleSubmit}
@@ -883,7 +883,7 @@ export function Notes() {
               },
             }}
           >
-            Valider
+             حفظ
           </Button>
         </DialogActions>
       </Dialog>
@@ -927,7 +927,7 @@ export function Notes() {
               variant="h6"
               sx={{ color: 'white', fontWeight: '700', fontSize: '16px' }}
             >
-              CRÉÉ
+              جديدة
             </Typography>
             <Chip
               label={filteredCreatedCards.length}
@@ -972,7 +972,7 @@ export function Notes() {
               variant="h6"
               sx={{ color: 'white', fontWeight: '700', fontSize: '16px' }}
             >
-              EN COURS
+قيد التقدم
             </Typography>
             <Chip
               label={filteredInProgressCards.length}
@@ -1017,7 +1017,7 @@ export function Notes() {
               variant="h6"
               sx={{ color: 'white', fontWeight: '700', fontSize: '16px' }}
             >
-              TERMINÉ
+              مكتملة
             </Typography>
             <Chip
               label={filteredFinishedCards.length}
