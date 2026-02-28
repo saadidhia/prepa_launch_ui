@@ -173,7 +173,7 @@ export default function ModernCalendar() {
             backgroundClip: 'text',
           }}
         >
-          Mon Agenda
+          مواعيد امتحاناتي
         </Typography>
         <Typography 
           variant="body1" 
@@ -183,7 +183,7 @@ export default function ModernCalendar() {
             fontWeight: '500',
           }}
         >
-          Planifiez et gérez vos événements
+          خطط ونظّم فعالياتك
         </Typography>
       </Box>
 
@@ -356,7 +356,7 @@ export default function ModernCalendar() {
             gap: '8px',
           }}
         >
-          Tous les événements
+          جميع الفعاليات
           <Chip 
             label={agendas.length}
             sx={{
@@ -377,10 +377,10 @@ export default function ModernCalendar() {
           }}>
             <CalendarTodayIcon sx={{ fontSize: 64, color: '#9ca3af', marginBottom: '16px' }} />
             <Typography variant="h6" sx={{ color: '#6b7280', fontWeight: '600' }}>
-              Aucun événement
+              لا توجد فعاليات
             </Typography>
             <Typography sx={{ color: '#9ca3af', marginTop: '8px' }}>
-              Cliquez sur une date pour créer un nouvel événement
+              اضغط على تاريخ لإنشاء فعالية جديدة
             </Typography>
           </Paper>
         )}
@@ -505,7 +505,7 @@ export default function ModernCalendar() {
                       <Box sx={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                         <AccessTimeIcon sx={{ fontSize: 18, color: '#667eea' }} />
                         <Typography variant="body2" sx={{ color: '#6b7280', fontSize: '13px' }}>
-                          Rappel: {new Date(ag.remindTime).toLocaleDateString('fr-FR')} · {new Date(ag.remindTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                         أول تذكير: {new Date(ag.remindTime).toLocaleDateString('fr-FR')} · {new Date(ag.remindTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                         </Typography>
                       </Box>
                     </Box>
@@ -519,7 +519,7 @@ export default function ModernCalendar() {
                     }}>
                       <Box sx={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
                         <Typography variant="body2" sx={{ fontWeight: '600', color: '#374151', fontSize: '13px' }}>
-                          Progression
+                          التقدّم
                         </Typography>
                         <Typography variant="body2" sx={{ fontWeight: '700', color: isCompleted ? '#22c55e' : '#667eea', fontSize: '13px' }}>
                           {percentage.toFixed(0)}%
@@ -556,7 +556,7 @@ export default function ModernCalendar() {
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
                           <NotesIcon sx={{ fontSize: 16, color: '#667eea' }} />
                           <Typography variant="body2" sx={{ fontWeight: '600', color: '#374151', fontSize: '13px' }}>
-                            Notes liées
+                           الملاحظات المرتبطة
                           </Typography>
                         </Box>
                         <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
@@ -615,7 +615,7 @@ export default function ModernCalendar() {
         <DialogContent>
           <Box sx={{ textAlign: 'center', marginBottom: '24px' }}>
             <Typography variant="body2" sx={{ color: '#6b7280', marginBottom: '4px' }}>
-              Temps déjà passé
+              الوقت المستغرق بالفعل
             </Typography>
             <Typography variant="h5" sx={{ fontWeight: '700', color: '#667eea' }}>
               {activeAgenda?.alreadySpent || 0} heures
@@ -625,7 +625,7 @@ export default function ModernCalendar() {
           <TextField
             fullWidth
             type="number"
-            label="Ajouter des heures"
+            label="إضافة ساعات"
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
             inputProps={{ 
@@ -671,7 +671,7 @@ export default function ModernCalendar() {
                 transition: 'all 0.3s ease',
               }}
             >
-              Ajouter
+              إضافة
             </Button>
             <Button
               fullWidth
@@ -693,7 +693,7 @@ export default function ModernCalendar() {
                 },
               }}
             >
-              Annuler
+             إلغاء
             </Button>
           </Box>
         </DialogContent>

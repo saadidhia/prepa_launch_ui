@@ -148,10 +148,10 @@ export default function AgendaFormular({ onClose, onSave }) {
             <EventIcon sx={{ fontSize: 32 }} />
             <Box>
               <Typography variant="h5" sx={{ fontWeight: '700', marginBottom: '4px' }}>
-                Nouvel Événement
+                حدث جديد
               </Typography>
               <Typography variant="body2" sx={{ opacity: 0.9, fontSize: '14px' }}>
-                Planifiez votre prochain événement
+                خطط لفعاليتك القادمة
               </Typography>
             </Box>
           </Box>
@@ -192,7 +192,7 @@ export default function AgendaFormular({ onClose, onSave }) {
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
                   <LabelIcon sx={{ color: '#667eea', fontSize: 20 }} />
                   <Typography variant="subtitle2" sx={{ fontWeight: '700', color: '#374151' }}>
-                    Titre
+                    العنوان
                   </Typography>
                 </Box>
                 <TextField
@@ -200,7 +200,7 @@ export default function AgendaFormular({ onClose, onSave }) {
                   name="title"
                   value={formData.title}
                   onChange={handleChange}
-                  placeholder="Ex: Examen de physique"
+                  placeholder="مثال: Examen de physique"
                   required
                   variant="outlined"
                   sx={{
@@ -229,7 +229,7 @@ export default function AgendaFormular({ onClose, onSave }) {
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
                   <DescriptionIcon sx={{ color: '#667eea', fontSize: 20 }} />
                   <Typography variant="subtitle2" sx={{ fontWeight: '700', color: '#374151' }}>
-                    Description
+                    الوصف
                   </Typography>
                 </Box>
                 <TextField
@@ -237,7 +237,7 @@ export default function AgendaFormular({ onClose, onSave }) {
                   name="description"
                   value={formData.description}
                   onChange={handleChange}
-                  placeholder="Description courte..."
+                  placeholder="وصف قصير..."
                   multiline
                   rows={2}
                   variant="outlined"
@@ -266,7 +266,7 @@ export default function AgendaFormular({ onClose, onSave }) {
               }}>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
                   <Typography variant="subtitle2" sx={{ fontWeight: '700', color: '#374151' }}>
-                    Type
+                    نوع الفعالية
                   </Typography>
                   {formData.type && (
                     <Chip 
@@ -293,7 +293,7 @@ export default function AgendaFormular({ onClose, onSave }) {
                     '& .MuiOutlinedInput-notchedOutline': { border: 'none' },
                   }}
                 >
-                  <MenuItem value="" disabled>Sélectionner un type</MenuItem>
+                  <MenuItem value="" disabled>حدد نوع الفعالية</MenuItem>
                   <MenuItem value="CONTROLE">CONTROLE</MenuItem>
                   <MenuItem value="SYNTHESE">SYNTHESE</MenuItem>
                   <MenuItem value="OTHER">AUTRE</MenuItem>
@@ -316,7 +316,7 @@ export default function AgendaFormular({ onClose, onSave }) {
               }}>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
                   <Typography variant="subtitle2" sx={{ fontWeight: '700', color: '#374151' }}>
-                    Priorité
+                    الأولوية
                   </Typography>
                   {formData.priority && (
                     <Chip 
@@ -343,7 +343,7 @@ export default function AgendaFormular({ onClose, onSave }) {
                     '& .MuiOutlinedInput-notchedOutline': { border: 'none' },
                   }}
                 >
-                  <MenuItem value="" disabled>Sélectionner une priorité</MenuItem>
+                  <MenuItem value="" disabled>اختر أولوية</MenuItem>
                   <MenuItem value="LOW">Basse</MenuItem>
                   <MenuItem value="MEDIUM">Moyenne</MenuItem>
                   <MenuItem value="HIGH">Haute</MenuItem>
@@ -368,7 +368,7 @@ export default function AgendaFormular({ onClose, onSave }) {
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
                   <EventIcon sx={{ color: '#667eea', fontSize: 20 }} />
                   <Typography variant="subtitle2" sx={{ fontWeight: '700', color: '#374151' }}>
-                    Heure de l'événement
+                    وقت الحدث
                   </Typography>
                 </Box>
                 <TextField
@@ -405,7 +405,7 @@ export default function AgendaFormular({ onClose, onSave }) {
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
                   <SubjectIcon sx={{ color: '#667eea', fontSize: 20 }} />
                   <Typography variant="subtitle2" sx={{ fontWeight: '700', color: '#374151' }}>
-                    Matière
+                    المادة
                   </Typography>
                 </Box>
                 <Select
@@ -420,7 +420,7 @@ export default function AgendaFormular({ onClose, onSave }) {
                     '& .MuiOutlinedInput-notchedOutline': { border: 'none' },
                   }}
                 >
-                  <MenuItem value="" disabled>Sélectionner une matière</MenuItem>
+                  <MenuItem value="" disabled>اختر مادة</MenuItem>
                   {userSubjects.map((subj, idx) => (
                     <MenuItem key={idx} value={subj.name}>{subj.name}</MenuItem>
                   ))}
@@ -444,7 +444,8 @@ export default function AgendaFormular({ onClose, onSave }) {
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
                   <AccessTimeIcon sx={{ color: '#667eea', fontSize: 20 }} />
                   <Typography variant="subtitle2" sx={{ fontWeight: '700', color: '#374151' }}>
-                    Durée prévue (Heures)
+                    المدة المتوقعة (ساعات)
+
                   </Typography>
                 </Box>
                 <TextField
@@ -453,7 +454,7 @@ export default function AgendaFormular({ onClose, onSave }) {
                   name="timeShouldSpent"
                   value={formData.timeShouldSpent}
                   onChange={handleChange}
-                  placeholder="Ex: 4"
+                  placeholder="مثال: 4"
                   inputProps={{ min: 1, step: 0.5 }}
                   variant="outlined"
                   sx={{
@@ -482,7 +483,7 @@ export default function AgendaFormular({ onClose, onSave }) {
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
                   <AccessTimeIcon sx={{ color: '#667eea', fontSize: 20 }} />
                   <Typography variant="subtitle2" sx={{ fontWeight: '700', color: '#374151' }}>
-                    Première heure de rappel
+                    وقت التذكير الأول	
                   </Typography>
                 </Box>
                 <TextField
@@ -513,7 +514,8 @@ export default function AgendaFormular({ onClose, onSave }) {
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
                   <NotesIcon sx={{ color: '#667eea', fontSize: 20 }} />
                   <Typography variant="subtitle2" sx={{ fontWeight: '700', color: '#374151' }}>
-                    Sélectionner des notes
+                    اختر الملاحظات
+
                   </Typography>
                   {formData.cardIds?.length > 0 && (
                     <Chip 
@@ -549,8 +551,8 @@ export default function AgendaFormular({ onClose, onSave }) {
                       }}
                     >
                       {formData.subject 
-                        ? 'Aucune note disponible pour cette matière' 
-                        : 'Sélectionnez d\'abord une matière'}
+                        ? 'لا توجد ملاحظات متاحة لهذه المادة' 
+                        : 'يرجى اختيار مادة أولاً'}
                     </Typography>
                   ) : (
                     <Box sx={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
@@ -632,7 +634,7 @@ export default function AgendaFormular({ onClose, onSave }) {
             },
           }}
         >
-          Annuler
+          إلغاء
         </Button>
         <Button
           onClick={handleSubmit}
@@ -653,7 +655,7 @@ export default function AgendaFormular({ onClose, onSave }) {
             transition: 'all 0.3s ease',
           }}
         >
-          Enregistrer
+          حفظ
         </Button>
       </DialogActions>
     </Dialog>
