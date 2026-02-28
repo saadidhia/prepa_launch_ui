@@ -40,7 +40,7 @@ export function Series() {
             backgroundClip: 'text',
           }}
         >
-          Séries
+          تمارينات
         </Typography>
         <Typography
           variant="body1"
@@ -50,7 +50,7 @@ export function Series() {
             fontWeight: '500',
           }}
         >
-          Accédez aux séries d'exercices par matière
+           ادخل إلى مجموعات التمارين حسب المادة
         </Typography>
       </Box>
 
@@ -87,7 +87,7 @@ export function Series() {
                   color: '#1a1a1a',
                 }}
               >
-                Matières disponibles
+                المواد المتاحة
               </Typography>
               <Chip
                 label={filteredCourses.length}

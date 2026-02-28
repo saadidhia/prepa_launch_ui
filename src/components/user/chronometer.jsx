@@ -39,13 +39,13 @@ import {
 } from "recharts";
 
 const columns = [
-  { id: 'day', label: 'Jour' },
-  { id: 'start', label: 'Début' },
-  { id: 'day_fin', label: 'Fin Jour' },
-  { id: 'stop', label: 'Fin' },
-  { id: 'elapsedTime', label: 'Durée' },
-  { id: 'subject', label: 'Matière' },
-  { id: 'description', label: 'Description' },
+  { id: 'day', label: 'اليوم' },
+  { id: 'start', label: 'البداية' },
+  { id: 'day_fin', label: 'نهاية اليوم' },
+  { id: 'stop', label: 'النهاية' },
+  { id: 'elapsedTime', label: 'المدة' },
+  { id: 'subject', label: 'المادة' },
+  { id: 'description', label: 'الوصف' },
 ];
 
 const Chronometer = () => {
@@ -187,15 +187,15 @@ const Chronometer = () => {
             {payload[0].payload.day}
           </Typography>
           <Typography sx={{ color: '#6b7280', fontSize: '14px' }}>
-            Temps: {payload[0].value} heures
+            الوقت: {payload[0].value} ساعات
           </Typography>
           {isAboveTarget ? (
             <Typography sx={{ color: '#10b981', fontSize: '12px', fontWeight: '600', marginTop: '4px' }}>
-              ✓ Objectif atteint
+              ✓ تم تحقيق الهدف
             </Typography>
           ) : (
             <Typography sx={{ color: '#f59e0b', fontSize: '12px', fontWeight: '600', marginTop: '4px' }}>
-              {(2 - hours).toFixed(2)}h restantes
+              {(2 - hours).toFixed(2)}س متبقية
             </Typography>
           )}
         </Paper>
@@ -220,7 +220,7 @@ const Chronometer = () => {
             backgroundClip: 'text',
           }}
         >
-          Chronomètre
+          مؤقت التركيز
         </Typography>
         <Typography
           variant="body1"
@@ -230,7 +230,7 @@ const Chronometer = () => {
             fontWeight: '500',
           }}
         >
-          Suivez et analysez votre temps d'étude
+          تتبع وحلل وقت الدراسة الخاص بك
         </Typography>
       </Box>
 
@@ -263,7 +263,7 @@ const Chronometer = () => {
               variant="h6"
               sx={{ color: 'white', fontWeight: '700', fontSize: '18px' }}
             >
-              Filtrer par période
+              تصفية حسب الفترة
             </Typography>
           </Box>
           {filteredTimers.length > 0 && (
@@ -286,7 +286,7 @@ const Chronometer = () => {
               <Box sx={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '10px' }}>
                 <CalendarIcon sx={{ color: '#667eea', fontSize: 20 }} />
                 <Typography variant="subtitle2" sx={{ fontWeight: '700', color: '#1a1a1a', fontSize: '13px' }}>
-                  Date de début
+                   تاريخ البداية
                 </Typography>
               </Box>
               <DatePicker
@@ -296,7 +296,7 @@ const Chronometer = () => {
                 startDate={startDate}
                 endDate={endDate}
                 dateFormat="yyyy-MM-dd"
-                placeholderText="Début"
+                placeholderText="البداية"
                 customInput={
                   <Button
                     fullWidth
@@ -317,7 +317,7 @@ const Chronometer = () => {
                       transition: 'all 0.3s ease',
                     }}
                   >
-                    {startDate ? startDate.toLocaleDateString('fr-FR') : "Date de début"}
+                    {startDate ? startDate.toLocaleDateString('fr-FR') : "البداية"}
                   </Button>
                 }
               />
@@ -328,7 +328,7 @@ const Chronometer = () => {
               <Box sx={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '10px' }}>
                 <DateRangeIcon sx={{ color: '#667eea', fontSize: 20 }} />
                 <Typography variant="subtitle2" sx={{ fontWeight: '700', color: '#1a1a1a', fontSize: '13px' }}>
-                  Date de fin
+                  تاريخ النهاية
                 </Typography>
               </Box>
               <DatePicker
@@ -339,7 +339,7 @@ const Chronometer = () => {
                 endDate={endDate}
                 minDate={startDate}
                 dateFormat="yyyy-MM-dd"
-                placeholderText="Fin"
+                placeholderText="النهاية"
                 customInput={
                   <Button
                     fullWidth
@@ -360,7 +360,7 @@ const Chronometer = () => {
                       transition: 'all 0.3s ease',
                     }}
                   >
-                    {endDate ? endDate.toLocaleDateString('fr-FR') : "Date de fin"}
+                    {endDate ? endDate.toLocaleDateString('fr-FR') : "النهاية"}
                   </Button>
                 }
               />
@@ -387,7 +387,7 @@ const Chronometer = () => {
                 transition: 'all 0.3s ease',
               }}
             >
-              Réinitialiser
+              إعادة تعيين
             </Button>
           </Box>
 
@@ -459,17 +459,17 @@ const Chronometer = () => {
               variant="h6"
               sx={{ color: 'white', fontWeight: '700', fontSize: '18px' }}
             >
-              Temps par jour
+              الوقت حسب اليوم
             </Typography>
             <Typography
               variant="body2"
               sx={{ color: 'rgba(255, 255, 255, 0.9)', fontSize: '13px' }}
             >
-              Visualisation de votre activité quotidienne
+              عرض نشاطك اليومي
             </Typography>
           </Box>
           <Chip
-            label="Objectif: 2h/jour"
+            label="الهدف: ساعتان/اليوم"
             sx={{
               backgroundColor: 'rgba(255, 255, 255, 0.25)',
               color: 'white',
@@ -496,7 +496,7 @@ const Chronometer = () => {
                   tick={{ fill: '#6b7280', fontSize: 12, fontWeight: 600 }}
                 />
                 <YAxis
-                  label={{ value: 'Heures', angle: -90, position: 'insideLeft', style: { fill: '#6b7280', fontWeight: 600 } }}
+                  label={{ value: 'ساعات', angle: -90, position: 'insideLeft', style: { fill: '#6b7280', fontWeight: 600 } }}
                   tick={{ fill: '#6b7280', fontSize: 12, fontWeight: 600 }}
                 />
                 <Tooltip content={<CustomTooltip />} />
@@ -528,10 +528,10 @@ const Chronometer = () => {
             <Box sx={{ textAlign: 'center', padding: '60px 20px' }}>
               <BarChartIcon sx={{ fontSize: 64, color: '#9ca3af', marginBottom: '16px' }} />
               <Typography variant="h6" sx={{ color: '#6b7280', fontWeight: '600' }}>
-                Aucune donnée disponible
+                 لا توجد بيانات متاحة
               </Typography>
               <Typography sx={{ color: '#9ca3af', marginTop: '8px' }}>
-                Démarrez un chronomètre pour voir vos statistiques
+                 ابدأ مؤقت التركيز لرؤية إحصائياتك
               </Typography>
             </Box>
           )}
@@ -561,13 +561,13 @@ const Chronometer = () => {
               variant="h6"
               sx={{ color: 'white', fontWeight: '700', fontSize: '18px' }}
             >
-              Historique des sessions
+              تاريخ الجلسات
             </Typography>
             <Typography
               variant="body2"
               sx={{ color: 'rgba(255, 255, 255, 0.9)', fontSize: '13px' }}
             >
-              Détails de toutes vos sessions de travail
+              تفاصيل جميع جلسات العمل الخاصة بك
             </Typography>
           </Box>
         </Box>

@@ -107,7 +107,7 @@ const Stopwatch = ({ onStart, onStop, textInput, subject }) => {
           letterSpacing: '0.5px',
         }}
       >
-        {isRunning ? 'En cours' : 'Prêt'}
+        {isRunning ? 'قيد التنفيذ' : 'جاهز'}
       </Typography>
     </Box>
   );

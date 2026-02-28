@@ -72,19 +72,19 @@ function TimerForm({ fetchTimers }) {
             variant="h6"
             sx={{ color: 'white', fontWeight: '700', fontSize: '18px' }}
           >
-            {isRunning ? 'Session en cours' : 'Nouvelle session'}
+            {isRunning ? 'الجلسة الحالية' : 'جلسة جديدة'}
           </Typography>
           <Typography
             variant="body2"
             sx={{ color: 'rgba(255, 255, 255, 0.9)', fontSize: '13px' }}
           >
-            {isRunning ? 'Le chronomètre est actif' : 'Démarrez votre session de travail'}
+            {isRunning ? 'مؤقت التركيز نشط' : 'ابدأ جلستك الدراسية'}
           </Typography>
         </Box>
         {isRunning && (
           <Chip
             icon={<PlayArrowIcon sx={{ color: 'white !important' }} />}
-            label="En cours"
+            label="قيد التنفيذ"
             sx={{
               backgroundColor: 'rgba(255, 255, 255, 0.25)',
               color: 'white',
@@ -102,12 +102,12 @@ function TimerForm({ fetchTimers }) {
             <Box sx={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '10px' }}>
               <DescriptionIcon sx={{ color: '#667eea', fontSize: 20 }} />
               <Typography variant="subtitle2" sx={{ fontWeight: '700', color: '#1a1a1a', fontSize: '13px' }}>
-                Description
+                الوصف
               </Typography>
             </Box>
             <TextField
               fullWidth
-              placeholder="Ex: Révision du cours de physique"
+              placeholder="مثال: Révision du cours de physique"
               variant="outlined"
               value={textInput}
               onChange={(e) => setTextInput(e.target.value)}
@@ -144,7 +144,7 @@ function TimerForm({ fetchTimers }) {
             <Box sx={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '10px' }}>
               <SubjectIcon sx={{ color: '#667eea', fontSize: 20 }} />
               <Typography variant="subtitle2" sx={{ fontWeight: '700', color: '#1a1a1a', fontSize: '13px' }}>
-                Matière
+                المادة
               </Typography>
             </Box>
             <FormControl fullWidth disabled={isRunning}>
@@ -176,7 +176,7 @@ function TimerForm({ fetchTimers }) {
                 }}
               >
                 <MenuItem value="" disabled>
-                  <em style={{ color: '#9ca3af' }}>Sélectionner</em>
+                  <em style={{ color: '#9ca3af' }}>اختر</em>
                 </MenuItem>
                 {userSubjects.map((subject, index) => (
                   <MenuItem key={index} value={subject.name}>
@@ -215,7 +215,7 @@ function TimerForm({ fetchTimers }) {
           >
             <TimerIcon sx={{ color: '#667eea', fontSize: 20 }} />
             <Typography variant="body2" sx={{ color: '#6b7280', fontSize: '13px', fontWeight: '500' }}>
-              Remplissez la description et la matière, puis cliquez sur démarrer pour commencer votre session
+              املأ الوصف والمادة، ثم اضغط على ابدأ لبدء جلستك
             </Typography>
           </Box>
         )}
@@ -236,7 +236,7 @@ function TimerForm({ fetchTimers }) {
           >
             <Box>
               <Typography variant="body2" sx={{ color: '#059669', fontWeight: '700', marginBottom: '4px' }}>
-                Session active
+                جلسة نشطة
               </Typography>
               <Typography variant="body2" sx={{ color: '#6b7280', fontSize: '13px', fontWeight: '500' }}>
                 {textInput} - {subject}
@@ -244,7 +244,7 @@ function TimerForm({ fetchTimers }) {
             </Box>
             <Chip
               icon={<PlayArrowIcon />}
-              label="En cours"
+              label="قيد التنفيذ"
               size="small"
               sx={{
                 background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',

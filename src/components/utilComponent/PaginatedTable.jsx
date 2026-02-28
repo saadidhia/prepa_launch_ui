@@ -171,7 +171,7 @@ const PaginatedTable = ({ rows, columns, onPauseTimer, onResumeTimer, actualResp
                 transition: 'all 0.2s ease',
               }}
             >
-              Modifier
+              تعديل
             </Button>
             <Chip
               icon={<HourglassEmptyIcon sx={{ fontSize: 14 }} />}
@@ -213,7 +213,7 @@ const PaginatedTable = ({ rows, columns, onPauseTimer, onResumeTimer, actualResp
                 transition: 'all 0.2s ease',
               }}
             >
-              Supprimer
+             حذف
             </Button>
             <Chip
               icon={<HourglassEmptyIcon sx={{ fontSize: 14 }} />}
@@ -269,7 +269,7 @@ const PaginatedTable = ({ rows, columns, onPauseTimer, onResumeTimer, actualResp
                   borderBottom: '2px solid #e5e7eb',
                 }}
               >
-                Action
+                الإجراء
               </TableCell>
             </TableRow>
           </TableHead>
@@ -310,7 +310,7 @@ const PaginatedTable = ({ rows, columns, onPauseTimer, onResumeTimer, actualResp
                           },
                         }}
                       >
-                        Voir
+                        عرض
                       </Button>
                     ) : (
                       row[column.id]
@@ -372,7 +372,7 @@ const PaginatedTable = ({ rows, columns, onPauseTimer, onResumeTimer, actualResp
         >
           <VisibilityIcon />
           <Typography variant="h6" sx={{ fontWeight: '700' }}>
-            Description
+            الوصف
           </Typography>
         </DialogTitle>
         <DialogContent sx={{ padding: '28px' }}>
@@ -425,14 +425,14 @@ const PaginatedTable = ({ rows, columns, onPauseTimer, onResumeTimer, actualResp
         >
           <EditIcon />
           <Typography variant="h6" sx={{ fontWeight: '700' }}>
-            Modifier le chronomètre
+            تعديل المؤقت
           </Typography>
         </DialogTitle>
         <DialogContent sx={{ padding: '28px', backgroundColor: '#f8f9fa' }}>
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: '20px', marginTop: '8px' }}>
             <TextField
               autoFocus
-              label="Description"
+              label="الوصف"
               type="text"
               fullWidth
               variant="outlined"
@@ -447,7 +447,7 @@ const PaginatedTable = ({ rows, columns, onPauseTimer, onResumeTimer, actualResp
             />
             <Box>
               <InputLabel sx={{ marginBottom: '8px', fontWeight: '600', color: '#1a1a1a' }}>
-                Matière
+                المادة
               </InputLabel>
               <Select
                 value={subject}
@@ -480,7 +480,7 @@ const PaginatedTable = ({ rows, columns, onPauseTimer, onResumeTimer, actualResp
               textTransform: 'none',
             }}
           >
-            Annuler
+            إلغاء
           </Button>
           <Button
             onClick={handleUpdate}
@@ -496,7 +496,7 @@ const PaginatedTable = ({ rows, columns, onPauseTimer, onResumeTimer, actualResp
               },
             }}
           >
-            Mettre à jour
+            تحديث
           </Button>
         </DialogActions>
       </Dialog>
@@ -526,12 +526,12 @@ const PaginatedTable = ({ rows, columns, onPauseTimer, onResumeTimer, actualResp
         >
           <DeleteIcon />
           <Typography variant="h6" sx={{ fontWeight: '700' }}>
-            Confirmer la suppression
+            تأكيد الحذف
           </Typography>
         </DialogTitle>
         <DialogContent sx={{ padding: '28px' }}>
           <Typography sx={{ color: '#374151', lineHeight: '1.6' }}>
-            Êtes-vous sûr de vouloir supprimer ce minuteur ?
+            هل أنت متأكد من رغبتك في حذف هذا المؤقت؟
           </Typography>
         </DialogContent>
         <DialogActions sx={{ padding: '16px 28px' }}>
@@ -544,7 +544,7 @@ const PaginatedTable = ({ rows, columns, onPauseTimer, onResumeTimer, actualResp
               textTransform: 'none',
             }}
           >
-            Annuler
+            إلغاء
           </Button>
           <Button
             onClick={handleDelete}
@@ -560,7 +560,7 @@ const PaginatedTable = ({ rows, columns, onPauseTimer, onResumeTimer, actualResp
               },
             }}
           >
-            Supprimer
+            حذف
           </Button>
         </DialogActions>
       </Dialog>
