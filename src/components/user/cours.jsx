@@ -30,7 +30,7 @@ export function Cours() {
             backgroundClip: 'text',
           }}
         >
-          Mes Cours
+          الدروس
         </Typography>
         <Typography 
           variant="body1" 
@@ -40,10 +40,10 @@ export function Cours() {
             fontWeight: '500',
           }}
         >
-          Découvrez vos cours disponibles
+          اكتشف الدروس المتاحة
         </Typography>
         <Chip 
-          label={`${filteredCourses.length + 1} cours disponibles`}
+          label={`درس متاح ${filteredCourses.length + 1}`}
           sx={{
             marginTop: '16px',
             background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
@@ -190,7 +190,7 @@ export function Cours() {
               marginBottom: '12px',
             }}
           >
-            Aucun cours disponible
+            لا توجد دروس متاحة
           </Typography>
           <Typography
             variant="body1"
@@ -198,7 +198,7 @@ export function Cours() {
               color: '#9ca3af',
             }}
           >
-            Il n'y a pas de cours disponibles pour votre branche pour le moment.
+            لا توجد دروس متاحة لتخصصك في الوقت الحالي.
           </Typography>
         </Box>
       )}

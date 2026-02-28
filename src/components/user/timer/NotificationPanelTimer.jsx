@@ -105,7 +105,7 @@ const NotificationPanelTimer = () => {
           transition: 'all 0.3s ease',
         }}
       >
-        {isPaused ? 'Reprendre' : 'Pause'}
+        {isPaused ? 'استئناف' : 'إيقاف'}
       </Button>
 
       <style>

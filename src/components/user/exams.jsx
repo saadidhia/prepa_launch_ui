@@ -43,7 +43,7 @@ export function Exams() {
             backgroundClip: 'text',
           }}
         >
-          Examens
+          الامتحانات
         </Typography>
         <Typography
           variant="body1"
@@ -53,7 +53,7 @@ export function Exams() {
             fontWeight: '500',
           }}
         >
-          Accédez aux Controles et syntheses par matière
+            ادخل إلى فروض المراقبة والتأليفية
         </Typography>
       </Box>
 
@@ -223,7 +223,7 @@ export function Exams() {
                   variant="body2"
                   sx={{ color: '#6b7280', fontSize: '12px', fontWeight: '500' }}
                 >
-                  Choisissez entre Controle ou Synthese
+                  اختر بين المراقبة أو التأليفية
                 </Typography>
               </Box>
             </CardContent>
