@@ -130,7 +130,7 @@ export function Progression() {
             backgroundClip: "text",
           }}
         >
-          Ma Progression
+          تقدمي الدراسي
         </Typography>
         <Typography
           variant="body1"
@@ -141,7 +141,7 @@ export function Progression() {
             marginBottom: "16px",
           }}
         >
-          Analysez votre temps d'étude par matière
+          حلّل وقت دراستك حسب المادة
         </Typography>
         
         {statisticsData.length > 0 && (
@@ -158,7 +158,7 @@ export function Progression() {
               }}
             />
             <Chip
-              label={`Temps total: ${formatTime(totalTime)}`}
+              label={`الوقت الإجمالي: ${formatTime(totalTime)}`}
               sx={{
                 background: "linear-gradient(135deg, #10b981 0%, #059669 100%)",
                 color: "white",
@@ -189,10 +189,10 @@ export function Progression() {
         >
           <ShowChartIcon sx={{ fontSize: 64, color: "#9ca3af", marginBottom: "16px" }} />
           <Typography variant="h6" sx={{ color: "#6b7280", fontWeight: "600" }}>
-            Aucune donnée disponible
+            لا توجد بيانات متاحة
           </Typography>
           <Typography sx={{ color: "#9ca3af", marginTop: "8px" }}>
-            Sélectionnez une période pour voir vos statistiques
+            اختر فترة زمنية لرؤية إحصائياتك
           </Typography>
         </Paper>
       ) : (
@@ -222,13 +222,13 @@ export function Progression() {
                     variant="h6"
                     sx={{ color: "white", fontWeight: "700", fontSize: "18px" }}
                   >
-                    Temps par matière
+                    الوقت حسب المادة
                   </Typography>
                   <Typography
                     variant="body2"
                     sx={{ color: "rgba(255, 255, 255, 0.9)", fontSize: "13px" }}
                   >
-                    Graphique en barres
+                    مخطط أعمدة
                   </Typography>
                 </Box>
               </Box>
@@ -313,13 +313,13 @@ export function Progression() {
                     variant="h6"
                     sx={{ color: "white", fontWeight: "700", fontSize: "18px" }}
                   >
-                    Répartition du temps
+                   توزيع الوقت
                   </Typography>
                   <Typography
                     variant="body2"
                     sx={{ color: "rgba(255, 255, 255, 0.9)", fontSize: "13px" }}
                   >
-                    Pourcentage par matière
+                    النسبة المئوية حسب المادة
                   </Typography>
                 </Box>
               </Box>
@@ -379,13 +379,13 @@ export function Progression() {
                     variant="h6"
                     sx={{ color: "white", fontWeight: "700", fontSize: "18px" }}
                   >
-                    Progression temporelle
+                    التقدم الزمني
                   </Typography>
                   <Typography
                     variant="body2"
                     sx={{ color: "rgba(255, 255, 255, 0.9)", fontSize: "13px" }}
                   >
-                    Évolution du temps d'étude
+                    تطور وقت الدراسة
                   </Typography>
                 </Box>
               </Box>
@@ -514,7 +514,7 @@ export function Progression() {
                             marginBottom: "4px",
                           }}
                         >
-                          Temps d'étude
+                          وقت الدراسة
                         </Typography>
                         <Typography
                           variant="h5"

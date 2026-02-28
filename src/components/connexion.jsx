@@ -133,7 +133,7 @@ export function Connexion() {
               <input
                 onChange={(e) => setUsername(e.target.value)}
                 type="text"
-                placeholder="Entrez votre nom"
+                placeholder="أدخل اسم المستخدم"
                 value={username}
                 style={{
                   width: "100%",
@@ -173,7 +173,7 @@ export function Connexion() {
                 <input
                   onChange={(e) => setPassword(e.target.value)}
                   type={showPassword ? "text" : "password"}
-                  placeholder="Entrez votre mot de passe"
+                  placeholder="أدخل كلمة المرور"
                   value={password}
                   style={{
                     width: "100%",

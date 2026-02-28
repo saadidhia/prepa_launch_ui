@@ -152,7 +152,7 @@ export function FilterStatistic({ onDataReceived }) {
         {/* Start and End Date */}
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, flex: 1 }}>
           <Box>
-            <Typography variant="body1">Start Date:</Typography>
+            <Typography variant="body1">تاريخ البدء:</Typography>
             <DatePicker
               selected={filterStat.startDate}
               onChange={(date) => handleDateChange('startDate', date)}
@@ -160,7 +160,7 @@ export function FilterStatistic({ onDataReceived }) {
               startDate={filterStat.startDate}
               endDate={filterStat.endDate}
               dateFormat="yyyy-MM-dd"
-              placeholderText="Select start date"
+              placeholderText="اختر تاريخ البدء"
               customInput={
                 <Button variant="outlined" fullWidth>
                   {filterStat.startDate ? filterStat.startDate.toLocaleDateString() : "Start Date"}
@@ -169,7 +169,7 @@ export function FilterStatistic({ onDataReceived }) {
             />
           </Box>
           <Box>
-            <Typography variant="body1">End Date:</Typography>
+            <Typography variant="body1">تاريخ الانتهاء:</Typography>
             <DatePicker
               selected={filterStat.endDate}
               onChange={(date) => handleDateChange('endDate', date)}
@@ -178,7 +178,7 @@ export function FilterStatistic({ onDataReceived }) {
               endDate={filterStat.endDate}
               minDate={filterStat.startDate}
               dateFormat="yyyy-MM-dd"
-              placeholderText="Select end date"
+              placeholderText="اختر تاريخ الانتهاء"
               customInput={
                 <Button variant="outlined" fullWidth>
                   {filterStat.endDate ? filterStat.endDate.toLocaleDateString() : "End Date"}
@@ -195,7 +195,7 @@ export function FilterStatistic({ onDataReceived }) {
             color="primary" 
             onClick={handleSubmit}
           >
-            soumettre le filtre
+            تطبيق الفلتر
           </Button>
         </Box>
       </Box>
