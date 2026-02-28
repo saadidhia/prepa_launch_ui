@@ -344,10 +344,10 @@ export default function AgendaFormular({ onClose, onSave }) {
                   }}
                 >
                   <MenuItem value="" disabled>اختر أولوية</MenuItem>
-                  <MenuItem value="LOW">Basse</MenuItem>
-                  <MenuItem value="MEDIUM">Moyenne</MenuItem>
-                  <MenuItem value="HIGH">Haute</MenuItem>
-                  <MenuItem value="CRITICAL">Critique</MenuItem>
+                  <MenuItem value="LOW">منخفضة</MenuItem>
+                  <MenuItem value="MEDIUM">متوسطة</MenuItem>
+                  <MenuItem value="HIGH">عالية</MenuItem>
+                  <MenuItem value="CRITICAL">حرجة</MenuItem>
                 </Select>
               </Box>
             </Grid>

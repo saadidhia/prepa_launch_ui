@@ -171,7 +171,7 @@ export default function Dashboard() {
     if (Auth.hasAgendaReminder) {
       // console.log("agenda "+ Auth.reminderAgendas)
 setAgendaAlertMessage(
-  "Vous avez des agendas prévus bientôt !" + 
+  "لديك أجندة قريبة قادمة!" + 
   Auth.reminderAgendas
     .map(agenda => {
       const date = new Date(agenda.eventTime);
