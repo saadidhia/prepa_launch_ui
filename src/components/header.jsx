@@ -138,7 +138,8 @@ export const Header = (props) => {
             }}
           >
             <Box component="span" sx={{ direction: "rtl", display: "block" }}>
-              نجاحك يبدا ب
+              نجاحك يبدا بـ
+
             </Box>
             <Box component="span" sx={{ direction: "ltr", display: "block" }}>
               Grintta Academy
