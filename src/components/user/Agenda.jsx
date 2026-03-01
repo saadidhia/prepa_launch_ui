@@ -38,7 +38,24 @@ const WEEK_DAYS = ['Dim', 'Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam']
 
 function formatDateISO(date) {
   if (!(date instanceof Date) || isNaN(date)) return '';
-  return date.toISOString().slice(0, 10);
+  // Use local date parts to avoid timezone shift
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
+function extractDateString(dateValue) {
+  if (!dateValue) return '';
+  // If it's already a string, slice the date part directly (avoids timezone conversion)
+  if (typeof dateValue === 'string') {
+    return dateValue.slice(0, 10);
+  }
+  // If it's a Date object, use local parts
+  if (dateValue instanceof Date) {
+    return formatDateISO(dateValue);
+  }
+  return '';
 }
 
 export default function ModernCalendar() {
@@ -128,7 +145,6 @@ export default function ModernCalendar() {
 
     try {
       await candidatsApi.updateAgendaById(user, activeAgenda.id, newAlreadySpent);
-
       setAgendas(prev =>
         prev.map(ag =>
           ag.id === activeAgenda.id
@@ -136,7 +152,6 @@ export default function ModernCalendar() {
             : ag
         )
       );
-
     } catch (err) {
       console.error("Error updating agenda:", err);
       alert("❌ Échec de la mise à jour de l'agenda");
@@ -264,12 +279,13 @@ export default function ModernCalendar() {
 
             {/* Calendar Days */}
             {days.map((day, i) => {
+              const dayStr = day ? formatDateISO(day) : '';
+
               const dayEvents = day ? agendas.filter(ag => {
                 const dateValue = ag.date || ag.eventTime;
                 if (!dateValue) return false;
-                const parsed = new Date(dateValue);
-                if (isNaN(parsed)) return false;
-                return formatDateISO(parsed) === formatDateISO(day);
+                // ✅ Fix: extract date string without timezone conversion
+                return extractDateString(dateValue) === dayStr;
               }) : [];
 
               return (
