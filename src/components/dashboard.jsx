@@ -171,7 +171,7 @@ export default function Dashboard() {
     if (Auth.hasAgendaReminder) {
       // console.log("agenda "+ Auth.reminderAgendas)
 setAgendaAlertMessage(
-  "لديك أجندة قريبة قادمة!" + 
+  "انتبه لديك امتحان قريبا!" + 
   Auth.reminderAgendas
     .map(agenda => {
       const date = new Date(agenda.eventTime);
@@ -523,8 +523,8 @@ setAgendaAlertOpen(true);
               borderRadius: '16px', 
               fontSize: '14px', 
               fontWeight: '600', 
-              boxShadow: '0 12px 32px rgba(59, 130, 246, 0.25)',
-              backgroundColor: '#eff6ff',
+              boxShadow: '0 12px 32px rgba(246, 59, 143, 0.25)',
+              backgroundColor: '#f14747',
               border: '2px solid #bfdbfe',
               padding: '16px',
               '& .MuiAlert-icon': {
