@@ -73,42 +73,88 @@ function Toolbar({ pageNav, zoom }) {
 
       <Box sx={{ flex: 1 }} />
 
-      <ZoomOut>
-        {({ onClick }) => (
-          <IconButton size="small" onClick={onClick} sx={{ color: 'white' }}>
-            <ZoomOutIcon fontSize="small" />
-          </IconButton>
-        )}
-      </ZoomOut>
+      {/* ── Zoom controls — large & prominent ── */}
+      <Box sx={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: '6px',
+        background: 'rgba(255,255,255,0.15)',
+        borderRadius: '12px',
+        padding: '4px 10px',
+        border: '1px solid rgba(255,255,255,0.3)',
+      }}>
+        <ZoomOut>
+          {({ onClick }) => (
+            <IconButton
+              onClick={onClick}
+              sx={{
+                color: 'white',
+                width: 38,
+                height: 38,
+                background: 'rgba(255,255,255,0.15)',
+                borderRadius: '8px',
+                '&:hover': {
+                  background: 'rgba(255,255,255,0.3)',
+                  transform: 'scale(1.1)',
+                },
+                transition: 'all 0.2s ease',
+              }}
+            >
+              <ZoomOutIcon sx={{ fontSize: 22 }} />
+            </IconButton>
+          )}
+        </ZoomOut>
 
-      <CurrentScale>
-        {({ scale }) => (
-          <Typography sx={{ color: 'white', fontSize: '13px', minWidth: '44px', textAlign: 'center' }}>
-            {Math.round(scale * 100)}%
-          </Typography>
-        )}
-      </CurrentScale>
+        <CurrentScale>
+          {({ scale }) => (
+            <Typography sx={{
+              color: 'white',
+              fontSize: '15px',
+              fontWeight: 700,
+              minWidth: '56px',
+              textAlign: 'center',
+              background: 'rgba(255,255,255,0.15)',
+              borderRadius: '6px',
+              padding: '2px 6px',
+            }}>
+              {Math.round(scale * 100)}%
+            </Typography>
+          )}
+        </CurrentScale>
 
-      <ZoomIn>
-        {({ onClick }) => (
-          <IconButton size="small" onClick={onClick} sx={{ color: 'white' }}>
-            <ZoomInIcon fontSize="small" />
-          </IconButton>
-        )}
-      </ZoomIn>
+        <ZoomIn>
+          {({ onClick }) => (
+            <IconButton
+              onClick={onClick}
+              sx={{
+                color: 'white',
+                width: 38,
+                height: 38,
+                background: 'rgba(255,255,255,0.15)',
+                borderRadius: '8px',
+                '&:hover': {
+                  background: 'rgba(255,255,255,0.3)',
+                  transform: 'scale(1.1)',
+                },
+                transition: 'all 0.2s ease',
+              }}
+            >
+              <ZoomInIcon sx={{ fontSize: 22 }} />
+            </IconButton>
+          )}
+        </ZoomIn>
+      </Box>
     </Box>
   );
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// SecurePdfViewer — page-by-page mode, arrow keys to navigate
+// SecurePdfViewer — each instance gets its OWN plugin instances
 // ─────────────────────────────────────────────────────────────────────────────
 function SecurePdfViewer({ url, height = '680px', showToolbar = true }) {
+  // ✅ Each SecurePdfViewer instance gets its own independent plugin instances
   const pageNavPlugin  = pageNavigationPlugin();
   const zoomPlug       = zoomPlugin();
-
-  // scrollModePlugin initialized with Page mode (value 2 = Page)
-  // 0 = Vertical, 1 = Horizontal, 2 = Wrapped, 3 = Page
   const scrollModePlug = scrollModePlugin({ scrollMode: 3 });
 
   const containerRef = useRef(null);
@@ -355,6 +401,7 @@ export function PdfViewer({ pdf, expiryMinutes = 10 }) {
           },
         }}
       >
+        {/* Modal header */}
         <Box sx={{
           background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
           padding: '14px 20px',
@@ -378,8 +425,9 @@ export function PdfViewer({ pdf, expiryMinutes = 10 }) {
           </Tooltip>
         </Box>
 
+        {/* ✅ Fixed: use calc height so toolbar + viewer both render correctly */}
         <DialogContent sx={{ padding: 0, flex: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
-          <SecurePdfViewer url={presignedUrl} height="100%" showToolbar={false} />
+          <SecurePdfViewer url={presignedUrl} height="calc(90vh - 68px)" showToolbar={true} />
         </DialogContent>
       </Dialog>
     </>
