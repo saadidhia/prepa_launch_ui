@@ -7,6 +7,7 @@ import {
 import { adminApi } from '../../apis/adminApi';
 import { useAuth } from '../context/AuthContext';
 import { KeyboardArrowDown, KeyboardArrowUp } from '@mui/icons-material';
+import '../../assets/css/activeSessionCount.css';
 
 export function Users() {
   const Auth = useAuth();
@@ -149,7 +150,17 @@ const handleSubmitDelete = async () => {
 
   return (
     <div>
-      <h2>User Table</h2>
+      
+      {/* Active session count with green dot, right aligned on medium+ screens */}
+      <div className="active-session-count-container">
+        <div className="active-session-count">
+          <span style={{ fontWeight: 'bold', marginRight: 8 }}>Active sessions:</span>
+          <span style={{ display: 'inline-block', width: 12, height: 12, borderRadius: '50%', background: 'green', marginRight: 6 }}></span>
+          <span style={{ fontWeight: 'bold' }}>
+            {filteredUsers.filter(u => u.hasSession).length}
+          </span>
+        </div>
+      </div>
       <TextField
         label="Filter by Email"
         value={filter}
@@ -222,6 +233,11 @@ const handleSubmitDelete = async () => {
                     >
                       Réinitialiser
                     </Button>
+                    {user.hasSession ? (
+                      <span style={{ display: 'inline-block', width: 12, height: 12, borderRadius: '50%', background: 'green', marginLeft: 4 }} title="Active"></span>
+                    ) : (
+                      <span style={{ display: 'inline-block', width: 12, height: 12, borderRadius: '50%', background: '#ccc', marginLeft: 4 }} title="Inactive"></span>
+                    )}
                   </TableCell>
                 </TableRow>
                 <TableRow>
