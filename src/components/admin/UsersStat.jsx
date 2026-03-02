@@ -8,8 +8,8 @@ export function UsersStat() {
     const admin = Auth.getUser();
     const [all, setAll] = useState(0);
     const [active, setActive] = useState(0);
-    const [primary, setPrimary] = useState(0);
-    const [secondary, setSecondary] = useState(0);
+    const [troisieme, setTroisieme] = useState(0);
+    const [bac, setBac] = useState(0);
     const [users, setUsers] = useState(0);
     const [math, setMath] = useState(0);
     const [science, setScience] = useState(0);
@@ -18,6 +18,15 @@ export function UsersStat() {
     const [letter, setLetter] = useState(0);
     const [sport, setSport] = useState(0);
     const [admins, setAdmins] = useState(0);
+    const [male, setMale] = useState(0);
+    const [female, setFemale] = useState(0);    
+    const [allemand, setAllemand] = useState(0);
+    const [espagnol, setEspagnol] = useState(0);
+    const [italien, setItalien] = useState(0);
+    const [turc, setTurc] = useState(0);
+    const [dessin, setDessin] = useState(0);
+    const [chinois, setChinois] = useState(0);
+
     const [loading, setLoading] = useState(true);
 
     const fetchStatics = async () => { 
@@ -33,9 +42,17 @@ export function UsersStat() {
             setLetter(data.LETTER);
             setSport(data.SPORT);
             setActive(data.ACTIVE);
-            setSecondary(data.SECONDARY);
-            setPrimary(data.PRIMARY);
+            setTroisieme(data.TROISIEME);
+            setBac(data.BAC);
             setAll(data.ALL);
+            setMale(data.MALE);
+            setFemale(data.FEMALE);
+            setAllemand(data.ALLEMAND);
+            setEspagnol(data.ESPAGNOL);
+            setItalien(data.ITALIEN);
+            setTurc(data.TURC);
+            setDessin(data.DESSIN);
+            setChinois(data.CHINOIS);
             setLoading(false);
         } catch (error) {
             console.error('Error fetching Statics of Users', error);
@@ -67,9 +84,17 @@ export function UsersStat() {
                     { label: 'ECO', value: eco },
                     { label: 'LETTER', value: letter },
                     { label: 'SPORT', value: sport },
-                    { label: 'Troisieme', value: primary },
-                    { label: 'Bac', value: secondary },
-                    { label: 'Active', value: active },
+                    { label: 'TROISIEME', value: troisieme },
+                    { label: 'BAC', value: bac },
+                    { label: 'ACTIVE', value: active },
+                    { label: 'MALE', value: male },
+                    { label: 'FEMALE', value: female },
+                    { label: 'ALLEMAND', value: allemand },
+                    { label: 'ESPAGNOL', value: espagnol },
+                    { label: 'ITALIEN', value: italien },   
+                    { label: 'TURC', value: turc },
+                    { label: 'DESSIN', value: dessin },
+                    { label: 'CHINOIS', value: chinois },
                 ].map((stat, index) => (
                     <Grid item xs={12} sm={6} md={4} lg={3} key={index}>
                         <Paper elevation={3}>
