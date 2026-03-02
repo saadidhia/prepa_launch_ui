@@ -1,0 +1,21 @@
+.active-session-count-container {
+  width: 100%;
+  max-width: 500px;
+  margin: 0 auto 12px auto;
+  display: flex;
+  justify-content: center;
+}
+.active-session-count {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-align: center;
+  flex-wrap: wrap;
+}
+@media (max-width: 600px) {
+  .active-session-count {
+    flex-direction: column;
+    gap: 4px;
+    font-size: 1rem;
+  }
+}
