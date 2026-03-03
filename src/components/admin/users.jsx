@@ -15,6 +15,7 @@ export function Users() {
   const [users, setUsers] = useState([]);
   const [deletedUser, setDeletedUser] = useState();
   const [filter, setFilter] = useState('');
+  const [filterStartDate, setFilterStartDate] = useState(''); // NEW: filter by start date
   const [openDialog, setOpenDialog] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
   const [months, setMonths] = useState(0);
@@ -22,8 +23,8 @@ export function Users() {
   const [openRows, setOpenRows] = useState({});
   const [activateStartDate, setActivateStartDate] = useState("");
   const [activateDuration, setActivateDuration] = useState("ONE");
-  const [openDeleteDialog, setOpenDeleteDialog] = useState(false); // State for delete dialog
-const [userToDelete, setUserToDelete] = useState(null); // State to hold the user to delete
+  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+  const [userToDelete, setUserToDelete] = useState(null);
 
 
 
@@ -51,8 +52,8 @@ const [userToDelete, setUserToDelete] = useState(null); // State to hold the use
 
   const getLastSubscription = (subscriptions) => {
     return subscriptions
-      .filter(subscription => subscription.expireDate) // Filter out subscriptions without an expiration date
-      .sort((a, b) => new Date(b.expireDate) - new Date(a.expireDate))[0]; // Sort by expireDate in descending order
+      .filter(subscription => subscription.expireDate)
+      .sort((a, b) => new Date(b.expireDate) - new Date(a.expireDate))[0];
   };
   
 
@@ -65,25 +66,22 @@ const [userToDelete, setUserToDelete] = useState(null); // State to hold the use
     }
   };
 
-// Function to open the delete confirmation dialog
-const handleOpenDeleteDialog = (user) => {
-  setUserToDelete(user);
-  setOpenDeleteDialog(true);
-};
+  const handleOpenDeleteDialog = (user) => {
+    setUserToDelete(user);
+    setOpenDeleteDialog(true);
+  };
 
-// Function to close the delete confirmation dialog
-const handleCloseDeleteDialog = () => {
-  setOpenDeleteDialog(false);
-  setUserToDelete(null);
-};
+  const handleCloseDeleteDialog = () => {
+    setOpenDeleteDialog(false);
+    setUserToDelete(null);
+  };
 
-// Function to handle deletion
-const handleSubmitDelete = async () => {
-  if (userToDelete) {
-    await handleDeleteUser(userToDelete.username);
-    handleCloseDeleteDialog();
-  }
-};
+  const handleSubmitDelete = async () => {
+    if (userToDelete) {
+      await handleDeleteUser(userToDelete.username);
+      handleCloseDeleteDialog();
+    }
+  };
 
   const handleResetSessionUser = async (username) => {
     try {
@@ -120,7 +118,7 @@ const handleSubmitDelete = async () => {
         startDate: activateStartDate,
         duration: activateDuration
       };
-      handleActivateUser(selectedUser.id, subscription); // Pass userId and subscription entity
+      handleActivateUser(selectedUser.id, subscription);
       handleCloseDialog();
     }
   };
@@ -138,14 +136,20 @@ const handleSubmitDelete = async () => {
 
   const isLastSubscriptionExpired = (subscriptions) => {
     const lastSubscription = getLastSubscription(subscriptions);
-    if (!lastSubscription) return false; // No valid subscriptions found
+    if (!lastSubscription) return false;
     const now = new Date();
     return new Date(lastSubscription.expireDate) < now;
   };
   
+  // NEW: helper to check if any subscription matches the selected start date
+  const hasSubscriptionWithStartDate = (subscriptions, dateStr) => {
+    if (!dateStr) return true; // no filter applied
+    return subscriptions.some(sub => sub.startDate && sub.startDate.startsWith(dateStr));
+  };
 
   const filteredUsers = users.filter(user =>
-    user.email.toLowerCase().includes(filter.toLowerCase())
+    user.email.toLowerCase().includes(filter.toLowerCase()) &&
+    hasSubscriptionWithStartDate(user.subscriptions, filterStartDate) // NEW: apply start date filter
   );
 
   return (
@@ -161,11 +165,27 @@ const handleSubmitDelete = async () => {
           </span>
         </div>
       </div>
-      <TextField
-        label="Filter by Email"
-        value={filter}
-        onChange={(e) => setFilter(e.target.value)}
-      />
+
+      {/* Filters row */}
+      <div style={{ display: 'flex', gap: 16, alignItems: 'center', marginBottom: 8 }}>
+        <TextField
+          label="Filter by Email"
+          value={filter}
+          onChange={(e) => setFilter(e.target.value)}
+        />
+        {/* NEW: Filter by Start Date */}
+        <TextField
+          label="Filter by Start Date"
+          type="date"
+          value={filterStartDate}
+          onChange={(e) => setFilterStartDate(e.target.value)}
+          InputLabelProps={{ shrink: true }}
+        />
+        {filterStartDate && (
+          <Button size="small" onClick={() => setFilterStartDate('')}>Clear Date</Button>
+        )}
+      </div>
+
       <TableContainer component={Paper}>
         <Table>
           <TableHead>
@@ -210,7 +230,7 @@ const handleSubmitDelete = async () => {
     variant="outlined"
     color="secondary"
     disabled={user.role === 'ADMIN'}
-    onClick={() => handleOpenDeleteDialog(user)} // Open delete confirmation dialog
+    onClick={() => handleOpenDeleteDialog(user)}
   >
     Supprimer
   </Button>
