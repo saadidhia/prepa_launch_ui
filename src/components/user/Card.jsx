@@ -75,19 +75,23 @@ const CustomCard = ({ content, onDelete, onUpdate }) => {
     setContext('');
   };
 
-  const getCardColor = (subject) => {
-    if (subject === 'Chimie'.toUpperCase()) {
-      return '33FF33'; // green
-    } else if (subject === 'Math1'.toUpperCase()) {
-      return 'red';
-    } else if (subject === 'Math2'.toUpperCase()) {
-      return 'yellow';
-    } else if (subject === 'Physique'.toUpperCase()) {
-      return 'blue';
-    } else if (subject === 'STA'.toUpperCase()) {
-      return '66B2FF';
-    }
-  };
+const getCardColor = (subject) => {
+  console.log('Subject:', subject); // Debugging log
+  switch (subject?.toUpperCase()) {
+    case 'ARABE':
+      return '#33FF33';
+    case 'FRANCAIS':
+      return '#FF4444';
+    case 'ANGLAIS':
+      return '#FFFF00';
+    case 'PHYSIQUE':
+      return '#33FF33';
+    case 'OPTION':
+      return '#66B2FF';
+    default:
+      return '#ffffff';
+  }
+};
 
   // Truncate note to first 30 words
   const truncatedNote = content.note
