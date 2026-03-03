@@ -78,7 +78,7 @@ export function CreateBook() {
                         </div>
 
                         <div className="form-group mt-3">
-                            <label >Link picture</label>
+                            <label >Link picture: https://imgbb.com/</label>
                             <input
                                 onChange={(e) => setLink(e.target.value)}
                                 type="text"
@@ -158,10 +158,10 @@ export function CreateBook() {
                                     onChange={(e) => setFields(e.target.checked ? [...fields, e.target.value] : fields.filter(item => item !== e.target.value))}
                                     className="form-check-input"
                                     type="checkbox"
-                                    id="bgCheckbox"
+                                    id="infoCheckbox"
                                     value="INFO"
                                 />
-                                <label className="form-check-label" htmlFor="bgCheckbox">
+                                <label className="form-check-label" htmlFor="infoCheckbox">
                                     INFO
                                 </label>
                             </div>
@@ -175,10 +175,10 @@ export function CreateBook() {
                                     className="form-check-input"
                                     type="checkbox"
                                     id="math1Checkbox"
-                                    value="MATH1"
+                                    value="MATH"
                                 />
                                 <label className="form-check-label" htmlFor="math1Checkbox">
-                                    MATH1
+                                    MATH
                                 </label>
                             </div>
                             <div className="form-check">
@@ -187,10 +187,10 @@ export function CreateBook() {
                                     className="form-check-input"
                                     type="checkbox"
                                     id="math2Checkbox"
-                                    value="MATH2"
+                                    value="SCIENCE"
                                 />
                                 <label className="form-check-label" htmlFor="math2Checkbox">
-                                    MATH2
+                                    SCIENCE
                                 </label>
                             </div>
                             <div className="form-check">
@@ -211,10 +211,10 @@ export function CreateBook() {
                                     className="form-check-input"
                                     type="checkbox"
                                     id="chimieCheckbox"
-                                    value="CHIMIE"
+                                    value="ECONOMIE"
                                 />
                                 <label className="form-check-label" htmlFor="chimieCheckbox">
-                                    CHIMIE
+                                    ECONOMIE
                                 </label>
                             </div>
                             <div className="form-check">
@@ -247,10 +247,10 @@ export function CreateBook() {
                                     className="form-check-input"
                                     type="checkbox"
                                     id="staCheckbox"
-                                    value="STA"
+                                    value="TECHNIQUE"
                                 />
                                 <label className="form-check-label" htmlFor="staCheckbox">
-                                    STA
+                                    TECHNIQUE
                                 </label>
                             </div>
                             <div className="form-check">
@@ -259,10 +259,59 @@ export function CreateBook() {
                                     className="form-check-input"
                                     type="checkbox"
                                     id="infoCheckbox"
-                                    value="INFO"
+                                    value="INFORMATIQUE"
                                 />
                                 <label className="form-check-label" htmlFor="infoCheckbox">
-                                    INFO
+                                    INFORMATIQUE
+                                </label>
+                            </div>
+                            <div className="form-check">
+                                <input
+                                    onChange={(e) => setSubjects(e.target.checked ? [...subjects, e.target.value] : subjects.filter(item => item !== e.target.value))}
+                                    className="form-check-input"
+                                    type="checkbox"
+                                    id="arabeCheckbox"
+                                    value="ARABE"
+                                />
+                                <label className="form-check-label" htmlFor="arabeCheckbox">
+                                    ARABE
+                                </label>
+                            </div>
+                             <div className="form-check">
+                                <input
+                                    onChange={(e) => setSubjects(e.target.checked ? [...subjects, e.target.value] : subjects.filter(item => item !== e.target.value))}
+                                    className="form-check-input"
+                                    type="checkbox"
+                                    id="bases_DE_DONNEESCheckbox"
+                                    value="BASES_DE_DONNEES"
+                                />
+                                <label className="form-check-label" htmlFor="bases_DE_DONNEESCheckbox">
+                                    BASES_DE_DONNEES
+                                </label>
+                            </div>
+
+                             <div className="form-check">
+                                <input
+                                    onChange={(e) => setSubjects(e.target.checked ? [...subjects, e.target.value] : subjects.filter(item => item !== e.target.value))}
+                                    className="form-check-input"
+                                    type="checkbox"
+                                    id="algorithmesCheckbox"
+                                    value="ALGORITHMES"
+                                />
+                                <label className="form-check-label" htmlFor="algorithmesCheckbox">
+                                    ALGORITHMES
+                                </label>
+                            </div>
+                              <div className="form-check">
+                                <input
+                                    onChange={(e) => setSubjects(e.target.checked ? [...subjects, e.target.value] : subjects.filter(item => item !== e.target.value))}
+                                    className="form-check-input"
+                                    type="checkbox"
+                                    id="gestionCheckbox"
+                                    value="GESTION"
+                                />
+                                <label className="form-check-label" htmlFor="gestionCheckbox">
+                                    GESTION
                                 </label>
                             </div>
                         </div>

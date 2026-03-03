@@ -23,7 +23,7 @@ import { Content } from './components/user/subjects/Content'
 
 const navigations = [
      {
-        text: "GRINTTA كُتب",
+        text: "الكتب",
         link: "books",
         component: Content,
         role: "user"
