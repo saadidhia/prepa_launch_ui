@@ -10,6 +10,7 @@ export const Books = (props) => {
 
   const fetchExternalBooks = async () => {
     const response = await externalApi.getExternalBooks();
+    console.log(response.data);
     setExternalBooks(response.data);
   }
 
@@ -35,7 +36,7 @@ export const Books = (props) => {
                   key={`${b.name}-${i}`}
                   className="col-sm-6 col-md-4 col-lg-4"
                 >
-
+                
                   <Image
                     name={b.name}
                     description={b.description}
