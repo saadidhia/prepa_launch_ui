@@ -91,6 +91,35 @@ export function Notes() {
   const query = useQuery();
   const noteIdFromUrl = query.get('id');
 
+  // Subject color mapping
+  const subjectColors = {
+    'ARABE': { border: '#f59e0b', bg: '#fef3c7', chip: '#f59e0b', gradient: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)' },
+    'FRANCAIS': { border: '#3b82f6', bg: '#eff6ff', chip: '#3b82f6', gradient: 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)' },
+    'ANGLAIS': { border: '#8b5cf6', bg: '#f5f3ff', chip: '#8b5cf6', gradient: 'linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%)' },
+    'TECHNIQUE': { border: '#ef4444', bg: '#fef2f2', chip: '#ef4444', gradient: 'linear-gradient(135deg, #ef4444 0%, #b91c1c 100%)' },
+    'SCIENCE': { border: '#ef4444', bg: '#fef2f2', chip: '#ef4444', gradient: 'linear-gradient(135deg, #ef4444 0%, #b91c1c 100%)' },
+    'MATH': { border: '#06b6d4', bg: '#ecfeff', chip: '#06b6d4', gradient: 'linear-gradient(135deg, #06b6d4 0%, #0891b2 100%)' },
+    'INFORMATIQUE': { border: '#10b981', bg: '#ecfdf5', chip: '#10b981', gradient: 'linear-gradient(135deg, #10b981 0%, #059669 100%)' },
+    'SVT': { border: '#84cc16', bg: '#f7fee7', chip: '#84cc16', gradient: 'linear-gradient(135deg, #84cc16 0%, #65a30d 100%)' },
+    'PHILOSOPHIE': { border: '#f97316', bg: '#fff7ed', chip: '#f97316', gradient: 'linear-gradient(135deg, #f97316 0%, #c2410c 100%)' },
+    'ECONOMIE': { border: '#14b8a6', bg: '#f0fdfa', chip: '#14b8a6', gradient: 'linear-gradient(135deg, #14b8a6 0%, #0f766e 100%)' },
+    'HISTORY': { border: '#a855f7', bg: '#faf5ff', chip: '#a855f7', gradient: 'linear-gradient(135deg, #a855f7 0%, #7e22ce 100%)' },
+    'BASES_DE_DONNEES': { border: '#0ea5e9', bg: '#f0f9ff', chip: '#0ea5e9', gradient: 'linear-gradient(135deg, #0ea5e9 0%, #0369a1 100%)' },
+    'ALGORITHMES': { border: '#ec4899', bg: '#fdf2f8', chip: '#ec4899', gradient: 'linear-gradient(135deg, #ec4899 0%, #be185d 100%)' },
+    'GESTION':   { border: '#facc15', bg: '#fefce8', chip: '#facc15', gradient: 'linear-gradient(135deg, #facc15 0%, #ca8a04 100%)' },
+    'PENSEE_ISLAMIQUE':      { border: '#a78bfa', bg: '#f5f3ff', chip: '#a78bfa', gradient: 'linear-gradient(135deg, #a78bfa 0%, #6d28d9 100%)' },
+    'HISTOIRE_GEOGRAPHIE':    { border: '#34d399', bg: '#ecfdf5', chip: '#34d399', gradient: 'linear-gradient(135deg, #34d399 0%, #059669 100%)' },
+    'OPTION': { border: '#94a3b8', bg: '#f8fafc', chip: '#94a3b8', gradient: 'linear-gradient(135deg, #94a3b8 0%, #475569 100%)' },
+    'PHYSIQUE':        { border: '#f472b6', bg: '#fdf2f8', chip: '#f472b6', gradient: 'linear-gradient(135deg, #f472b6 0%, #db2777 100%)' },
+
+  };
+
+  const getSubjectColor = (subjectName) => {
+    if (!subjectName) return { border: '#667eea', bg: '#f0f0ff', chip: '#667eea', gradient: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' };
+    const key = subjectName.trim().toUpperCase();
+    return subjectColors[key] || { border: '#667eea', bg: '#f0f0ff', chip: '#667eea', gradient: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' };
+  };
+
   const toggleContext = (contextName) => {
     const normalizedContext = contextName.trim().toLowerCase();
     setSelectedContexts((prev) => {
@@ -515,158 +544,176 @@ export function Notes() {
   };
 
   // Render card component
-  const renderCard = (card, columnType) => (
-    <Card
-      key={card.id}
-      draggable
-      onDragStart={(e) => handleDragStart(e, card, columnType)}
-      onTouchStart={(e) => handleTouchStart(e, card, columnType)}
-      onTouchMove={handleTouchMove}
-      onTouchEnd={handleTouchEnd}
-      className="card"
-      sx={{
-        marginBottom: '12px',
-        borderRadius: '12px',
-        border: '2px solid #e5e7eb',
-        boxShadow: '0 2px 8px rgba(0, 0, 0, 0.08)',
-        cursor: 'grab',
-        transition: 'all 0.3s ease',
-        opacity: isDragging && draggedCard?.id === card.id ? 0.5 : 1,
-        '&:hover': {
-          borderColor: '#667eea',
-          boxShadow: '0 4px 12px rgba(102, 126, 234, 0.2)',
-          transform: 'translateY(-2px)',
-        },
-        '&:active': {
-          cursor: 'grabbing',
-        },
-      }}
-    >
-      <CardContent sx={{ padding: '16px', position: 'relative' }}>
-        <DragIndicatorIcon
-          sx={{
-            position: 'absolute',
-            top: '12px',
-            left: '12px',
-            color: '#9ca3af',
-            fontSize: 20,
-          }}
-        />
-
-        <IconButton
-          onClick={(e) => handleMenuOpen(e, card.id)}
-          sx={{
-            position: 'absolute',
-            top: '8px',
-            right: '8px',
-            backgroundColor: '#667eea',
-            color: 'white',
-            padding: '6px',
-            '&:hover': {
-              backgroundColor: '#764ba2',
-            },
-          }}
-          size="small"
-        >
-          <MoreVertIcon fontSize="small" />
-        </IconButton>
-
-        <Menu
-          anchorEl={anchorEl}
-          open={Boolean(anchorEl) && menuCardId === card.id}
-          onClose={handleMenuClose}
-          PaperProps={{
-            sx: {
-              borderRadius: '12px',
-              boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
-            },
-          }}
-        >
-          <MenuItem
-            onClick={() => {
-              handleOpenEdit(card);
-              handleMenuClose();
+  const renderCard = (card, columnType) => {
+    const subjectColor = getSubjectColor(card.subject);
+    return (
+      <Card
+        key={card.id}
+        draggable
+        onDragStart={(e) => handleDragStart(e, card, columnType)}
+        onTouchStart={(e) => handleTouchStart(e, card, columnType)}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+        className="card"
+        sx={{
+          marginBottom: '12px',
+          borderRadius: '12px',
+          border: `2px solid ${subjectColor.border}`,
+          backgroundColor: subjectColor.bg,
+          boxShadow: `0 2px 8px ${subjectColor.border}33`,
+          cursor: 'grab',
+          transition: 'all 0.3s ease',
+          opacity: isDragging && draggedCard?.id === card.id ? 0.5 : 1,
+          '&:hover': {
+            borderColor: subjectColor.border,
+            boxShadow: `0 4px 12px ${subjectColor.border}55`,
+            transform: 'translateY(-2px)',
+          },
+          '&:active': {
+            cursor: 'grabbing',
+          },
+        }}
+      >
+        <CardContent sx={{ padding: '16px', position: 'relative' }}>
+          {/* Colored top accent bar */}
+          <Box
+            sx={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              right: 0,
+              height: '4px',
+              borderRadius: '12px 12px 0 0',
+              background: subjectColor.gradient,
             }}
-            sx={{ gap: '8px' }}
-          >
-            <EditIcon fontSize="small" sx={{ color: '#667eea' }} />
-            Editer
-          </MenuItem>
-          <MenuItem
-            onClick={() => {
-              handleDelete(card.id);
-              handleMenuClose();
+          />
+
+          <DragIndicatorIcon
+            sx={{
+              position: 'absolute',
+              top: '12px',
+              left: '12px',
+              color: subjectColor.border,
+              fontSize: 20,
             }}
-            sx={{ gap: '8px' }}
+          />
+
+          <IconButton
+            onClick={(e) => handleMenuOpen(e, card.id)}
+            sx={{
+              position: 'absolute',
+              top: '8px',
+              right: '8px',
+              backgroundColor: subjectColor.chip,
+              color: 'white',
+              padding: '6px',
+              '&:hover': {
+                backgroundColor: subjectColor.border,
+                filter: 'brightness(0.85)',
+              },
+            }}
+            size="small"
           >
-            <DeleteIcon fontSize="small" sx={{ color: '#ef4444' }} />
-            Supprimer
-          </MenuItem>
-        </Menu>
+            <MoreVertIcon fontSize="small" />
+          </IconButton>
 
-        <Typography
-          variant="h6"
-          sx={{
-            fontWeight: '700',
-            color: '#1a1a1a',
-            marginTop: '24px',
-            marginBottom: '12px',
-            fontSize: '16px',
-            overflow: 'hidden',
-            textOverflow: 'ellipsis',
-            whiteSpace: 'nowrap',
-          }}
-        >
-          {card.title}
-        </Typography>
+          <Menu
+            anchorEl={anchorEl}
+            open={Boolean(anchorEl) && menuCardId === card.id}
+            onClose={handleMenuClose}
+            PaperProps={{
+              sx: {
+                borderRadius: '12px',
+                boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
+              },
+            }}
+          >
+            <MenuItem
+              onClick={() => {
+                handleOpenEdit(card);
+                handleMenuClose();
+              }}
+              sx={{ gap: '8px' }}
+            >
+              <EditIcon fontSize="small" sx={{ color: '#667eea' }} />
+              Editer
+            </MenuItem>
+            <MenuItem
+              onClick={() => {
+                handleDelete(card.id);
+                handleMenuClose();
+              }}
+              sx={{ gap: '8px' }}
+            >
+              <DeleteIcon fontSize="small" sx={{ color: '#ef4444' }} />
+              Supprimer
+            </MenuItem>
+          </Menu>
 
-        <Box
-          sx={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '6px',
-            marginBottom: '8px',
-            cursor: 'pointer',
-            color: '#667eea',
-            '&:hover': {
-              textDecoration: 'underline',
-            },
-          }}
-          onClick={() => handleOpenNoteDialog(card.note, card.title)}
-        >
-          <VisibilityIcon fontSize="small" />
-          <Typography variant="body2" sx={{ fontWeight: '600', fontSize: '13px' }}>
-            Voir la note
+          <Typography
+            variant="h6"
+            sx={{
+              fontWeight: '700',
+              color: '#1a1a1a',
+              marginTop: '24px',
+              marginBottom: '12px',
+              fontSize: '16px',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              whiteSpace: 'nowrap',
+            }}
+          >
+            {card.title}
           </Typography>
-        </Box>
 
-        <Box sx={{ display: 'flex', gap: '6px', flexWrap: 'wrap', marginTop: '12px' }}>
-          <Chip
-            label={card.subject}
-            size="small"
-            icon={<SubjectIcon sx={{ fontSize: 14 }} />}
+          <Box
             sx={{
-              backgroundColor: '#667eea',
-              color: 'white',
-              fontWeight: '600',
-              fontSize: '11px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px',
+              marginBottom: '8px',
+              cursor: 'pointer',
+              color: subjectColor.chip,
+              '&:hover': {
+                textDecoration: 'underline',
+              },
             }}
-          />
-          <Chip
-            label={card.context}
-            size="small"
-            icon={<CategoryIcon sx={{ fontSize: 14 }} />}
-            sx={{
-              backgroundColor: '#10b981',
-              color: 'white',
-              fontWeight: '600',
-              fontSize: '11px',
-            }}
-          />
-        </Box>
-      </CardContent>
-    </Card>
-  );
+            onClick={() => handleOpenNoteDialog(card.note, card.title)}
+          >
+            <VisibilityIcon fontSize="small" />
+            <Typography variant="body2" sx={{ fontWeight: '600', fontSize: '13px' }}>
+              Voir la note
+            </Typography>
+          </Box>
+
+          <Box sx={{ display: 'flex', gap: '6px', flexWrap: 'wrap', marginTop: '12px' }}>
+            <Chip
+              label={card.subject}
+              size="small"
+              icon={<SubjectIcon sx={{ fontSize: 14, color: 'white !important' }} />}
+              sx={{
+                backgroundColor: subjectColor.chip,
+                color: 'white',
+                fontWeight: '600',
+                fontSize: '11px',
+              }}
+            />
+            <Chip
+              label={card.context}
+              size="small"
+              icon={<CategoryIcon sx={{ fontSize: 14 }} />}
+              sx={{
+                backgroundColor: '#10b981',
+                color: 'white',
+                fontWeight: '600',
+                fontSize: '11px',
+              }}
+            />
+          </Box>
+        </CardContent>
+      </Card>
+    );
+  };
 
   return (
     <Container maxWidth="xl" sx={{ paddingY: '32px' }}>
