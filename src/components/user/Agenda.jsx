@@ -45,6 +45,16 @@ function formatDateISO(date) {
   return `${year}-${month}-${day}`;
 }
 
+const getPriorityLabel = (priority) => {
+  switch (priority) {
+    case 'CRITICAL': return 'حرجة';
+    case 'HIGH':     return 'عالية';
+    case 'MEDIUM':   return 'متوسطة';
+    case 'LOW':      return 'منخفضة';
+    default:         return 'متوسطة';
+  }
+};
+
 function extractDateString(dateValue) {
   if (!dateValue) return '';
   // If it's already a string, slice the date part directly (avoids timezone conversion)
@@ -484,7 +494,7 @@ export default function ModernCalendar() {
 
                     {/* Priority Badge */}
                     <Chip
-                      label={ag.priority || 'Normal'}
+                     label={getPriorityLabel(ag.priority)}
                       sx={{
                         background: getPriorityGradient(ag.priority),
                         color: 'white',
