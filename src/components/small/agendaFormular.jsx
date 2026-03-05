@@ -82,7 +82,26 @@ export default function AgendaFormular({ onClose, onSave }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
+    // Required fields validation
+    const requiredFields = {
+      title: 'العنوان',
+      description: 'الوصف',
+      type: 'نوع الفعالية',
+      priority: 'الأولوية',
+      eventTime: 'وقت الحدث',
+      subject: 'المادة',
+      timeShouldSpent: 'المدة المتوقعة',
+      remindTime: 'وقت التذكير الأول',
+    };
+
+    for (const [field, label] of Object.entries(requiredFields)) {
+      if (!formData[field] || formData[field] === '') {
+        alert(`يرجى تعبئة الحقل المطلوب: ${label}`);
+        return;
+      }
+    }
+
     // Date validation
     if (formData.remindTime && formData.eventTime) {
       const remind = new Date(formData.remindTime);
@@ -96,11 +115,11 @@ export default function AgendaFormular({ onClose, onSave }) {
     try {
       const data = await candidatsApi.createAgenda(user, formData);
       if (onSave) onSave(formData);
-      alert('✅ Agenda créé avec succès !');
+      alert('✅ تم إنشاء الأجندة بنجاح!');
       onClose();
     } catch (error) {
       console.error('Error creating agenda:', error);
-      alert('❌ Erreur lors de la création de l\'agenda');
+      alert('❌ حدث خطأ أثناء إنشاء الأجندة');
     }
   };
 
@@ -192,7 +211,7 @@ export default function AgendaFormular({ onClose, onSave }) {
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
                   <LabelIcon sx={{ color: '#667eea', fontSize: 20 }} />
                   <Typography variant="subtitle2" sx={{ fontWeight: '700', color: '#374151' }}>
-                    العنوان
+                    العنوان <span style={{ color: '#ef4444' }}>*</span>
                   </Typography>
                 </Box>
                 <TextField
@@ -229,7 +248,7 @@ export default function AgendaFormular({ onClose, onSave }) {
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
                   <DescriptionIcon sx={{ color: '#667eea', fontSize: 20 }} />
                   <Typography variant="subtitle2" sx={{ fontWeight: '700', color: '#374151' }}>
-                    الوصف
+                    الوصف <span style={{ color: '#ef4444' }}>*</span>
                   </Typography>
                 </Box>
                 <TextField
@@ -240,6 +259,7 @@ export default function AgendaFormular({ onClose, onSave }) {
                   placeholder="وصف قصير..."
                   multiline
                   rows={2}
+                  required
                   variant="outlined"
                   sx={{
                     '& .MuiOutlinedInput-root': {
@@ -266,7 +286,7 @@ export default function AgendaFormular({ onClose, onSave }) {
               }}>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
                   <Typography variant="subtitle2" sx={{ fontWeight: '700', color: '#374151' }}>
-                    نوع الفعالية
+                    نوع الفعالية <span style={{ color: '#ef4444' }}>*</span>
                   </Typography>
                   {formData.type && (
                     <Chip 
@@ -316,7 +336,7 @@ export default function AgendaFormular({ onClose, onSave }) {
               }}>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
                   <Typography variant="subtitle2" sx={{ fontWeight: '700', color: '#374151' }}>
-                    الأولوية
+                    الأولوية <span style={{ color: '#ef4444' }}>*</span>
                   </Typography>
                   {formData.priority && (
                     <Chip 
@@ -368,7 +388,7 @@ export default function AgendaFormular({ onClose, onSave }) {
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
                   <EventIcon sx={{ color: '#667eea', fontSize: 20 }} />
                   <Typography variant="subtitle2" sx={{ fontWeight: '700', color: '#374151' }}>
-                    وقت الحدث
+                    وقت الحدث <span style={{ color: '#ef4444' }}>*</span>
                   </Typography>
                 </Box>
                 <TextField
@@ -405,7 +425,7 @@ export default function AgendaFormular({ onClose, onSave }) {
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
                   <SubjectIcon sx={{ color: '#667eea', fontSize: 20 }} />
                   <Typography variant="subtitle2" sx={{ fontWeight: '700', color: '#374151' }}>
-                    المادة
+                    المادة <span style={{ color: '#ef4444' }}>*</span>
                   </Typography>
                 </Box>
                 <Select
@@ -444,8 +464,7 @@ export default function AgendaFormular({ onClose, onSave }) {
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
                   <AccessTimeIcon sx={{ color: '#667eea', fontSize: 20 }} />
                   <Typography variant="subtitle2" sx={{ fontWeight: '700', color: '#374151' }}>
-                    المدة المتوقعة (ساعات)
-
+                    المدة المتوقعة (ساعات) <span style={{ color: '#ef4444' }}>*</span>
                   </Typography>
                 </Box>
                 <TextField
@@ -456,6 +475,7 @@ export default function AgendaFormular({ onClose, onSave }) {
                   onChange={handleChange}
                   placeholder="مثال: 4"
                   inputProps={{ min: 1, step: 0.5 }}
+                  required
                   variant="outlined"
                   sx={{
                     '& .MuiOutlinedInput-root': {
@@ -483,7 +503,7 @@ export default function AgendaFormular({ onClose, onSave }) {
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
                   <AccessTimeIcon sx={{ color: '#667eea', fontSize: 20 }} />
                   <Typography variant="subtitle2" sx={{ fontWeight: '700', color: '#374151' }}>
-                    وقت التذكير الأول	
+                    وقت التذكير الأول <span style={{ color: '#ef4444' }}>*</span>
                   </Typography>
                 </Box>
                 <TextField
@@ -492,6 +512,7 @@ export default function AgendaFormular({ onClose, onSave }) {
                   name="remindTime"
                   value={formData.remindTime}
                   onChange={handleChange}
+                  required
                   variant="outlined"
                   sx={{
                     '& .MuiOutlinedInput-root': {
@@ -503,7 +524,7 @@ export default function AgendaFormular({ onClose, onSave }) {
               </Box>
             </Grid>
 
-            {/* Notes Selection */}
+            {/* Notes Selection — optional */}
             <Grid item xs={12}>
               <Box sx={{
                 padding: '20px',
@@ -515,8 +536,18 @@ export default function AgendaFormular({ onClose, onSave }) {
                   <NotesIcon sx={{ color: '#667eea', fontSize: 20 }} />
                   <Typography variant="subtitle2" sx={{ fontWeight: '700', color: '#374151' }}>
                     اختر الملاحظات
-
                   </Typography>
+                  <Chip
+                    label="اختياري"
+                    size="small"
+                    sx={{
+                      backgroundColor: '#f3f4f6',
+                      color: '#9ca3af',
+                      fontWeight: '600',
+                      fontSize: '11px',
+                      border: '1px solid #e5e7eb',
+                    }}
+                  />
                   {formData.cardIds?.length > 0 && (
                     <Chip 
                       label={`${formData.cardIds.length} sélectionné(s)`}
