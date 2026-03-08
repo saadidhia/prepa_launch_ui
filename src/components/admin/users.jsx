@@ -60,6 +60,7 @@ const fetchActiveSessionsCount = async () => {
     setTotalPages(data.page?.totalPages ?? data.totalPages ?? 0);
     setTotalElements(data.page?.totalElements ?? data.totalElements ?? 0);
   } catch (error) {
+    setUsers([]);
     console.error('Error fetching users:', error);
   }
 };
