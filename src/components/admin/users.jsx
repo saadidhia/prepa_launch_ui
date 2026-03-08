@@ -162,10 +162,10 @@ const fetchActiveSessionsCount = async () => {
     return subscriptions.some(sub => sub.startDate && sub.startDate.startsWith(dateStr));
   };
 
-  const filteredUsers = users.filter(user =>
-    user.email.toLowerCase().includes(filter.toLowerCase()) &&
-    hasSubscriptionWithStartDate(user.subscriptions, filterStartDate)
-  );
+ const filteredUsers = users.filter(user =>
+  user.email?.toLowerCase().includes(filter.toLowerCase()) &&
+  hasSubscriptionWithStartDate(user.subscriptions ?? [], filterStartDate)
+);
 
   return (
     <div>
