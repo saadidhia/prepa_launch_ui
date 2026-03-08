@@ -54,9 +54,11 @@ const fetchActiveSessionsCount = async () => {
   const fetchUsers = async () => {
   try {
     const response = await adminApi.getUsers(admin, page, pageSize, filter);
-      setUsers(response.data.content ?? []);
-    setTotalPages(response.data.page.totalPages);
-    setTotalElements(response.data.page.totalElements);
+    const data = response.data;
+    setUsers(data.content ?? []);
+    // handle both flat and nested structure
+    setTotalPages(data.page?.totalPages ?? data.totalPages ?? 0);
+    setTotalElements(data.page?.totalElements ?? data.totalElements ?? 0);
   } catch (error) {
     console.error('Error fetching users:', error);
   }
