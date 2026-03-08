@@ -26,7 +26,7 @@ export const instance = axios.create({
   baseURL: process.env.REACT_APP_API
 })
 
-function getUsers(admin, page , size, email ) {
+function getUsers(admin, page=0 , size=10, email ) {
   return instance.get('/api/admin', {
     headers: {
       'Authorization': bearerAuth(admin),
