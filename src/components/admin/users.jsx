@@ -15,7 +15,7 @@ export function Users() {
   const [users, setUsers] = useState([]);
   const [deletedUser, setDeletedUser] = useState();
   const [filter, setFilter] = useState('');
-  const [filterStartDate, setFilterStartDate] = useState(''); // NEW: filter by start date
+  const [filterStartDate, setFilterStartDate] = useState('');
   const [openDialog, setOpenDialog] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
   const [months, setMonths] = useState(0);
@@ -25,8 +25,12 @@ export function Users() {
   const [activateDuration, setActivateDuration] = useState("ONE");
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [userToDelete, setUserToDelete] = useState(null);
+  const [page, setPage] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
+  const [totalElements, setTotalElements] = useState(0);
+  const [activeSessionsCount, setActiveSessionsCount] = useState(0);
 
-
+  const pageSize = 10;
 
   const handleActivateUser = async (userId, subscription) => {
     try {
@@ -36,26 +40,38 @@ export function Users() {
       console.error('Error activating user:', error);
     }
   };
+
+  // add fetch function
+const fetchActiveSessionsCount = async () => {
+  try {
+    const response = await adminApi.getActiveSessionsCount(admin);
+    setActiveSessionsCount(response.data);
+  } catch (error) {
+    console.error('Error fetching active sessions count:', error);
+  }
+};
+
   const fetchUsers = async () => {
-    try {
-      const response = await adminApi.getUsers(admin);
-      setUsers(response.data);
-      console.log('Fetched users:', response.data);
-    } catch (error) {
-      console.error('Error fetching users:', error);
-    }
-  };
+  try {
+    const response = await adminApi.getUsers(admin, page, pageSize, filter);
+    setUsers(response.data.content);
+    setTotalPages(response.data.page.totalPages);
+    setTotalElements(response.data.page.totalElements);
+  } catch (error) {
+    console.error('Error fetching users:', error);
+  }
+};
+
   useEffect(() => {
-   
     fetchUsers();
-  }, [deletedUser]);
+    fetchActiveSessionsCount();
+  }, [deletedUser, page, filter]);
 
   const getLastSubscription = (subscriptions) => {
     return subscriptions
       .filter(subscription => subscription.expireDate)
       .sort((a, b) => new Date(b.expireDate) - new Date(a.expireDate))[0];
   };
-  
 
   const handleDeleteUser = async (username) => {
     try {
@@ -140,40 +156,36 @@ export function Users() {
     const now = new Date();
     return new Date(lastSubscription.expireDate) < now;
   };
-  
-  // NEW: helper to check if any subscription matches the selected start date
+
   const hasSubscriptionWithStartDate = (subscriptions, dateStr) => {
-    if (!dateStr) return true; // no filter applied
+    if (!dateStr) return true;
     return subscriptions.some(sub => sub.startDate && sub.startDate.startsWith(dateStr));
   };
 
   const filteredUsers = users.filter(user =>
     user.email.toLowerCase().includes(filter.toLowerCase()) &&
-    hasSubscriptionWithStartDate(user.subscriptions, filterStartDate) // NEW: apply start date filter
+    hasSubscriptionWithStartDate(user.subscriptions, filterStartDate)
   );
 
   return (
     <div>
-      
-      {/* Active session count with green dot, right aligned on medium+ screens */}
       <div className="active-session-count-container">
         <div className="active-session-count">
           <span style={{ fontWeight: 'bold', marginRight: 8 }}>Active sessions:</span>
           <span style={{ display: 'inline-block', width: 12, height: 12, borderRadius: '50%', background: 'green', marginRight: 6 }}></span>
-          <span style={{ fontWeight: 'bold' }}>
-            {filteredUsers.filter(u => u.hasSession).length}
-          </span>
+           {activeSessionsCount}
         </div>
       </div>
 
-      {/* Filters row */}
       <div style={{ display: 'flex', gap: 16, alignItems: 'center', marginBottom: 8 }}>
         <TextField
-          label="Filter by Email"
-          value={filter}
-          onChange={(e) => setFilter(e.target.value)}
-        />
-        {/* NEW: Filter by Start Date */}
+  label="Filter by Email"
+  value={filter}
+  onChange={(e) => {
+    setFilter(e.target.value);
+    setPage(0); // reset to first page on new search
+  }}
+/>
         <TextField
           label="Filter by Start Date"
           type="date"
@@ -202,7 +214,7 @@ export function Users() {
               <TableCell>Phone</TableCell>
               <TableCell>Role</TableCell>
               <TableCell>Action</TableCell>
-               <TableCell>étendre</TableCell>
+              <TableCell>étendre</TableCell>
               <TableCell>Session</TableCell>
             </TableRow>
           </TableHead>
@@ -226,25 +238,25 @@ export function Users() {
                   <TableCell>{user.numberPhone}</TableCell>
                   <TableCell>{user.role}</TableCell>
                   <TableCell>
-  <Button
-    variant="outlined"
-    color="secondary"
-    disabled={user.role === 'ADMIN'}
-    onClick={() => handleOpenDeleteDialog(user)}
-  >
-    Supprimer
-  </Button>
-</TableCell>
+                    <Button
+                      variant="outlined"
+                      color="secondary"
+                      disabled={user.role === 'ADMIN'}
+                      onClick={() => handleOpenDeleteDialog(user)}
+                    >
+                      Supprimer
+                    </Button>
+                  </TableCell>
                   <TableCell>
-                                    <Button
-                                        variant="outlined"
-                                        color="secondary"
-                                        disabled={user.role === 'ADMIN' || !isLastSubscriptionExpired(user.subscriptions)}
-                                        onClick={() => handleOpenDialog(user)}
-                                    >
-                                        Activate
-                                    </Button>
-                                </TableCell>
+                    <Button
+                      variant="outlined"
+                      color="secondary"
+                      disabled={user.role === 'ADMIN' || !isLastSubscriptionExpired(user.subscriptions)}
+                      onClick={() => handleOpenDialog(user)}
+                    >
+                      Activate
+                    </Button>
+                  </TableCell>
                   <TableCell>
                     <Button
                       variant="outlined"
@@ -290,6 +302,25 @@ export function Users() {
         </Table>
       </TableContainer>
 
+      {/* Pagination Controls */}
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 16, marginTop: 16 }}>
+        <Button
+          variant="outlined"
+          disabled={page === 0}
+          onClick={() => setPage(p => p - 1)}
+        >
+          Previous
+        </Button>
+        <span>Page {page + 1} of {totalPages} — {totalElements} users total</span>
+        <Button
+          variant="outlined"
+          disabled={page >= totalPages - 1}
+          onClick={() => setPage(p => p + 1)}
+        >
+          Next
+        </Button>
+      </div>
+
       {/* Session Reset Dialog */}
       <Dialog open={openDialogSession} onClose={handleCloseDialogSession}>
         <DialogTitle>Réinitialiser la session</DialogTitle>
@@ -306,56 +337,50 @@ export function Users() {
 
       {/* Activate User Dialog */}
       <Dialog open={openDialog} onClose={handleCloseDialog}>
-  <DialogTitle>Activer l'utilisateur</DialogTitle>
-  <DialogContent>
-    <DialogContentText>
-      Êtes-vous sûr de vouloir activer cet utilisateur ?
-    </DialogContentText>
-    
-    {/* Start Date Picker */}
-     <input
-              type="date"
-              className="form-control mt-1"
-              value={activateStartDate}
-              onChange={(e) => setActivateStartDate(e.target.value)}
-      />
+        <DialogTitle>Activer l'utilisateur</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Êtes-vous sûr de vouloir activer cet utilisateur ?
+          </DialogContentText>
+          <input
+            type="date"
+            className="form-control mt-1"
+            value={activateStartDate}
+            onChange={(e) => setActivateStartDate(e.target.value)}
+          />
+          <FormControl fullWidth margin="dense">
+            <InputLabel>Duration (Months)</InputLabel>
+            <Select
+              value={activateDuration}
+              onChange={(e) => setActivateDuration(e.target.value)}
+              label="Duration (Months)"
+            >
+              <MenuItem value="ONE">ONE</MenuItem>
+              <MenuItem value="THREE">THREE</MenuItem>
+              <MenuItem value="SIX">SIX</MenuItem>
+              <MenuItem value="TEN">TEN</MenuItem>
+            </Select>
+          </FormControl>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseDialog} color="primary">Annuler</Button>
+          <Button onClick={handleSubmitActivate} color="primary">Soumettre</Button>
+        </DialogActions>
+      </Dialog>
 
-    {/* Duration Selector */}
-    <FormControl fullWidth margin="dense">
-      <InputLabel>Duration (Months)</InputLabel>
-      <Select
-        value={activateDuration}
-        onChange={(e) => setActivateDuration(e.target.value)}
-        label="Duration (Months)"
-      >
-        <MenuItem value="ONE">ONE</MenuItem>
-        <MenuItem value="THREE">THREE</MenuItem>
-        <MenuItem value="SIX">SIX</MenuItem>
-        <MenuItem value="TEN">TEN</MenuItem>
-      </Select>
-    </FormControl>
-
-  
-  </DialogContent>
-  
-  <DialogActions>
-    <Button onClick={handleCloseDialog} color="primary">Annuler</Button>
-    <Button onClick={handleSubmitActivate} color="primary">Soumettre</Button>
-  </DialogActions>
-</Dialog>
-
-<Dialog open={openDeleteDialog} onClose={handleCloseDeleteDialog}>
-  <DialogTitle>Supprimer l'utilisateur</DialogTitle>
-  <DialogContent>
-    <DialogContentText>
-      Êtes-vous sûr de vouloir supprimer l'utilisateur <strong>{userToDelete?.username}</strong> ?
-    </DialogContentText>
-  </DialogContent>
-  <DialogActions>
-    <Button onClick={handleCloseDeleteDialog} color="primary">Annuler</Button>
-    <Button onClick={handleSubmitDelete} color="primary">Soumettre</Button>
-  </DialogActions>
-</Dialog>
+      {/* Delete User Dialog */}
+      <Dialog open={openDeleteDialog} onClose={handleCloseDeleteDialog}>
+        <DialogTitle>Supprimer l'utilisateur</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Êtes-vous sûr de vouloir supprimer l'utilisateur <strong>{userToDelete?.username}</strong> ?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseDeleteDialog} color="primary">Annuler</Button>
+          <Button onClick={handleSubmitDelete} color="primary">Soumettre</Button>
+        </DialogActions>
+      </Dialog>
     </div>
   );
 }

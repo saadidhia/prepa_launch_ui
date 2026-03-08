@@ -5,6 +5,7 @@ import { bearerAuth } from './AuthApi'
 export const adminApi = {
 
   getUsers,
+  getActiveSessionsCount,
   deleteUser,
   activateAndExtendUser,
   getNotifiedUsers,
@@ -25,8 +26,22 @@ export const instance = axios.create({
   baseURL: process.env.REACT_APP_API
 })
 
-function getUsers(admin) {
+function getUsers(admin, page , size, email ) {
   return instance.get('/api/admin', {
+    headers: {
+      'Authorization': bearerAuth(admin),
+      'Content-type': 'application/json'
+    },
+    params: {
+      page,
+      size,
+      email
+    }
+  })
+}
+
+function getActiveSessionsCount(admin) {
+  return instance.get('/api/admin/active-sessions', {
     headers: {
       'Authorization': bearerAuth(admin),
       'Content-type': 'application/json'
