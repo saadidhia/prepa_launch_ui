@@ -1,6 +1,7 @@
 import axios from 'axios'
 import { config } from '../constants'
 import { bearerAuth } from './AuthApi'
+import { create } from '@mui/material/styles/createTransitions'
 
 export const adminApi = {
 
@@ -19,7 +20,9 @@ export const adminApi = {
   getBooks,
   deleteBook,
   getStatics,
-  resetSession
+  resetSession,
+  createNews,
+  deleteNews
 }
 
 export const instance = axios.create({
@@ -185,4 +188,26 @@ function resetSession(admin, username){
     })
 }
 
+function createNews(admin, news){
 
+  const formData = new FormData();
+  formData.append('title', news.title);
+  formData.append('description', news.description);
+  formData.append('image', news.image); 
+
+  return instance.post('/api/admin/news', formData, {
+    headers: {
+      'Authorization': bearerAuth(admin),
+      'Content-type': 'multipart/form-data'
+    }
+  })
+}
+
+function deleteNews(admin, newsId){
+  return instance.delete(`/api/admin/news/${newsId}`, {
+    headers: {
+      'Authorization': bearerAuth(admin),
+      'Content-type': 'application/json'
+    }
+  })
+}

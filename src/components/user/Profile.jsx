@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { candidatsApi } from '../../apis/candidatsApi';
 import { useAuth } from '../context/AuthContext';
-import { Typography, Paper, Grid, TextField, IconButton, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Box, Avatar, Chip, Card, CardContent } from '@mui/material';
+import { Typography, Paper, Grid, TextField, IconButton, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Box, Avatar, Chip, Card, CardContent, InputAdornment, Collapse } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import CheckIcon from '@mui/icons-material/Check';
 import CloseIcon from '@mui/icons-material/Close';
@@ -13,6 +13,11 @@ import WorkIcon from '@mui/icons-material/Work';
 import WcIcon from '@mui/icons-material/Wc';
 import VerifiedIcon from '@mui/icons-material/Verified';
 import ClassIcon from '@mui/icons-material/Class';
+import LockIcon from '@mui/icons-material/Lock';
+import LockResetIcon from '@mui/icons-material/LockReset';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
+import KeyIcon from '@mui/icons-material/Key';
 import femaleImage from '../../assets/statics/female.jpg';
 import maleImage from '../../assets/statics/male.jpg';
 
@@ -30,6 +35,18 @@ export function Profile() {
     const [successMessage, setSuccessMessage] = useState('');
     const [subscriptions, setSubscriptions] = useState([]);
     const [option, setOption] = useState('');
+
+    // Password change state
+    const [isChangingPassword, setIsChangingPassword] = useState(false);
+    const [oldPassword, setOldPassword] = useState('');
+    const [newPassword, setNewPassword] = useState('');
+    const [confirmNewPassword, setConfirmNewPassword] = useState('');
+    const [showOldPassword, setShowOldPassword] = useState(false);
+    const [showNewPassword, setShowNewPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+    const [passwordError, setPasswordError] = useState('');
+    const [passwordSuccess, setPasswordSuccess] = useState('');
+    const [isPasswordLoading, setIsPasswordLoading] = useState(false);
 
     const Auth = useAuth();
     const user = Auth.getUser();
@@ -108,6 +125,92 @@ export function Profile() {
         }
     };
 
+    const handleCancelPasswordChange = () => {
+        setIsChangingPassword(false);
+        setOldPassword('');
+        setNewPassword('');
+        setConfirmNewPassword('');
+        setPasswordError('');
+        setPasswordSuccess('');
+        setShowOldPassword(false);
+        setShowNewPassword(false);
+        setShowConfirmPassword(false);
+    };
+
+    const handleChangePassword = async () => {
+        setPasswordError('');
+        setPasswordSuccess('');
+
+        if (!oldPassword || !newPassword || !confirmNewPassword) {
+            setPasswordError("يرجى ملء جميع الحقول.");
+            return;
+        }
+
+        if (newPassword.length < 6) {
+            setPasswordError("يجب أن تحتوي كلمة المرور الجديدة على 6 أحرف على الأقل.");
+            return;
+        }
+
+        if (newPassword !== confirmNewPassword) {
+            setPasswordError("كلمة المرور الجديدة وتأكيدها غير متطابقتين.");
+            return;
+        }
+
+        if (oldPassword === newPassword) {
+            setPasswordError("كلمة المرور الجديدة يجب أن تكون مختلفة عن القديمة.");
+            return;
+        }
+
+        try {
+            setIsPasswordLoading(true);
+            await candidatsApi.changePassword(user, oldPassword, newPassword);
+            setPasswordSuccess("تم تغيير كلمة المرور بنجاح!");
+            setTimeout(() => {
+                handleCancelPasswordChange();
+            }, 2000);
+        } catch (error) {
+            console.error('Error changing password:', error);
+            setPasswordError("كلمة المرور القديمة غير صحيحة. يرجى المحاولة مرة أخرى.");
+        } finally {
+            setIsPasswordLoading(false);
+        }
+    };
+
+    const infoBoxStyle = {
+        display: 'flex',
+        alignItems: 'center',
+        gap: '12px',
+        padding: '16px',
+        borderRadius: '16px',
+        background: 'linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%)',
+        border: '2px solid #f3f4f6',
+        transition: 'all 0.3s ease',
+        '&:hover': {
+            transform: 'translateY(-2px)',
+            boxShadow: '0 4px 12px rgba(102, 126, 234, 0.1)',
+        }
+    };
+
+    const iconBoxStyle = {
+        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+        borderRadius: '12px',
+        padding: '12px',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+    };
+
+    const passwordFieldStyle = {
+        '& .MuiOutlinedInput-root': {
+            borderRadius: '12px',
+            direction: 'ltr',
+            '& fieldset': { borderColor: '#e5e7eb' },
+            '&:hover fieldset': { borderColor: '#667eea' },
+            '&.Mui-focused fieldset': { borderColor: '#667eea', borderWidth: '2px' },
+        },
+        '& .MuiInputLabel-root.Mui-focused': { color: '#667eea' },
+    };
+
     return (
         <Box sx={{ 
             padding: '24px',
@@ -130,7 +233,6 @@ export function Profile() {
                     borderRadius: '20px 20px 0 0',
                     position: 'relative',
                 }}>
-                    {/* Decorative circles */}
                     <Box sx={{
                         position: 'absolute',
                         top: '-20px',
@@ -174,28 +276,8 @@ export function Profile() {
                     <Grid container spacing={3}>
                         {/* Email */}
                         <Grid item xs={12} md={6}>
-                            <Box sx={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: '12px',
-                                padding: '16px',
-                                borderRadius: '16px',
-                                background: 'linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%)',
-                                border: '2px solid #f3f4f6',
-                                transition: 'all 0.3s ease',
-                                '&:hover': {
-                                    transform: 'translateY(-2px)',
-                                    boxShadow: '0 4px 12px rgba(102, 126, 234, 0.1)',
-                                }
-                            }}>
-                                <Box sx={{
-                                    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                                    borderRadius: '12px',
-                                    padding: '12px',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                }}>
+                            <Box sx={infoBoxStyle}>
+                                <Box sx={iconBoxStyle}>
                                     <EmailIcon sx={{ color: 'white', fontSize: 24 }} />
                                 </Box>
                                 <Box sx={{ flex: 1 }}>
@@ -211,28 +293,8 @@ export function Profile() {
 
                         {/* Gender */}
                         <Grid item xs={12} md={6}>
-                            <Box sx={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: '12px',
-                                padding: '16px',
-                                borderRadius: '16px',
-                                background: 'linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%)',
-                                border: '2px solid #f3f4f6',
-                                transition: 'all 0.3s ease',
-                                '&:hover': {
-                                    transform: 'translateY(-2px)',
-                                    boxShadow: '0 4px 12px rgba(102, 126, 234, 0.1)',
-                                }
-                            }}>
-                                <Box sx={{
-                                    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                                    borderRadius: '12px',
-                                    padding: '12px',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                }}>
+                            <Box sx={infoBoxStyle}>
+                                <Box sx={iconBoxStyle}>
                                     <WcIcon sx={{ color: 'white', fontSize: 24 }} />
                                 </Box>
                                 <Box sx={{ flex: 1 }}>
@@ -248,28 +310,8 @@ export function Profile() {
 
                         {/* Level */}
                         <Grid item xs={12} md={6}>
-                            <Box sx={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: '12px',
-                                padding: '16px',
-                                borderRadius: '16px',
-                                background: 'linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%)',
-                                border: '2px solid #f3f4f6',
-                                transition: 'all 0.3s ease',
-                                '&:hover': {
-                                    transform: 'translateY(-2px)',
-                                    boxShadow: '0 4px 12px rgba(102, 126, 234, 0.1)',
-                                }
-                            }}>
-                                <Box sx={{
-                                    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                                    borderRadius: '12px',
-                                    padding: '12px',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                }}>
+                            <Box sx={infoBoxStyle}>
+                                <Box sx={iconBoxStyle}>
                                     <SchoolIcon sx={{ color: 'white', fontSize: 24 }} />
                                 </Box>
                                 <Box sx={{ flex: 1 }}>
@@ -285,28 +327,8 @@ export function Profile() {
 
                         {/* Option */}
                         <Grid item xs={12} md={6}>
-                            <Box sx={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: '12px',
-                                padding: '16px',
-                                borderRadius: '16px',
-                                background: 'linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%)',
-                                border: '2px solid #f3f4f6',
-                                transition: 'all 0.3s ease',
-                                '&:hover': {
-                                    transform: 'translateY(-2px)',
-                                    boxShadow: '0 4px 12px rgba(102, 126, 234, 0.1)',
-                                }
-                            }}>
-                                <Box sx={{
-                                    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                                    borderRadius: '12px',
-                                    padding: '12px',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                }}>
+                            <Box sx={infoBoxStyle}>
+                                <Box sx={iconBoxStyle}>
                                     <ClassIcon sx={{ color: 'white', fontSize: 24 }} />
                                 </Box>
                                 <Box sx={{ flex: 1 }}>
@@ -322,28 +344,8 @@ export function Profile() {
 
                         {/* Field */}
                         <Grid item xs={12} md={6}>
-                            <Box sx={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: '12px',
-                                padding: '16px',
-                                borderRadius: '16px',
-                                background: 'linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%)',
-                                border: '2px solid #f3f4f6',
-                                transition: 'all 0.3s ease',
-                                '&:hover': {
-                                    transform: 'translateY(-2px)',
-                                    boxShadow: '0 4px 12px rgba(102, 126, 234, 0.1)',
-                                }
-                            }}>
-                                <Box sx={{
-                                    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                                    borderRadius: '12px',
-                                    padding: '12px',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                }}>
+                            <Box sx={infoBoxStyle}>
+                                <Box sx={iconBoxStyle}>
                                     <WorkIcon sx={{ color: 'white', fontSize: 24 }} />
                                 </Box>
                                 <Box sx={{ flex: 1 }}>
@@ -359,28 +361,8 @@ export function Profile() {
 
                         {/* Phone Number */}
                         <Grid item xs={12} md={6}>
-                            <Box sx={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: '12px',
-                                padding: '16px',
-                                borderRadius: '16px',
-                                background: 'linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%)',
-                                border: '2px solid #f3f4f6',
-                                transition: 'all 0.3s ease',
-                                '&:hover': {
-                                    transform: 'translateY(-2px)',
-                                    boxShadow: '0 4px 12px rgba(102, 126, 234, 0.1)',
-                                }
-                            }}>
-                                <Box sx={{
-                                    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                                    borderRadius: '12px',
-                                    padding: '12px',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                }}>
+                            <Box sx={infoBoxStyle}>
+                                <Box sx={iconBoxStyle}>
                                     <PhoneIcon sx={{ color: 'white', fontSize: 24 }} />
                                 </Box>
                                 <Box sx={{ flex: 1 }}>
@@ -396,15 +378,9 @@ export function Profile() {
                                                 '& .MuiOutlinedInput-root': {
                                                     borderRadius: '8px',
                                                     direction: 'ltr',
-                                                    '& fieldset': {
-                                                        borderColor: '#e5e7eb',
-                                                    },
-                                                    '&:hover fieldset': {
-                                                        borderColor: '#667eea',
-                                                    },
-                                                    '&.Mui-focused fieldset': {
-                                                        borderColor: '#667eea',
-                                                    },
+                                                    '& fieldset': { borderColor: '#e5e7eb' },
+                                                    '&:hover fieldset': { borderColor: '#667eea' },
+                                                    '&.Mui-focused fieldset': { borderColor: '#667eea' },
                                                 },
                                             }}
                                         />
@@ -421,10 +397,7 @@ export function Profile() {
                                             sx={{
                                                 background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
                                                 color: 'white',
-                                                '&:hover': {
-                                                    background: 'linear-gradient(135deg, #059669 0%, #047857 100%)',
-                                                    transform: 'scale(1.05)',
-                                                },
+                                                '&:hover': { background: 'linear-gradient(135deg, #059669 0%, #047857 100%)', transform: 'scale(1.05)' },
                                                 transition: 'all 0.3s ease',
                                             }}
                                         >
@@ -439,10 +412,7 @@ export function Profile() {
                                             sx={{
                                                 background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)',
                                                 color: 'white',
-                                                '&:hover': {
-                                                    background: 'linear-gradient(135deg, #dc2626 0%, #b91c1c 100%)',
-                                                    transform: 'scale(1.05)',
-                                                },
+                                                '&:hover': { background: 'linear-gradient(135deg, #dc2626 0%, #b91c1c 100%)', transform: 'scale(1.05)' },
                                                 transition: 'all 0.3s ease',
                                             }}
                                         >
@@ -455,10 +425,7 @@ export function Profile() {
                                         sx={{
                                             background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
                                             color: 'white',
-                                            '&:hover': {
-                                                background: 'linear-gradient(135deg, #764ba2 0%, #667eea 100%)',
-                                                transform: 'scale(1.05)',
-                                            },
+                                            '&:hover': { background: 'linear-gradient(135deg, #764ba2 0%, #667eea 100%)', transform: 'scale(1.05)' },
                                             transition: 'all 0.3s ease',
                                         }}
                                     >
@@ -498,6 +465,261 @@ export function Profile() {
                             </Typography>
                         </Box>
                     )}
+                </CardContent>
+            </Card>
+
+            {/* Change Password Card */}
+            <Card sx={{
+                marginBottom: '24px',
+                borderRadius: '20px',
+                boxShadow: '0 8px 24px rgba(102, 126, 234, 0.15)',
+            }}>
+                <CardContent sx={{ padding: '32px' }}>
+                    {/* Header row */}
+                    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: isChangingPassword ? '24px' : '0' }}>
+                        <Typography
+                            variant="h5"
+                            sx={{
+                                fontWeight: '700',
+                                color: '#1a1a1a',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '10px',
+                            }}
+                        >
+                            <Box sx={{
+                                ...iconBoxStyle,
+                                padding: '8px',
+                                borderRadius: '10px',
+                            }}>
+                                <LockResetIcon sx={{ color: 'white', fontSize: 20 }} />
+                            </Box>
+                            تغيير كلمة المرور
+                        </Typography>
+
+                        {!isChangingPassword ? (
+                            <IconButton
+                                onClick={() => setIsChangingPassword(true)}
+                                sx={{
+                                    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                                    color: 'white',
+                                    borderRadius: '12px',
+                                    padding: '10px 20px',
+                                    gap: '6px',
+                                    '&:hover': {
+                                        background: 'linear-gradient(135deg, #764ba2 0%, #667eea 100%)',
+                                        transform: 'translateY(-2px)',
+                                        boxShadow: '0 4px 12px rgba(102, 126, 234, 0.4)',
+                                    },
+                                    transition: 'all 0.3s ease',
+                                }}
+                            >
+                                <KeyIcon sx={{ fontSize: 18 }} />
+                                <Typography sx={{ fontSize: '14px', fontWeight: '600', color: 'white' }}>
+                                    تعديل
+                                </Typography>
+                            </IconButton>
+                        ) : (
+                            <IconButton
+                                onClick={handleCancelPasswordChange}
+                                sx={{
+                                    background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)',
+                                    color: 'white',
+                                    borderRadius: '12px',
+                                    padding: '10px 20px',
+                                    gap: '6px',
+                                    '&:hover': {
+                                        background: 'linear-gradient(135deg, #dc2626 0%, #b91c1c 100%)',
+                                        transform: 'translateY(-2px)',
+                                    },
+                                    transition: 'all 0.3s ease',
+                                }}
+                            >
+                                <CloseIcon sx={{ fontSize: 18 }} />
+                                <Typography sx={{ fontSize: '14px', fontWeight: '600', color: 'white' }}>
+                                    إلغاء
+                                </Typography>
+                            </IconButton>
+                        )}
+                    </Box>
+
+                    {/* Collapsible form */}
+                    <Collapse in={isChangingPassword}>
+                        <Box sx={{
+                            padding: '24px',
+                            borderRadius: '16px',
+                            background: 'linear-gradient(135deg, rgba(102, 126, 234, 0.04) 0%, rgba(118, 75, 162, 0.04) 100%)',
+                            border: '2px solid #f3f4f6',
+                            animation: 'slideIn 0.3s ease',
+                        }}>
+                            <Grid container spacing={3}>
+                                {/* Old Password */}
+                                <Grid item xs={12} md={4}>
+                                    <Typography variant="caption" sx={{ color: '#6b7280', fontWeight: '600', display: 'block', marginBottom: '8px' }}>
+                                        كلمة المرور الحالية
+                                    </Typography>
+                                    <TextField
+                                        fullWidth
+                                        type={showOldPassword ? 'text' : 'password'}
+                                        value={oldPassword}
+                                        onChange={(e) => setOldPassword(e.target.value)}
+                                        placeholder="••••••••"
+                                        size="small"
+                                        sx={passwordFieldStyle}
+                                        InputProps={{
+                                            startAdornment: (
+                                                <InputAdornment position="start">
+                                                    <LockIcon sx={{ color: '#9ca3af', fontSize: 18 }} />
+                                                </InputAdornment>
+                                            ),
+                                            endAdornment: (
+                                                <InputAdornment position="end">
+                                                    <IconButton
+                                                        onClick={() => setShowOldPassword(!showOldPassword)}
+                                                        edge="end"
+                                                        size="small"
+                                                        sx={{ color: '#9ca3af' }}
+                                                    >
+                                                        {showOldPassword ? <VisibilityOffIcon fontSize="small" /> : <VisibilityIcon fontSize="small" />}
+                                                    </IconButton>
+                                                </InputAdornment>
+                                            ),
+                                        }}
+                                    />
+                                </Grid>
+
+                                {/* New Password */}
+                                <Grid item xs={12} md={4}>
+                                    <Typography variant="caption" sx={{ color: '#6b7280', fontWeight: '600', display: 'block', marginBottom: '8px' }}>
+                                        كلمة المرور الجديدة
+                                    </Typography>
+                                    <TextField
+                                        fullWidth
+                                        type={showNewPassword ? 'text' : 'password'}
+                                        value={newPassword}
+                                        onChange={(e) => setNewPassword(e.target.value)}
+                                        placeholder="••••••••"
+                                        size="small"
+                                        sx={passwordFieldStyle}
+                                        InputProps={{
+                                            startAdornment: (
+                                                <InputAdornment position="start">
+                                                    <LockResetIcon sx={{ color: '#9ca3af', fontSize: 18 }} />
+                                                </InputAdornment>
+                                            ),
+                                            endAdornment: (
+                                                <InputAdornment position="end">
+                                                    <IconButton
+                                                        onClick={() => setShowNewPassword(!showNewPassword)}
+                                                        edge="end"
+                                                        size="small"
+                                                        sx={{ color: '#9ca3af' }}
+                                                    >
+                                                        {showNewPassword ? <VisibilityOffIcon fontSize="small" /> : <VisibilityIcon fontSize="small" />}
+                                                    </IconButton>
+                                                </InputAdornment>
+                                            ),
+                                        }}
+                                    />
+                                </Grid>
+
+                                {/* Confirm New Password */}
+                                <Grid item xs={12} md={4}>
+                                    <Typography variant="caption" sx={{ color: '#6b7280', fontWeight: '600', display: 'block', marginBottom: '8px' }}>
+                                        تأكيد كلمة المرور الجديدة
+                                    </Typography>
+                                    <TextField
+                                        fullWidth
+                                        type={showConfirmPassword ? 'text' : 'password'}
+                                        value={confirmNewPassword}
+                                        onChange={(e) => setConfirmNewPassword(e.target.value)}
+                                        placeholder="••••••••"
+                                        size="small"
+                                        sx={passwordFieldStyle}
+                                        InputProps={{
+                                            startAdornment: (
+                                                <InputAdornment position="start">
+                                                    <LockIcon sx={{ color: '#9ca3af', fontSize: 18 }} />
+                                                </InputAdornment>
+                                            ),
+                                            endAdornment: (
+                                                <InputAdornment position="end">
+                                                    <IconButton
+                                                        onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                                                        edge="end"
+                                                        size="small"
+                                                        sx={{ color: '#9ca3af' }}
+                                                    >
+                                                        {showConfirmPassword ? <VisibilityOffIcon fontSize="small" /> : <VisibilityIcon fontSize="small" />}
+                                                    </IconButton>
+                                                </InputAdornment>
+                                            ),
+                                        }}
+                                    />
+                                </Grid>
+                            </Grid>
+
+                            {/* Confirm button */}
+                            <Box sx={{ display: 'flex', justifyContent: 'flex-end', marginTop: '20px' }}>
+                                <IconButton
+                                    onClick={handleChangePassword}
+                                    disabled={isPasswordLoading}
+                                    sx={{
+                                        background: isPasswordLoading
+                                            ? '#d1d5db'
+                                            : 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+                                        color: 'white',
+                                        borderRadius: '12px',
+                                        padding: '10px 24px',
+                                        gap: '6px',
+                                        '&:hover': {
+                                            background: isPasswordLoading
+                                                ? '#d1d5db'
+                                                : 'linear-gradient(135deg, #059669 0%, #047857 100%)',
+                                            transform: isPasswordLoading ? 'none' : 'translateY(-2px)',
+                                            boxShadow: isPasswordLoading ? 'none' : '0 4px 12px rgba(16, 185, 129, 0.4)',
+                                        },
+                                        transition: 'all 0.3s ease',
+                                    }}
+                                >
+                                    <CheckIcon sx={{ fontSize: 18 }} />
+                                    <Typography sx={{ fontSize: '14px', fontWeight: '600', color: 'white' }}>
+                                        {isPasswordLoading ? 'جاري التغيير...' : 'تأكيد التغيير'}
+                                    </Typography>
+                                </IconButton>
+                            </Box>
+
+                            {/* Password error/success messages */}
+                            {passwordError && (
+                                <Box sx={{
+                                    marginTop: '16px',
+                                    padding: '12px 16px',
+                                    borderRadius: '12px',
+                                    backgroundColor: '#fef2f2',
+                                    border: '1px solid #fecaca',
+                                    animation: 'shake 0.5s ease',
+                                }}>
+                                    <Typography sx={{ color: '#dc2626', fontWeight: '600', fontSize: '14px' }}>
+                                        {passwordError}
+                                    </Typography>
+                                </Box>
+                            )}
+                            {passwordSuccess && (
+                                <Box sx={{
+                                    marginTop: '16px',
+                                    padding: '12px 16px',
+                                    borderRadius: '12px',
+                                    backgroundColor: '#f0fdf4',
+                                    border: '1px solid #bbf7d0',
+                                    animation: 'slideIn 0.5s ease',
+                                }}>
+                                    <Typography sx={{ color: '#16a34a', fontWeight: '600', fontSize: '14px' }}>
+                                        {passwordSuccess}
+                                    </Typography>
+                                </Box>
+                            )}
+                        </Box>
+                    </Collapse>
                 </CardContent>
             </Card>
 
@@ -548,13 +770,10 @@ export function Profile() {
                                     <TableRow 
                                         key={index}
                                         sx={{
-                                            '&:hover': {
-                                                backgroundColor: 'rgba(102, 126, 234, 0.05)',
-                                            },
+                                            '&:hover': { backgroundColor: 'rgba(102, 126, 234, 0.05)' },
                                             transition: 'background-color 0.3s ease',
                                         }}
                                     >
-                                      
                                         <TableCell sx={{ color: '#6b7280', direction: 'ltr', textAlign: 'right' }}>{sub.startDate}</TableCell>
                                         <TableCell sx={{ color: '#6b7280', direction: 'ltr', textAlign: 'right' }}>{sub.expireDate}</TableCell>
                                         <TableCell>

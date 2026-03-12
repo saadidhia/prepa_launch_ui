@@ -17,6 +17,7 @@ export const candidatsApi = {
     getAgendas,
     deleteAgenda,
     updateAgendaById,
+    changePassword
 }
 
 function updateAgendaById(user, id, alreadySpent) {
@@ -176,5 +177,15 @@ function getSubscriptions(user){
       params, // Axios will handle query parameters
     });
   }
+
+
+  function changePassword(user, oldPassword, newPassword) {
+  return instance.patch('api/v1/profile/change-password', { oldPassword, newPassword }, {
+    headers: {
+      'Authorization': bearerAuth(user),
+      'Content-type': 'application/json',
+    },
+  });
+}
   
 
