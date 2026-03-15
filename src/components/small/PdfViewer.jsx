@@ -173,7 +173,7 @@ function SecurePdfViewer({ url, height = '680px', showToolbar = true }) {
 
   // Auto-focus container after PDF loads so arrow keys work immediately
   useEffect(() => {
-    const t = setTimeout(() => containerRef.current?.focus(), 400);
+    const t = setTimeout(() => containerRef.current?.focus({ preventScroll: true }));
     return () => clearTimeout(t);
   }, []);
 
