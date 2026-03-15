@@ -567,7 +567,7 @@ setAgendaAlertOpen(true);
         >
           <WarningAmberIcon sx={{ fontSize: 32 }} />
           <Typography variant="h6" sx={{ fontWeight: '700' }}>
-            Chronomètre actif
+            مؤقت التركيز مفتوح
           </Typography>
         </DialogTitle>
         <DialogContent sx={{ padding: '32px 24px' }}>
@@ -587,22 +587,11 @@ setAgendaAlertOpen(true);
               <TimerIcon sx={{ fontSize: 32, color: 'white' }} />
             </Box>
             <DialogContentText sx={{ fontSize: '16px', color: '#374151', flex: 1 }}>
-              Vous avez un chronomètre en cours d'exécution. Veuillez l'arrêter avant de vous déconnecter.
+              لديك مؤقت تركيز قيد التشغيل، يرجى إيقافه قبل تسجيل الخروج.
+الرجاء النقر على "إيقاف نهائي"
             </DialogContentText>
           </Box>
-          <Box
-            sx={{
-              background: '#fef3c7',
-              border: '2px solid #fbbf24',
-              borderRadius: '12px',
-              padding: '16px',
-              marginTop: '16px',
-            }}
-          >
-            <Typography variant="body2" sx={{ color: '#92400e', fontWeight: '600' }}>
-              💡 Astuce: Rendez-vous dans la section chronomètre pour arrêter votre session en cours.
-            </Typography>
-          </Box>
+          
         </DialogContent>
       </Dialog>
 
