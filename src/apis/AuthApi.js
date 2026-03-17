@@ -53,6 +53,7 @@ instance.interceptors.request.use(function (config) {
 
     // Check if the token is expired and redirect to login if it is
     if (Date.now() > data.exp * 1000) {
+      localStorage.removeItem("chronometerId");
       window.location.href = "/connexion";
       return Promise.reject(new Error("Token expired, redirecting to login."));
     }
