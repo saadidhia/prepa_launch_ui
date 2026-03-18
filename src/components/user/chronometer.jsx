@@ -489,6 +489,11 @@ const Chronometer = () => {
                     <stop offset="0%" stopColor="#667eea" stopOpacity={1} />
                     <stop offset="100%" stopColor="#764ba2" stopOpacity={0.8} />
                   </linearGradient>
+                  {/* ✅ FIX: Added missing green gradient */}
+                  <linearGradient id="colorBarGreen" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="#10b981" stopOpacity={1} />
+                    <stop offset="100%" stopColor="#059669" stopOpacity={0.8} />
+                  </linearGradient>
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
                 <XAxis
