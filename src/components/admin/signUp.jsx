@@ -30,6 +30,20 @@ export function SignUp() {
       return;
     }
 
+    if (!/^[a-zA-Z]/.test(username)){
+      setErrorMessage("Username must start with a letter.");
+      return;
+    }
+
+    if (!/^[a-zA-Z]/.test(name)){
+      setErrorMessage("Name must start with a letter.");
+      return;
+    }
+    if (numberPhone && !/^\d{8}$/.test(numberPhone)){
+      setErrorMessage("Phone number must be 8 digits.");
+      return;
+    }
+
     const user = {
       username,
       password,
