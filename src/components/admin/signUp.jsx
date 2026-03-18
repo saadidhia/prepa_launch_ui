@@ -65,8 +65,12 @@ export function SignUp() {
       setSuccessMessage('User is created');
     } catch (error) {
       
-      setErrorMessage("An error occurred while creating the user.");
-      handleLogError(error);
+      const data = error?.response?.data;
+  const message = typeof data === "string"
+    ? data
+    : data?.message || data?.error || "An error occurred while creating the user.";
+  setErrorMessage(message);
+  handleLogError(error);
     }
   };
 
