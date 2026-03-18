@@ -84,7 +84,7 @@ const navigations = [
         role: "admin"
     },
     {
-        text:"News",
+        text:"الأخبار",
         link:"news",
         component:News,
         role:"admin"
@@ -151,7 +151,7 @@ const navigations = [
         role: "user"
     },
     {
-        text:"News",
+        text:"الأخبار",
         link:"ournews",
         component: NewsRead,
         role:"user"
