@@ -86,18 +86,29 @@ const Interested = () => {
   };
 
   const handleImageClick = (imageUrl) => {
-  // Remove leading slash from imageUrl if present and construct proper URL
-  const cleanUrl = imageUrl.startsWith('/') ? imageUrl.substring(1) : imageUrl;
-  const fullUrl = `${process.env.REACT_APP_API}/${cleanUrl}`;
-  setSelectedImage(fullUrl);
-  setShowImageModal(true);
-};
-
+    // If it's already a full URL (e.g. S3 https://...), use it directly
+    const fullUrl = imageUrl.startsWith('http')
+      ? imageUrl
+      : `${process.env.REACT_APP_API.replace(/\/$/, '')}/${imageUrl.startsWith('/') ? imageUrl.substring(1) : imageUrl}`;
+    setSelectedImage(fullUrl);
+    setShowImageModal(true);
+  };
 
   const closeImageModal = () => {
     setShowImageModal(false);
     setSelectedImage(null);
   };
+
+  // Close modal on Escape key
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape' && showImageModal) {
+        closeImageModal();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [showImageModal]);
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
@@ -286,7 +297,7 @@ const Interested = () => {
                   </td>
                   <td className="level-cell">
                     <span className={`level-badge level-${person.level}`}>
-                      {person.level === 'PREMIERE' ? '1ère' : '2ème'}
+                      {person.level === 'TROISIEME' ? '3ème' : 'Bac'}
                     </span>
                   </td>
                   <td className="gender-cell">
@@ -298,18 +309,18 @@ const Interested = () => {
                     {getOptionLabel(person.option)}
                   </td>
                   <td className="invoice-cell">
-  {person.invoicePhotoUrl ? (
-    <button
-      className="invoice-button"
-      onClick={() => handleImageClick(person.invoicePhotoUrl)}
-      title="Cliquez pour voir la facture"
-    >
-      📄 {getInvoiceFileName(person.invoicePhotoUrl)}
-    </button>
-  ) : (
-    <span className="no-invoice">Aucune</span>
-  )}
-</td>
+                    {person.invoicePhotoUrl ? (
+                      <button
+                        className="invoice-button"
+                        onClick={() => handleImageClick(person.invoicePhotoUrl)}
+                        title="Cliquez pour voir la facture"
+                      >
+                        📄 {getInvoiceFileName(person.invoicePhotoUrl)}
+                      </button>
+                    ) : (
+                      <span className="no-invoice">Aucune</span>
+                    )}
+                  </td>
                   <td className="toggle-cell">
                     <button
                       className={`toggle-button ${person.checked ? 'active' : ''}`}
@@ -351,27 +362,108 @@ const Interested = () => {
 
       {/* Image Modal */}
       {showImageModal && (
-        <div className="image-modal-overlay" onClick={closeImageModal}>
-          <div className="image-modal-content" onClick={(e) => e.stopPropagation()}>
-            <button className="modal-close-button" onClick={closeImageModal}>
+        <div
+          className="image-modal-overlay"
+          onClick={closeImageModal}
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            width: '100vw',
+            height: '100vh',
+            backgroundColor: 'rgba(0, 0, 0, 0.85)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 9999,
+            backdropFilter: 'blur(4px)',
+            animation: 'fadeIn 0.2s ease'
+          }}
+        >
+          <div
+            className="image-modal-content"
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              position: 'relative',
+              backgroundColor: '#fff',
+              borderRadius: '12px',
+              padding: '16px',
+              maxWidth: '90vw',
+              maxHeight: '90vh',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              gap: '12px',
+              boxShadow: '0 25px 60px rgba(0,0,0,0.4)',
+              animation: 'scaleIn 0.2s ease'
+            }}
+          >
+            {/* Close button */}
+            <button
+              className="modal-close-button"
+              onClick={closeImageModal}
+              style={{
+                position: 'absolute',
+                top: '-14px',
+                right: '-14px',
+                width: '32px',
+                height: '32px',
+                borderRadius: '50%',
+                border: 'none',
+                backgroundColor: '#ef4444',
+                color: '#fff',
+                fontSize: '16px',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontWeight: 'bold',
+                boxShadow: '0 2px 8px rgba(0,0,0,0.3)',
+                zIndex: 1
+              }}
+            >
               ✕
             </button>
-            <img 
-              src={selectedImage} 
-              alt="Facture" 
+
+            {/* Title */}
+            <p style={{
+              margin: 0,
+              fontWeight: '600',
+              fontSize: '14px',
+              color: '#374151',
+              alignSelf: 'flex-start'
+            }}>
+              📄 Facture
+            </p>
+
+            {/* Image */}
+            <img
+              src={selectedImage}
+              alt="Facture"
               className="modal-image"
+              style={{
+                maxWidth: '80vw',
+                maxHeight: '75vh',
+                objectFit: 'contain',
+                borderRadius: '8px',
+                border: '1px solid #e5e7eb'
+              }}
             />
-            <div className="modal-actions">
-              <a 
-                href={selectedImage} 
-                download 
-                className="download-button"
-                onClick={(e) => e.stopPropagation()}
-              >
-                📥 Télécharger
-              </a>
-            </div>
+
+
           </div>
+
+          {/* Keyframe animations injected inline */}
+          <style>{`
+            @keyframes fadeIn {
+              from { opacity: 0; }
+              to { opacity: 1; }
+            }
+            @keyframes scaleIn {
+              from { transform: scale(0.92); opacity: 0; }
+              to { transform: scale(1); opacity: 1; }
+            }
+          `}</style>
         </div>
       )}
     </div>
