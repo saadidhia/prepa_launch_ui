@@ -16,7 +16,6 @@ import Chronometer  from './components/user/chronometer'
 import { UsersStat } from './components/admin/UsersStat'
 import { Progression }  from './components/user/Progression'
 import Agenda from './components/user/Agenda'
-import interested  from './components/admin/interested'
 import{ News }from './components/admin/News'
 import { Content } from './components/user/subjects/Content'
 import { NewsRead } from './components/user/NewsRead'
@@ -162,12 +161,6 @@ const navigations = [
         link:"ournews",
         component: NewsRead,
         role:"user"
-    },
-    {
-        text: "المهتمون",
-        link: "interested",
-        component: interested,
-        role: "admin"
     }
 ];
 
