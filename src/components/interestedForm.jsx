@@ -7,21 +7,50 @@ export const instance = axios.create({
   baseURL: process.env.REACT_APP_API
 })
 
+const CITIES = [
+  { value: "TUNIS", label: "Tunis" },
+  { value: "ARIANA", label: "Ariana" },
+  { value: "BEN_AROUS", label: "Ben Arous" },
+  { value: "MANOUBA", label: "Manouba" },
+  { value: "NABEUL", label: "Nabeul" },
+  { value: "ZAGHOUAN", label: "Zaghouan" },
+  { value: "BIZERTE", label: "Bizerte" },
+  { value: "BEJA", label: "Béja" },
+  { value: "JENDOUBA", label: "Jendouba" },
+  { value: "KEF", label: "Le Kef" },
+  { value: "SILIANA", label: "Siliana" },
+  { value: "SOUSSE", label: "Sousse" },
+  { value: "MONASTIR", label: "Monastir" },
+  { value: "MAHDIA", label: "Mahdia" },
+  { value: "SFAX", label: "Sfax" },
+  { value: "KAIROUAN", label: "Kairouan" },
+  { value: "KASSERINE", label: "Kasserine" },
+  { value: "SIDI_BOUZID", label: "Sidi Bouzid" },
+  { value: "GABES", label: "Gabès" },
+  { value: "MEDENINE", label: "Médenine" },
+  { value: "TATAOUINE", label: "Tataouine" },
+  { value: "GAFSA", label: "Gafsa" },
+  { value: "TOZEUR", label: "Tozeur" },
+  { value: "KEBILI", label: "Kébili" },
+  { value: "NONE", label: "Autre" },
+];
+
 const InterestedForm = () => {
   const [formData, setFormData] = useState({
     email: '',
     name: '',
-    whatsappPhone: '',
+ //   whatsappPhone: '',
     phone: '',
     field: '',
     level: '',
     gender: '',
-    message: '',
-    option: 'ALLEMAND'
+    option: 'ALLEMAND',
+    city: ''
   });
 
-  const [invoicePhoto, setInvoicePhoto] = useState(null);
-  const [invoicePreview, setInvoicePreview] = useState(null);
+  // -- INVOICE PHOTO (commented out for future use) --
+  // const [invoicePhoto, setInvoicePhoto] = useState(null);
+  // const [invoicePreview, setInvoicePreview] = useState(null);
 
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
@@ -33,82 +62,39 @@ const InterestedForm = () => {
       ...prev,
       [name]: value
     }));
-    // Clear error when user starts typing
     if (errors[name]) {
       setErrors(prev => ({
         ...prev,
         [name]: ''
       }));
     }
-    // Clear submit status when user makes changes
     if (submitStatus) {
       setSubmitStatus(null);
     }
   };
 
-  const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    
-    if (file) {
-      // Validate file type
-      const validTypes = ['image/jpeg', 'image/jpg', 'image/png'];
-      if (!validTypes.includes(file.type)) {
-        setErrors(prev => ({
-          ...prev,
-          invoice: 'Veuillez télécharger une image (JPEG, JPG ou PNG)'
-        }));
-        return;
-      }
-
-      // Validate file size (max 5MB)
-      if (file.size > 5 * 1024 * 1024) {
-        setErrors(prev => ({
-          ...prev,
-          invoice: 'La taille du fichier ne doit pas dépasser 5 MB'
-        }));
-        return;
-      }
-
-      setInvoicePhoto(file);
-      
-      // Create preview
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setInvoicePreview(reader.result);
-      };
-      reader.readAsDataURL(file);
-
-      // Clear error
-      if (errors.invoice) {
-        setErrors(prev => ({
-          ...prev,
-          invoice: ''
-        }));
-      }
-    }
-  };
-
-  const removeInvoicePhoto = () => {
-    setInvoicePhoto(null);
-    setInvoicePreview(null);
-    // Reset file input
-    const fileInput = document.getElementById('invoice');
-    if (fileInput) {
-      fileInput.value = '';
-    }
-  };
+  // -- FILE HANDLING (commented out for future use) --
+  // const handleFileChange = (e) => { ... };
+  // const removeInvoicePhoto = () => { ... };
 
   const validateForm = () => {
     const newErrors = {};
     
     if (!formData.name.trim()) newErrors.name = 'Le nom est requis';
+    else if (formData.name.trim().split(/\s+/).length < 2) newErrors.name = 'Veuillez entrer votre prénom et nom (ex: Ahmed Ben Ali)';
+
     if (!formData.email.trim()) newErrors.email = "L'email est requis";
     else if (!/\S+@\S+\.\S+/.test(formData.email)) newErrors.email = 'Email invalide';
+
     if (!formData.phone.trim()) newErrors.phone = 'Le téléphone est requis';
+    else if (!/^\d{8}$/.test(formData.phone.trim())) newErrors.phone = 'Le téléphone doit contenir exactement 8 chiffres';
+
     if (!formData.level) newErrors.level = 'Le niveau est requis';
     if (!formData.field) newErrors.field = 'La filière est requise';
     if (!formData.gender) newErrors.gender = 'Le genre est requis';
-    if (!invoicePhoto) newErrors.invoice = 'La photo de facture est requise';
+    if (!formData.city) newErrors.city = 'La ville est requise';
+    // -- INVOICE VALIDATION (commented out for future use) --
+    // if (!invoicePhoto) newErrors.invoice = 'La photo de facture est requise';
     
     return newErrors;
   };
@@ -122,62 +108,50 @@ const InterestedForm = () => {
       setSubmitStatus(null);
       
       try {
-        // Create FormData object
-        const formDataToSend = new FormData();
-        
-        // Add JSON data as a blob
         const apiData = {
           email: formData.email,
           name: formData.name,
-          whatsappPhone: formData.whatsappPhone || formData.phone,
+ //         whatsappPhone: formData.whatsappPhone || formData.phone,
           phone: formData.phone,
           field: formData.field,
           level: formData.level.toUpperCase(),
           gender: formData.gender === 'Homme' ? 'MALE' : 'FEMALE',
-          message: formData.message || '',
-          option: formData.option
+          option: formData.option,
+          city: formData.city,
+          // message: formData.message  -- removed (field deleted)
         };
 
-        formDataToSend.append('data', new Blob([JSON.stringify(apiData)], {
-          type: 'application/json'
-        }));
-
-        // Add invoice photo
-        formDataToSend.append('invoice', invoicePhoto);
-
-        const response = await instance.post('/api/v1/interested/create', formDataToSend, {
+        // -- OLD MULTIPART/FORM-DATA CALL (commented out for future use) --
+        // const formDataToSend = new FormData();
+        // ...
+        console.log("API Data being sent:", apiData); // Debug log
+        const response = await instance.post('/api/auth/signup/not-verified', apiData, {
           headers: {
-            'Content-Type': 'multipart/form-data',
+            'Content-Type': 'application/json',
           }
         });
 
-        if (response.status === 200) {
-          const data = response.data;
-          console.log('Success:', data);
+        if (response.status === 200 || response.status === 201) {
           setSubmitStatus('success');
-          
-          // Reset form after successful submission
           setFormData({
             email: '',
             name: '',
-            whatsappPhone: '',
+ //         whatsappPhone: '',
             phone: '',
             field: '',
             level: '',
             gender: '',
-            message: '',
-            option: 'ALLEMAND'
+            option: 'ALLEMAND',
+            city: ''
           });
-          setInvoicePhoto(null);
-          setInvoicePreview(null);
-          
-          // Show success message for 5 seconds
+          // -- RESET INVOICE (commented out for future use) --
+          // setInvoicePhoto(null);
+          // setInvoicePreview(null);
+
           setTimeout(() => {
             setSubmitStatus(null);
           }, 5000);
         } else {
-          const errorData = await response.json();
-          console.error('Error:', errorData);
           setSubmitStatus('error');
         }
       } catch (error) {
@@ -208,9 +182,8 @@ const InterestedForm = () => {
                   filter: "drop-shadow(0 4px 6px rgba(0, 0, 0, 0.1))"
                 }} 
               />
-              
               <h2 className="brand-name">GRINTTA</h2>
-              <p className="brand-tagline">Classes Préparatoires</p>
+              <p className="brand-tagline">Les classes du secondaire (2ème, Bac)</p>
             </div>
 
             <div className="features-list">
@@ -221,7 +194,6 @@ const InterestedForm = () => {
                   <p>Tous les cours et exercices dont vous avez besoin</p>
                 </div>
               </div>
-              
               <div className="feature-item">
                 <div className="feature-icon">⏱️</div>
                 <div>
@@ -229,7 +201,6 @@ const InterestedForm = () => {
                   <p>Organisez votre emploi du temps efficacement</p>
                 </div>
               </div>
-              
               <div className="feature-item">
                 <div className="feature-icon">📝</div>
                 <div>
@@ -237,7 +208,6 @@ const InterestedForm = () => {
                   <p>Ne manquez jamais un examen important</p>
                 </div>
               </div>
-              
               <div className="feature-item">
                 <div className="feature-icon">📊</div>
                 <div>
@@ -245,7 +215,6 @@ const InterestedForm = () => {
                   <p>Visualisez votre évolution en temps réel</p>
                 </div>
               </div>
-
               <div className="feature-item">
                 <div className="feature-icon">📅</div>
                 <div>
@@ -296,7 +265,7 @@ const InterestedForm = () => {
                   value={formData.name}
                   onChange={handleChange}
                   className={errors.name ? 'error' : ''}
-                  placeholder="Votre nom complet"
+                  placeholder="Prénom Nom (ex: Ahmed Ben Ali)"
                   disabled={loading}
                 />
                 {errors.name && <span className="error-message">{errors.name}</span>}
@@ -321,7 +290,9 @@ const InterestedForm = () => {
               {/* Phone Numbers Row */}
               <div className="form-row">
                 <div className="form-group">
-                  <label htmlFor="phone">Téléphone *</label>
+                  <label htmlFor="phone">
+                    Téléphone * <small style={{ fontWeight: 'normal', color: '#888' }}>(8 chiffres)</small>
+                  </label>
                   <input
                     type="tel"
                     id="phone"
@@ -329,23 +300,11 @@ const InterestedForm = () => {
                     value={formData.phone}
                     onChange={handleChange}
                     className={errors.phone ? 'error' : ''}
-                    placeholder="+216 XX XXX XXX"
+                    placeholder="XX XXX XXX"
+                    maxLength={8}
                     disabled={loading}
                   />
                   {errors.phone && <span className="error-message">{errors.phone}</span>}
-                </div>
-
-                <div className="form-group">
-                  <label htmlFor="whatsappPhone">WhatsApp</label>
-                  <input
-                    type="tel"
-                    id="whatsappPhone"
-                    name="whatsappPhone"
-                    value={formData.whatsappPhone}
-                    onChange={handleChange}
-                    placeholder="+216 XX XXX XXX"
-                    disabled={loading}
-                  />
                 </div>
               </div>
 
@@ -391,7 +350,7 @@ const InterestedForm = () => {
                 </div>
               </div>
 
-              {/* Gender and Duration Row */}
+              {/* Gender and Option Row */}
               <div className="form-row">
                 <div className="form-group">
                   <label>Genre *</label>
@@ -423,7 +382,7 @@ const InterestedForm = () => {
                 </div>
 
                 <div className="form-group">
-                  <label htmlFor="option">Option*</label>
+                  <label htmlFor="option">Option *</label>
                   <select
                     id="option"
                     name="option"
@@ -438,62 +397,28 @@ const InterestedForm = () => {
                     <option value="TURC">Turc</option>
                     <option value="CHINOIS">Chinois</option>
                     <option value="DESSIN">Dessin</option>
-
                   </select>
                   {errors.option && <span className="error-message">{errors.option}</span>}
                 </div>
               </div>
 
-              {/* Invoice Photo Upload */}
+              {/* City */}
               <div className="form-group">
-                <label htmlFor="invoice">Photo de la facture *</label>
-                <div className="file-upload-container">
-                  <input
-                    type="file"
-                    id="invoice"
-                    name="invoice"
-                    accept="image/jpeg,image/jpg,image/png"
-                    onChange={handleFileChange}
-                    className="file-input"
-                    disabled={loading}
-                    style={{ display: 'none' }}
-                  />
-                  
-                  {!invoicePreview ? (
-                    <label htmlFor="invoice" className="file-upload-label">
-                      <div className="upload-icon">📷</div>
-                      <span>Cliquez pour télécharger la facture</span>
-                      <small>JPEG, JPG ou PNG (Max 5 MB)</small>
-                    </label>
-                  ) : (
-                    <div className="file-preview">
-                      <img src={invoicePreview} alt="Invoice preview" className="preview-image" />
-                      <button
-                        type="button"
-                        onClick={removeInvoicePhoto}
-                        className="remove-file-btn"
-                        disabled={loading}
-                      >
-                        ✕ Supprimer
-                      </button>
-                    </div>
-                  )}
-                </div>
-                {errors.invoice && <span className="error-message">{errors.invoice}</span>}
-              </div>
-
-              {/* Message */}
-              <div className="form-group">
-                <label htmlFor="message">Message (optionnel)</label>
-                <textarea
-                  id="message"
-                  name="message"
-                  value={formData.message}
+                <label htmlFor="city">Ville *</label>
+                <select
+                  id="city"
+                  name="city"
+                  value={formData.city}
                   onChange={handleChange}
-                  rows="4"
-                  placeholder="Parlez-nous de vos objectifs..."
+                  className={errors.city ? 'error' : ''}
                   disabled={loading}
-                />
+                >
+                  <option value="">Sélectionner une ville...</option>
+                  {CITIES.map((c) => (
+                    <option key={c.value} value={c.value}>{c.label}</option>
+                  ))}
+                </select>
+                {errors.city && <span className="error-message">{errors.city}</span>}
               </div>
 
               {/* Submit Button */}

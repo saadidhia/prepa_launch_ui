@@ -20,6 +20,7 @@ import interested  from './components/admin/interested'
 import{ News }from './components/admin/News'
 import { Content } from './components/user/subjects/Content'
 import { NewsRead } from './components/user/NewsRead'
+import {  NotVerifiedUsers } from './components/admin/Activate'
 
 const navigations = [
      {
@@ -75,6 +76,12 @@ const navigations = [
         text: "المستخدمون",
         link: "users",
         component: Users,
+        role: "admin"
+    },
+    {
+        text: "تفعيل المستخدمين",
+        link: "activation",
+        component: NotVerifiedUsers,
         role: "admin"
     },
     {
