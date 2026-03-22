@@ -183,7 +183,7 @@ const InterestedForm = () => {
                 }} 
               />
               <h2 className="brand-name">GRINTTA</h2>
-              <p className="brand-tagline">Les classes du secondaire (2ème, Bac)</p>
+              <p className="brand-tagline">Les classes du secondaire (3ème, Bac)</p>
             </div>
 
             <div className="features-list">
