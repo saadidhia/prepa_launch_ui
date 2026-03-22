@@ -22,7 +22,9 @@ export const adminApi = {
   getStatics,
   resetSession,
   createNews,
-  deleteNews
+  deleteNews,
+  getNotVerifiedUsers,
+  verifyUser
 }
 
 export const instance = axios.create({
@@ -42,6 +44,29 @@ function getUsers(admin, page=0 , size=10, email ) {
     }
   })
 }
+
+function getNotVerifiedUsers(admin) {
+  return instance.get('/api/admin/users/not-activated', {
+    headers: {
+      'Authorization': bearerAuth(admin),
+      'Content-type': 'application/json'
+    }
+  })
+}
+
+function verifyUser(admin, username) {
+    return instance.patch(
+        `/api/auth/signup/verify/${username}`,
+        {},
+        {
+            headers: {
+      'Authorization': bearerAuth(admin),
+      'Content-type': 'application/json'
+    }
+        }
+    );
+}
+
 
 function getActiveSessionsCount(admin) {
   return instance.get('/api/admin/active-sessions', {

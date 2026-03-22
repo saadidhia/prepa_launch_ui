@@ -21,12 +21,13 @@ export function SignUp() {
   const [startDate, setStartDate] = useState("");
   const [price, setPrice] = useState("");
   const [option, setOption] = useState("ALLEMAND");
+  const [city, setCity] = useState("TUNIS");
   const [successMessage, setSuccessMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!(username && password && name && email && level && field && numberPhone && gender && role && option && price)) {
+    if (!(username && password && name && email && level && field && numberPhone && gender && role && option && price && city)) {
       return;
     }
 
@@ -55,6 +56,7 @@ export function SignUp() {
       gender,
       role,
       option,
+      city,
       subscriptionDto: {
         price
       }
@@ -64,15 +66,42 @@ export function SignUp() {
       await authApi.signup(user, admin);
       setSuccessMessage('User is created');
     } catch (error) {
-      
       const data = error?.response?.data;
-  const message = typeof data === "string"
-    ? data
-    : data?.message || data?.error || "An error occurred while creating the user.";
-  setErrorMessage(message);
-  handleLogError(error);
+      const message = typeof data === "string"
+        ? data
+        : data?.message || data?.error || "An error occurred while creating the user.";
+      setErrorMessage(message);
+      handleLogError(error);
     }
   };
+
+  const cities = [
+    { value: "TUNIS", label: "Tunis" },
+    { value: "ARIANA", label: "Ariana" },
+    { value: "BEN_AROUS", label: "Ben Arous" },
+    { value: "MANOUBA", label: "Manouba" },
+    { value: "NABEUL", label: "Nabeul" },
+    { value: "ZAGHOUAN", label: "Zaghouan" },
+    { value: "BIZERTE", label: "Bizerte" },
+    { value: "BEJA", label: "Béja" },
+    { value: "JENDOUBA", label: "Jendouba" },
+    { value: "KEF", label: "Le Kef" },
+    { value: "SILIANA", label: "Siliana" },
+    { value: "SOUSSE", label: "Sousse" },
+    { value: "MONASTIR", label: "Monastir" },
+    { value: "MAHDIA", label: "Mahdia" },
+    { value: "SFAX", label: "Sfax" },
+    { value: "KAIROUAN", label: "Kairouan" },
+    { value: "KASSERINE", label: "Kasserine" },
+    { value: "SIDI_BOUZID", label: "Sidi Bouzid" },
+    { value: "GABES", label: "Gabès" },
+    { value: "MEDENINE", label: "Médenine" },
+    { value: "TATAOUINE", label: "Tataouine" },
+    { value: "GAFSA", label: "Gafsa" },
+    { value: "TOZEUR", label: "Tozeur" },
+    { value: "KEBILI", label: "Kébili" },
+   
+  ];
 
   return (
     <div className="Auth-form-container">
@@ -144,11 +173,9 @@ export function SignUp() {
               <option value="ECO">SECTION ECONOMIE</option>
               <option value="LETTER">SECTION LETTER</option>
               <option value="SPORT">SECTION SPORT</option>
-
             </select>
-
           </div>
-           <div className="form-group mt-3">
+          <div className="form-group mt-3">
             <label>Option</label>
             <select className="form-control mt-1" onChange={(e) => setOption(e.target.value)} value={option}>
               <option value="ALLEMAND">Allemand</option>
@@ -178,18 +205,28 @@ export function SignUp() {
             </select>
           </div>
 
+          {/* City Field */}
           <div className="form-group mt-3">
-  <label>Subscription Price</label>
-  <input
-    type="number"
-    className="form-control mt-1"
-    value={price}
-    onChange={(e) => setPrice(e.target.value)}
-    min="0"
-    step="0.01"
-    placeholder="Enter price"
-  />
-</div>
+            <label>City</label>
+            <select className="form-control mt-1" onChange={(e) => setCity(e.target.value)} value={city}>
+              {cities.map((c) => (
+                <option key={c.value} value={c.value}>{c.label}</option>
+              ))}
+            </select>
+          </div>
+
+          <div className="form-group mt-3">
+            <label>Subscription Price</label>
+            <input
+              type="number"
+              className="form-control mt-1"
+              value={price}
+              onChange={(e) => setPrice(e.target.value)}
+              min="0"
+              step="0.01"
+              placeholder="Enter price"
+            />
+          </div>
 
           <div className="d-grid gap-2 mt-3">
             <button type="submit" className="btn btn-primary">
