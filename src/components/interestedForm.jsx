@@ -239,7 +239,7 @@ const InterestedForm = () => {
                 <span className="alert-icon">✅</span>
                 <div>
                   <strong>Inscription réussie!</strong>
-                  <p>Nous vous contacterons bientôt avec plus d'informations.</p>
+                 <p>Votre compte sera activé dans les 12 prochaines heures au maximum.</p>
                 </div>
               </div>
             )}
