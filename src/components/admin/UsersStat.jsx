@@ -10,7 +10,9 @@ export function UsersStat() {
     const [active, setActive] = useState(0);
     const [troisieme, setTroisieme] = useState(0);
     const [bac, setBac] = useState(0);
-    const [users, setUsers] = useState(0);
+ //   const [users, setUsers] = useState(0);
+    const [verified, setVerified] = useState(0);
+    const [nonVerified, setNonVerified] = useState(0);
     const [math, setMath] = useState(0);
     const [science, setScience] = useState(0);
     const [tech, setTech] = useState(0);
@@ -33,7 +35,8 @@ export function UsersStat() {
         try {
             const response = await adminApi.getStatics(admin);
             const data = response.data;
-            setUsers(data.USERS);
+            setVerified(data.VERIFIED);
+            setNonVerified(data.NON_VERIFIED);
             setAdmins(data.ADMINS);
             setMath(data.MATH);
             setScience(data.SCIENCE);
@@ -75,7 +78,8 @@ export function UsersStat() {
                     <Typography variant="h4" align="center">User Statistics</Typography>
                 </Grid>
                 {[
-                    { label: 'Users', value: users },
+                    { label: 'Verified', value: verified },
+                    { label: 'Non Verified', value: nonVerified },
                     { label: 'Admins', value: admins },
                     { label: 'All', value: all },
                     { label: 'MATH', value: math },
