@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useAuth } from '../context/AuthContext';
 import { adminApi } from '../../apis/adminApi';
 import { Box, Grid, Typography, Paper, CircularProgress } from "@mui/material";
+import { ResponsiveContainer, BarChart, CartesianGrid, XAxis, YAxis, Tooltip, Bar } from "recharts";
 
 export function UsersStat() {
     const Auth = useAuth();
@@ -28,6 +29,7 @@ export function UsersStat() {
     const [turc, setTurc] = useState(0);
     const [dessin, setDessin] = useState(0);
     const [chinois, setChinois] = useState(0);
+    const [cityStats, setCityStats] = useState([]);
 
     const [loading, setLoading] = useState(true);
 
@@ -56,6 +58,16 @@ export function UsersStat() {
             setTurc(data.TURC);
             setDessin(data.DESSIN);
             setChinois(data.CHINOIS);
+
+            const extractedCityStats = Object.entries(data)
+                .filter(([key]) => key.startsWith('VERIFIED_CITY_'))
+                .map(([key, value]) => ({
+                    city: key.replace('VERIFIED_CITY_', '').replace(/_/g, ' '),
+                    users: Number(value) || 0,
+                }))
+                .sort((a, b) => b.users - a.users);
+
+            setCityStats(extractedCityStats);
             setLoading(false);
         } catch (error) {
             console.error('Error fetching Statics of Users', error);
@@ -109,6 +121,38 @@ export function UsersStat() {
                         </Paper>
                     </Grid>
                 ))}
+
+                {cityStats.length > 0 && (
+                    <Grid item xs={12}>
+                        <Paper elevation={3}>
+                            <Box p={3}>
+                                <Typography variant="h5" gutterBottom>
+                                    Users per City
+                                </Typography>
+                                <Box sx={{ width: '100%', height: 380 }}>
+                                    <ResponsiveContainer>
+                                        <BarChart
+                                            data={cityStats}
+                                            margin={{ top: 10, right: 20, left: 0, bottom: 70 }}
+                                        >
+                                            <CartesianGrid strokeDasharray="3 3" />
+                                            <XAxis
+                                                dataKey="city"
+                                                angle={-30}
+                                                textAnchor="end"
+                                                interval={0}
+                                                height={80}
+                                            />
+                                            <YAxis allowDecimals={false} />
+                                            <Tooltip />
+                                            <Bar dataKey="users" fill="#1976d2" radius={[4, 4, 0, 0]} />
+                                        </BarChart>
+                                    </ResponsiveContainer>
+                                </Box>
+                            </Box>
+                        </Paper>
+                    </Grid>
+                )}
             </Grid>
         </Box>
     );
