@@ -14,6 +14,7 @@ export function NotVerifiedUsers() {
   const [users, setUsers] = useState([]);
   const [openRows, setOpenRows] = useState({});
   const [openVerifyDialog, setOpenVerifyDialog] = useState(false);
+  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
 
   const fetchUsers = async () => {
@@ -34,6 +35,7 @@ export function NotVerifiedUsers() {
     setOpenRows(prev => ({ ...prev, [userId]: !prev[userId] }));
   };
 
+  // --- Verify ---
   const handleOpenVerifyDialog = (user) => {
     setSelectedUser(user);
     setOpenVerifyDialog(true);
@@ -52,6 +54,29 @@ export function NotVerifiedUsers() {
         fetchUsers();
       } catch (error) {
         console.error('Error verifying user:', error);
+      }
+    }
+  };
+
+  // --- Delete ---
+  const handleOpenDeleteDialog = (user) => {
+    setSelectedUser(user);
+    setOpenDeleteDialog(true);
+  };
+
+  const handleCloseDeleteDialog = () => {
+    setOpenDeleteDialog(false);
+    setSelectedUser(null);
+  };
+
+  const handleDeleteUser = async () => {
+    if (selectedUser) {
+      try {
+        await adminApi.deleteUser(admin, selectedUser.username);
+        handleCloseDeleteDialog();
+        fetchUsers();
+      } catch (error) {
+        console.error('Error deleting user:', error);
       }
     }
   };
@@ -98,13 +123,22 @@ export function NotVerifiedUsers() {
                   <TableCell>{user.city}</TableCell>
                   <TableCell>{user.numberPhone}</TableCell>
                   <TableCell>
-                    <Button
-                      variant="contained"
-                      color="success"
-                      onClick={() => handleOpenVerifyDialog(user)}
-                    >
-                      Vérifier
-                    </Button>
+                    <div style={{ display: 'flex', gap: 8 }}>
+                      <Button
+                        variant="contained"
+                        color="success"
+                        onClick={() => handleOpenVerifyDialog(user)}
+                      >
+                        Vérifier
+                      </Button>
+                      <Button
+                        variant="contained"
+                        color="error"
+                        onClick={() => handleOpenDeleteDialog(user)}
+                      >
+                        Supprimer
+                      </Button>
+                    </div>
                   </TableCell>
                 </TableRow>
 
@@ -158,6 +192,20 @@ export function NotVerifiedUsers() {
         <DialogActions>
           <Button onClick={handleCloseVerifyDialog} color="primary">Annuler</Button>
           <Button onClick={handleVerifyUser} color="success" variant="contained">Vérifier</Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Delete User Dialog */}
+      <Dialog open={openDeleteDialog} onClose={handleCloseDeleteDialog}>
+        <DialogTitle>Supprimer l'utilisateur</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Êtes-vous sûr de vouloir supprimer l'utilisateur <strong>{selectedUser?.username}</strong> ? Cette action est irréversible.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseDeleteDialog} color="primary">Annuler</Button>
+          <Button onClick={handleDeleteUser} color="error" variant="contained">Supprimer</Button>
         </DialogActions>
       </Dialog>
     </div>
