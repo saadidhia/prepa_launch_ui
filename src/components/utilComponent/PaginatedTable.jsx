@@ -43,6 +43,7 @@ const PaginatedTable = ({ rows, columns, onPauseTimer, onResumeTimer, actualResp
   const [editRowId, setEditRowId] = useState(null);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [description, setDescription] = useState('');
+  const [originalDescription, setOriginalDescription] = useState('');
   const [subject, setSubject] = useState('');
   const [deleteRowId, setDeleteRowId] = useState(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -78,12 +79,27 @@ const PaginatedTable = ({ rows, columns, onPauseTimer, onResumeTimer, actualResp
   const handleCloseEditDialog = () => {
     setEditDialogOpen(false);
     setDescription('');
+    setOriginalDescription('');
     setEditRowId(null);
   };
 
   const handleUpdate = async () => {
     try {
-      await chronometersApi.updateChronometer(user, editRowId, { description, subject });
+      const fallbackDescription = `${originalDescription || ''}`.trim();
+      const typedDescription = `${description || ''}`.trim();
+      const finalDescription = typedDescription.length > 0 ? typedDescription : fallbackDescription;
+
+      if (!finalDescription) {
+        console.error('Cannot update timer: description is missing.');
+        return;
+      }
+
+      const payload = {
+        description: finalDescription,
+        subject,
+      };
+
+      await chronometersApi.updateChronometer(user, editRowId, payload);
       handleCloseEditDialog();
       fetchTimers();
     } catch (error) {
@@ -93,7 +109,8 @@ const PaginatedTable = ({ rows, columns, onPauseTimer, onResumeTimer, actualResp
 
   const handleOpenEditDialog = (row) => {
     setEditRowId(row.id);
-    setDescription(row.description);
+    setDescription(row.description || '');
+    setOriginalDescription(row.description || '');
     setSubject(row.subject);
     setEditDialogOpen(true);
   };
