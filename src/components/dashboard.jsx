@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { styled, useTheme } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import Drawer from '@mui/material/Drawer';
@@ -14,9 +14,7 @@ import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
-import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
-import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import AccountCircleRoundedIcon from '@mui/icons-material/AccountCircleRounded';
 import Avatar from '@mui/material/Avatar';
 import MuiAlert from '@mui/material/Alert';
@@ -24,21 +22,19 @@ import Stack from '@mui/material/Stack';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import EventNoteIcon from '@mui/icons-material/EventNote';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
-import VerifiedIcon from '@mui/icons-material/Verified';
 import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
-import DialogActions from '@mui/material/DialogActions';
-import Button from '@mui/material/Button';
 import DialogContentText from '@mui/material/DialogContentText';
 import TimerIcon from '@mui/icons-material/Timer';
 import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 
 import navigations from '../Navigations';
-import { Outlet, useNavigate } from 'react-router-dom';
+import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from './context/AuthContext';
 import Logout from './small/logout';
 import NotificationPanelTimer from './user/timer/NotificationPanelTimer';
+import { getConversationCollection, messagesApi, normalizeConversation } from '../apis/messagesApi';
 
 const drawerWidth = 260;
 
@@ -91,11 +87,11 @@ const DrawerHeader = styled('div')(({ theme }) => ({
   justifyContent: 'flex-end',
 }));
 
-const SingleLevel = ({ item, handleNavigation }) => (
+const SingleLevel = ({ item, handleNavigation, unreadCount = 0 }) => (
   <ListItemButton
     onClick={() => handleNavigation(item.link)}
     sx={{
-      '&:hover': { 
+      '&:hover': {
         background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
         transform: 'translateX(4px)',
         boxShadow: '0 6px 16px rgba(102, 126, 234, 0.3)',
@@ -112,28 +108,91 @@ const SingleLevel = ({ item, handleNavigation }) => (
       border: 'none',
     }}
   >
-    <ListItemText
-      primary={item.text}
-      primaryTypographyProps={{
-        sx: { 
-          color: 'white', 
-          fontSize: '14px', 
-          fontWeight: '600',
-          letterSpacing: '0.2px',
-        },
-      }}
-    />
+    <Box sx={{ position: 'relative', width: '100%' }}>
+      <ListItemText
+        primary={item.text}
+        primaryTypographyProps={{
+          sx: {
+            color: 'white',
+            fontSize: '14px',
+            fontWeight: '600',
+            letterSpacing: '0.2px',
+          },
+        }}
+      />
+      {unreadCount > 0 && (
+        <Box
+          sx={{
+            position: 'absolute',
+            top: '50%',
+            right: 8,
+            transform: 'translateY(-50%)',
+            minWidth: 22,
+            height: 22,
+            px: 0.75,
+            borderRadius: '999px',
+            backgroundColor: '#ef4444',
+            color: '#fff',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            fontSize: '12px',
+            fontWeight: 700,
+            lineHeight: 1,
+            boxShadow: '0 4px 10px rgba(239, 68, 68, 0.35)',
+          }}
+        >
+          {unreadCount > 99 ? '99+' : unreadCount}
+        </Box>
+      )}
+    </Box>
   </ListItemButton>
 );
 
-const MenuItem = ({ item, handleNavigation }) => (
-  <SingleLevel item={item} handleNavigation={handleNavigation} />
+const NavMenuItem = ({ item, handleNavigation, unreadCount }) => (
+  <SingleLevel item={item} handleNavigation={handleNavigation} unreadCount={unreadCount} />
 );
+
+function playIncomingMessageSound(audioContextRef) {
+  const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+
+  if (!AudioContextClass) {
+    return;
+  }
+
+  const audioContext = audioContextRef.current || new AudioContextClass();
+  audioContextRef.current = audioContext;
+
+  if (audioContext.state === 'suspended') {
+    audioContext.resume().catch(() => {});
+  }
+
+  const oscillator = audioContext.createOscillator();
+  const gainNode = audioContext.createGain();
+  const startTime = audioContext.currentTime;
+
+  oscillator.type = 'sine';
+  oscillator.frequency.setValueAtTime(880, startTime);
+  oscillator.frequency.exponentialRampToValueAtTime(660, startTime + 0.18);
+
+  gainNode.gain.setValueAtTime(0.0001, startTime);
+  gainNode.gain.exponentialRampToValueAtTime(0.08, startTime + 0.02);
+  gainNode.gain.exponentialRampToValueAtTime(0.0001, startTime + 0.22);
+
+  oscillator.connect(gainNode);
+  gainNode.connect(audioContext.destination);
+
+  oscillator.start(startTime);
+  oscillator.stop(startTime + 0.24);
+}
 
 export default function Dashboard() {
   const navigate = useNavigate();
+  const location = useLocation();
   const Auth = useAuth();
   const user = Auth.getUser();
+  const userRole = user?.data?.rol?.[0] || '';
+  const accessToken = user?.accessToken || '';
 
   const theme = useTheme();
   const [open, setOpen] = useState(false);
@@ -146,47 +205,153 @@ export default function Dashboard() {
   const [agendaAlertOpen, setAgendaAlertOpen] = useState(false);
   const [agendaAlertMessage, setAgendaAlertMessage] = useState('');
 
+  // Badge count lives in AuthContext — read it directly here.
+  const unreadMessagesCount = Auth.unreadMessagesCount ?? 0;
+
+  // Stable refs so SSE handler never becomes stale without reconnecting.
+  const accessTokenRef = useRef(accessToken);
+  const userRoleRef = useRef(userRole);
+  const locationRef = useRef(location.pathname);
+  const audioContextRef = useRef(null);
+  const lastSoundAtRef = useRef(0);
+  useEffect(() => { accessTokenRef.current = accessToken; }, [accessToken]);
+  useEffect(() => { userRoleRef.current = userRole; }, [userRole]);
+  useEffect(() => { locationRef.current = location.pathname; }, [location.pathname]);
+
   const handleDrawerOpen = () => setOpen(true);
   const handleDrawerClose = () => setOpen(false);
   const handleNavigation = (link) => navigate(`/dashboard/${link}`);
   const handleProfileClick = () => navigate('/dashboard/profile');
 
-
-
-  // Subscription alert
+  // ─── Subscription alert ───────────────────────────────────────────────────────
   useEffect(() => {
     if (Auth.isUserAlertedToRenewSubscription()) {
       setSubAlertMessage(
         'Votre compte va expirer à ' + user.data.lock_date + ". Contactez l'administrateur SVP!"
       );
       setSubAlertOpen(true);
-
       const timer = setTimeout(() => setSubAlertOpen(false), 10000);
       return () => clearTimeout(timer);
     }
   }, []);
 
-  // Agenda alert
+  // ─── Agenda alert ─────────────────────────────────────────────────────────────
   useEffect(() => {
     if (Auth.hasAgendaReminder) {
-      // console.log("agenda "+ Auth.reminderAgendas)
-setAgendaAlertMessage(
-  "انتبه لديك امتحان قريبا!" + 
-  Auth.reminderAgendas
-    .map(agenda => {
-      const date = new Date(agenda.eventTime);
-      const formattedDate = date.toISOString().split('T')[0]; // returns YYYY-MM-DD
-      return `\n- ${formattedDate}`;
-    })
-    .join('')
-);      
-setAgendaAlertOpen(true);
-
+      setAgendaAlertMessage(
+        'انتبه لديك امتحان قريبا!' +
+          Auth.reminderAgendas
+            .map((agenda) => {
+              const date = new Date(agenda.eventTime);
+              const formattedDate = date.toISOString().split('T')[0];
+              return `\n- ${formattedDate}`;
+            })
+            .join('')
+      );
+      setAgendaAlertOpen(true);
       const timer = setTimeout(() => setAgendaAlertOpen(false), 10000);
       return () => clearTimeout(timer);
     }
   }, [Auth.hasAgendaReminder]);
 
+  // ─── Initial unread count (one REST call on mount) ────────────────────────────
+  useEffect(() => {
+    if (!accessToken || !userRole) return;
+    let mounted = true;
+    const authClient = { accessToken };
+
+    const fetchUnreadOnce = async () => {
+      try {
+        if (userRole === 'ADMIN') {
+          const response = await messagesApi.getAdminConversations(authClient);
+          const total = getConversationCollection(response.data)
+            .map(normalizeConversation)
+            .reduce((sum, c) => sum + c.unreadAdminCount, 0);
+          if (mounted) Auth.updateUnreadMessages(total);
+        } else {
+          const response = await messagesApi.getMyConversation(authClient);
+          const conversation = normalizeConversation(response.data || {});
+          if (mounted) Auth.updateUnreadMessages(conversation.unreadUserCount || 0);
+        }
+      } catch {
+        // 404 = no conversation yet, badge stays 0
+      }
+    };
+
+    fetchUnreadOnce();
+    return () => { mounted = false; };
+  }, [accessToken, userRole]);
+
+  // ─── SSE for live badge updates (connects ONCE on mount) ─────────────────────
+  //
+  // ADMIN: on new user message → increment badge (MessagesAdmin resets it to
+  //        the correct total when the admin opens that page).
+  //
+  // USER:  on admin reply → increment badge ONLY if the user is NOT currently
+  //        on the messages page (Messages.jsx resets it to 0 on mount).
+  //        If the user IS on the messages page, Messages.jsx handles it and
+  //        intentionally keeps the badge at 0.
+  useEffect(() => {
+    const token = accessTokenRef.current;
+    const role = userRoleRef.current;
+    if (!token || !role) return;
+
+    const isOnMessagesPage = () => {
+      const path = locationRef.current;
+      // matches /dashboard/messages and /dashboard/messages-admin
+      return path.includes('messages');
+    };
+
+    const playSoundOnce = () => {
+      const now = Date.now();
+
+      if (now - lastSoundAtRef.current < 350) {
+        return;
+      }
+
+      lastSoundAtRef.current = now;
+      playIncomingMessageSound(audioContextRef);
+    };
+
+    const onSseEvent = () => {
+      playSoundOnce();
+
+      // For users: only increment badge when they are away from the messages page.
+      // For admins: always increment (MessagesAdmin page handles the reset).
+      if (role === 'USER' && isOnMessagesPage()) return;
+
+      Auth.updateUnreadMessages((prev) => prev + 1);
+    };
+
+    const eventSource =
+      role === 'ADMIN'
+        ? messagesApi.createAdminSse(token)
+        : messagesApi.createUserSse(token);
+
+    const eventNames =
+      role === 'ADMIN'
+        ? ['new-message', 'new_message', 'NEW_MESSAGE']
+        : ['admin-reply', 'admin_reply', 'ADMIN_REPLY'];
+
+    eventNames.forEach((name) => eventSource.addEventListener(name, onSseEvent));
+    eventSource.onmessage = onSseEvent;
+
+    return () => {
+      eventNames.forEach((name) => eventSource.removeEventListener(name, onSseEvent));
+      eventSource.onmessage = null;
+      eventSource.close();
+    };
+  }, []); // ← empty: one connection for the entire dashboard lifetime
+
+  useEffect(() => {
+    return () => {
+      if (audioContextRef.current) {
+        audioContextRef.current.close().catch(() => {});
+      }
+    };
+  }, []);
+
+  // ─── Render ───────────────────────────────────────────────────────────────────
   return (
     <>
       <Box sx={{ display: 'flex' }}>
@@ -199,8 +364,8 @@ setAgendaAlertOpen(true);
                 aria-label="open drawer"
                 onClick={handleDrawerOpen}
                 edge="start"
-                sx={{ 
-                  mr: 2, 
+                sx={{
+                  mr: 2,
                   ...(open && { display: 'none' }),
                   '&:hover': {
                     backgroundColor: 'rgba(255, 255, 255, 0.15)',
@@ -211,11 +376,11 @@ setAgendaAlertOpen(true);
               >
                 <MenuIcon sx={{ fontSize: 28 }} />
               </IconButton>
-              <Typography 
-                variant="h6" 
-                noWrap 
+              <Typography
+                variant="h6"
+                noWrap
                 component="div"
-                sx={{ 
+                sx={{
                   display: 'inline',
                   fontWeight: '700',
                   fontSize: '20px',
@@ -249,8 +414,8 @@ setAgendaAlertOpen(true);
           sx={{
             width: drawerWidth,
             flexShrink: 0,
-            '& .MuiDrawer-paper': { 
-              width: drawerWidth, 
+            '& .MuiDrawer-paper': {
+              width: drawerWidth,
               boxSizing: 'border-box',
               background: '#ffffff',
               borderRight: 'none',
@@ -262,16 +427,16 @@ setAgendaAlertOpen(true);
           open={open}
         >
           {/* Header with close button */}
-          <DrawerHeader 
-            sx={{ 
+          <DrawerHeader
+            sx={{
               background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
               minHeight: '70px !important',
               padding: '0 16px',
             }}
           >
-            <IconButton 
+            <IconButton
               onClick={handleDrawerClose}
-              sx={{ 
+              sx={{
                 color: 'white',
                 '&:hover': {
                   backgroundColor: 'rgba(255, 255, 255, 0.2)',
@@ -284,9 +449,9 @@ setAgendaAlertOpen(true);
             </IconButton>
           </DrawerHeader>
 
-          {/* Compact Profile Section - MOVED HIGHER WITH LESS PADDING */}
-          <Box 
-            sx={{ 
+          {/* Profile section */}
+          <Box
+            sx={{
               position: 'relative',
               background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
               padding: '8px 16px 12px 16px',
@@ -294,31 +459,21 @@ setAgendaAlertOpen(true);
               boxShadow: '0 4px 16px rgba(102, 126, 234, 0.2)',
             }}
           >
-            {/* Avatar with online status */}
-            <Box 
-              sx={{ 
-                display: 'flex',
-                alignItems: 'center',
-                gap: '10px',
-                marginBottom: '10px',
-              }}
-            >
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '10px' }}>
               <Box sx={{ position: 'relative' }}>
-                <Avatar 
-                  sx={{ 
-                    bgcolor: 'white', 
-                    color: '#667eea', 
-                    width: 44, 
-                    height: 44, 
+                <Avatar
+                  sx={{
+                    bgcolor: 'white',
+                    color: '#667eea',
+                    width: 44,
+                    height: 44,
                     fontSize: 18,
                     fontWeight: '700',
                     boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
                     border: '2px solid rgba(255, 255, 255, 0.5)',
                     cursor: 'pointer',
                     transition: 'all 0.3s ease',
-                    '&:hover': {
-                      transform: 'scale(1.05)',
-                    },
+                    '&:hover': { transform: 'scale(1.05)' },
                   }}
                   onClick={handleProfileClick}
                 >
@@ -338,13 +493,12 @@ setAgendaAlertOpen(true);
                   }}
                 />
               </Box>
-
               <Box sx={{ flex: 1 }}>
-                <Typography 
-                  variant="subtitle1" 
-                  component="div" 
-                  sx={{ 
-                    fontWeight: '700', 
+                <Typography
+                  variant="subtitle1"
+                  component="div"
+                  sx={{
+                    fontWeight: '700',
                     color: 'white',
                     fontSize: '14px',
                     lineHeight: 1.2,
@@ -353,11 +507,10 @@ setAgendaAlertOpen(true);
                 >
                   {user.data.preferred_username}
                 </Typography>
-                
               </Box>
             </Box>
 
-            {/* Expiration info - More compact */}
+            {/* Expiration info */}
             <Box
               sx={{
                 background: 'rgba(255, 255, 255, 0.2)',
@@ -371,9 +524,9 @@ setAgendaAlertOpen(true);
             >
               <CalendarTodayIcon sx={{ color: 'white', fontSize: 14 }} />
               <Box sx={{ flex: 1 }}>
-                <Typography 
-                  variant="caption" 
-                  sx={{ 
+                <Typography
+                  variant="caption"
+                  sx={{
                     color: 'rgba(255, 255, 255, 0.85)',
                     fontSize: '9px',
                     fontWeight: '600',
@@ -382,78 +535,77 @@ setAgendaAlertOpen(true);
                 >
                   ينتهي الاشتراك في
                 </Typography>
-                <Typography 
-                  variant="body2" 
-                  sx={{ 
-                    color: 'white',
-                    fontSize: '12px',
-                    fontWeight: '700',
-                  }}
-                >
+                <Typography variant="body2" sx={{ color: 'white', fontSize: '12px', fontWeight: '700' }}>
                   {user.data.lock_date}
                 </Typography>
               </Box>
             </Box>
           </Box>
 
-{/* Navigation Section */}
-<Box sx={{ padding: '0 16px', flexGrow: 1 }}>
-  
-  <List sx={{ padding: 0 }}>
-    {user.data.rol[0] === "ADMIN"
-      ? navigations.filter(n => n.role === "admin").map((item, index) => (
-          <ListItem 
-            key={index} 
-            disablePadding 
-            sx={{ 
-              marginBottom: '6px',
-              '& button': {
-                justifyContent: 'center',
-              },
-              '& span, & p, & div': {
-                fontSize: '20px !important',
-                fontWeight: '600 !important',
-                textAlign: 'center !important',
-              }
-            }}
-          >
-            <MenuItem item={item} handleNavigation={handleNavigation} />
-          </ListItem>
-        ))
-      : navigations.filter(n => n.role === "user").map((item, index) => (
-          <ListItem 
-            key={index} 
-            disablePadding 
-            sx={{ 
-              marginBottom: '3px',
-              '& button': {
-                justifyContent: 'center',
-              },
-              '& span, & p, & div': {
-                fontSize: '20px !important',
-                fontWeight: '600 !important',
-                textAlign: 'center !important',
-              }
-            }}
-          >
-            <MenuItem item={item} handleNavigation={handleNavigation} />
-          </ListItem>
-        ))
-    }
-  </List>
-</Box>
+          {/* Navigation */}
+          <Box sx={{ padding: '0 16px', flexGrow: 1 }}>
+            <List sx={{ padding: 0 }}>
+              {user.data.rol[0] === 'ADMIN'
+                ? navigations
+                    .filter((n) => n.role === 'admin')
+                    .map((item, index) => (
+                      <ListItem
+                        key={index}
+                        disablePadding
+                        sx={{
+                          marginBottom: '6px',
+                          '& button': { justifyContent: 'center' },
+                          '& span, & p, & div': {
+                            fontSize: '20px !important',
+                            fontWeight: '600 !important',
+                            textAlign: 'center !important',
+                          },
+                        }}
+                      >
+                        <NavMenuItem
+                          item={item}
+                          handleNavigation={handleNavigation}
+                          unreadCount={item.link === 'messages-admin' ? unreadMessagesCount : 0}
+                        />
+                      </ListItem>
+                    ))
+                : navigations
+                    .filter((n) => n.role === 'user')
+                    .map((item, index) => (
+                      <ListItem
+                        key={index}
+                        disablePadding
+                        sx={{
+                          marginBottom: '3px',
+                          '& button': { justifyContent: 'center' },
+                          '& span, & p, & div': {
+                            fontSize: '20px !important',
+                            fontWeight: '600 !important',
+                            textAlign: 'center !important',
+                          },
+                        }}
+                      >
+                        <NavMenuItem
+                          item={item}
+                          handleNavigation={handleNavigation}
+                          unreadCount={item.link === 'messages' ? unreadMessagesCount : 0}
+                        />
+                      </ListItem>
+                    ))}
+            </List>
+          </Box>
 
           {/* Footer */}
-          <Box 
-            sx={{ 
+          <Box
+            sx={{
               padding: '12px',
               borderTop: '1px solid #e5e7eb',
               background: 'rgba(102, 126, 234, 0.03)',
             }}
           >
-            <Typography 
-              variant="caption" 
-              sx={{ 
+            <Typography
+              variant="caption"
+              sx={{
                 color: '#9ca3af',
                 textAlign: 'center',
                 display: 'block',
@@ -473,14 +625,14 @@ setAgendaAlertOpen(true);
         </Main>
       </Box>
 
-      {/* Alerts centered at top */}
-      <Stack 
-        spacing={2} 
-        sx={{ 
-          width: 'auto', 
-          position: 'fixed', 
-          top: 90, 
-          left: '50%', 
+      {/* Alerts */}
+      <Stack
+        spacing={2}
+        sx={{
+          width: 'auto',
+          position: 'fixed',
+          top: 90,
+          left: '50%',
           transform: 'translateX(-50%)',
           zIndex: 2000,
           maxWidth: '550px',
@@ -492,21 +644,16 @@ setAgendaAlertOpen(true);
             severity="error"
             icon={<NotificationsIcon />}
             onClose={() => setSubAlertOpen(false)}
-            sx={{ 
-              borderRadius: '16px', 
-              fontSize: '14px', 
-              fontWeight: '600', 
+            sx={{
+              borderRadius: '16px',
+              fontSize: '14px',
+              fontWeight: '600',
               boxShadow: '0 12px 32px rgba(239, 68, 68, 0.25)',
               backgroundColor: '#fef2f2',
               border: '2px solid #fecaca',
               padding: '16px',
-              '& .MuiAlert-icon': {
-                color: '#dc2626',
-                fontSize: '24px',
-              },
-              '& .MuiAlert-message': {
-                padding: '4px 0',
-              },
+              '& .MuiAlert-icon': { color: '#dc2626', fontSize: '24px' },
+              '& .MuiAlert-message': { padding: '4px 0' },
               animation: 'slideDown 0.5s cubic-bezier(0.4, 0, 0.2, 1)',
             }}
           >
@@ -519,21 +666,16 @@ setAgendaAlertOpen(true);
             severity="info"
             icon={<EventNoteIcon />}
             onClose={() => setAgendaAlertOpen(false)}
-            sx={{ 
-              borderRadius: '16px', 
-              fontSize: '14px', 
-              fontWeight: '600', 
+            sx={{
+              borderRadius: '16px',
+              fontSize: '14px',
+              fontWeight: '600',
               boxShadow: '0 12px 32px rgba(246, 59, 143, 0.25)',
               backgroundColor: '#f14747',
               border: '2px solid #bfdbfe',
               padding: '16px',
-              '& .MuiAlert-icon': {
-                color: '#2563eb',
-                fontSize: '24px',
-              },
-              '& .MuiAlert-message': {
-                padding: '4px 0',
-              },
+              '& .MuiAlert-icon': { color: '#2563eb', fontSize: '24px' },
+              '& .MuiAlert-message': { padding: '4px 0' },
               animation: 'slideDown 0.5s cubic-bezier(0.4, 0, 0.2, 1)',
             }}
           >
@@ -542,7 +684,7 @@ setAgendaAlertOpen(true);
         )}
       </Stack>
 
-      {/* Chronometer Warning Dialog */}
+      {/* Chronometer warning dialog */}
       <Dialog
         open={Auth.isChronometerOpen}
         maxWidth="sm"
@@ -552,11 +694,11 @@ setAgendaAlertOpen(true);
             borderRadius: '20px',
             boxShadow: '0 20px 60px rgba(0, 0, 0, 0.3)',
             overflow: 'hidden',
-          }
+          },
         }}
       >
-        <DialogTitle 
-          sx={{ 
+        <DialogTitle
+          sx={{
             background: 'linear-gradient(135deg, #f59e0b 0%, #ef4444 100%)',
             color: 'white',
             padding: '24px',
@@ -588,34 +730,20 @@ setAgendaAlertOpen(true);
             </Box>
             <DialogContentText sx={{ fontSize: '16px', color: '#374151', flex: 1 }}>
               لديك مؤقت تركيز قيد التشغيل، يرجى إيقافه قبل تسجيل الخروج.
-الرجاء النقر على "إيقاف نهائي"
+              الرجاء النقر على "إيقاف نهائي"
             </DialogContentText>
           </Box>
-          
         </DialogContent>
       </Dialog>
 
       <style>{`
         @keyframes slideDown {
-          from {
-            opacity: 0;
-            transform: translate(-50%, -30px);
-          }
-          to {
-            opacity: 1;
-            transform: translate(-50%, 0);
-          }
+          from { opacity: 0; transform: translate(-50%, -30px); }
+          to   { opacity: 1; transform: translate(-50%, 0); }
         }
-
         @keyframes pulse {
-          0%, 100% {
-            opacity: 1;
-            transform: scale(1);
-          }
-          50% {
-            opacity: 0.8;
-            transform: scale(0.95);
-          }
+          0%, 100% { opacity: 1; transform: scale(1); }
+          50%       { opacity: 0.8; transform: scale(0.95); }
         }
       `}</style>
     </>

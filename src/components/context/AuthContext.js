@@ -8,41 +8,37 @@ class AuthProvider extends Component {
   state = {
     user: null,
     tokenCheckInterval: null,
-    hasAgendaReminder: false, // new flag
-    isChronometerOpen: false, // new flag
+    hasAgendaReminder: false,
+    isChronometerOpen: false,
+    // Global unread messages count — readable by Dashboard (badge),
+    // writable by Messages / MessagesAdmin via updateUnreadMessages().
+    unreadMessagesCount: 0,
   };
 
-   componentDidMount() {
+  componentDidMount() {
     const user = localStorage.getItem("user");
     if (user) {
       const parsedUser = JSON.parse(user);
       this.setState({ user: parsedUser });
       this.startTokenExpiryCheck();
-      this.checkAgendaReminder(parsedUser); // check agenda when app loads
+      this.checkAgendaReminder(parsedUser);
     }
   }
 
   componentWillUnmount() {
-    // Clear the interval when component unmounts
     clearInterval(this.state.tokenCheckInterval);
   }
 
   startTokenExpiryCheck = () => {
-    // Initial check
     this.checkTokenExpiry();
-
-    // Check every minute
-    const tokenCheckInterval = setInterval(this.checkTokenExpiry, 60000); // 1 minute interval
+    const tokenCheckInterval = setInterval(this.checkTokenExpiry, 60000);
     this.setState({ tokenCheckInterval });
   };
 
   checkTokenExpiry = () => {
     let user = localStorage.getItem("user");
-    if (!user) {
-      return;
-    }
+    if (!user) return;
     user = JSON.parse(user);
-
     if (Date.now() > user.data.exp * 1000) {
       this.userLogout();
     }
@@ -52,27 +48,20 @@ class AuthProvider extends Component {
     return JSON.parse(localStorage.getItem("user"));
   };
 
-  isUserAlertedToRenewSubscription = ()=> {
+  isUserAlertedToRenewSubscription = () => {
     let user = localStorage.getItem("user");
-    if (!user) {
-      return;
-    }
+    if (!user) return;
     user = JSON.parse(user);
     const expiration = new Date(user.data.lock_date);
     const now = new Date();
     const threeDaysFromNow = new Date(now.getTime() + 3 * 24 * 60 * 60 * 1000);
-
     return expiration <= threeDaysFromNow;
-    
-  }
+  };
 
   userIsAuthenticated = () => {
     let user = localStorage.getItem("user");
-    if (!user) {
-      return false;
-    }
+    if (!user) return false;
     user = JSON.parse(user);
-
     return true;
   };
 
@@ -83,20 +72,18 @@ class AuthProvider extends Component {
     await this.checkAgendaReminder(user);
   };
 
-    checkAgendaReminder = async (user) => {
+  checkAgendaReminder = async (user) => {
     try {
       const agendas = await candidatsApi.getAgendas(user);
       console.log("Agendas fetched for reminder check:", agendas);
       const now = new Date();
-
       const matchingAgendas = agendas.data.filter((agenda) => {
         const firstReminder = new Date(agenda.remindTime);
         const eventTime = new Date(agenda.eventTime);
         return now >= firstReminder && now < eventTime;
       });
       const hasReminder = matchingAgendas.length > 0;
-
-      this.setState({ hasAgendaReminder: hasReminder,  reminderAgendas: matchingAgendas });
+      this.setState({ hasAgendaReminder: hasReminder, reminderAgendas: matchingAgendas });
     } catch (error) {
       console.error("Error checking agenda reminder:", error);
     }
@@ -106,44 +93,35 @@ class AuthProvider extends Component {
     let user = localStorage.getItem("user");
     user = JSON.parse(user);
 
-    if(localStorage.getItem("chronometerId")){
+    if (localStorage.getItem("chronometerId")) {
       this.setState({ isChronometerOpen: true });
-        setTimeout(() => {
+      setTimeout(() => {
         this.setState({ isChronometerOpen: false });
       }, 5000);
       return;
     }
 
- 
-      authApi.logout(user);
-      localStorage.removeItem("user");
-      localStorage.removeItem("chronometerId");
-      localStorage.removeItem("filter_stat")
-      
-      this.setState({ user: null }, () => {
-        clearInterval(this.state.tokenCheckInterval);
-      });
-      return true;
-    
-    
+    authApi.logout(user);
+    localStorage.removeItem("user");
+    localStorage.removeItem("chronometerId");
+    localStorage.removeItem("filter_stat");
 
-    // Clear the token expiry check interval on logout
+    this.setState({ user: null, unreadMessagesCount: 0 }, () => {
+      clearInterval(this.state.tokenCheckInterval);
+    });
+    return true;
   };
 
   userIsAdmin = () => {
     let user = localStorage.getItem("user");
     user = JSON.parse(user);
-    if (user.data.rol[0] === "ADMIN") {
-      return true;
-    }
+    if (user.data.rol[0] === "ADMIN") return true;
     return false;
   };
 
   userIsCandidate = () => {
     let user = localStorage.getItem("user");
-    if (user.data.sub[0] === "USER") {
-      return true;
-    }
+    if (user.data.sub[0] === "USER") return true;
     return false;
   };
 
@@ -152,11 +130,37 @@ class AuthProvider extends Component {
     return user && user.data.rol.includes(role);
   };
 
+  // ─── New: called by Messages / MessagesAdmin to keep the badge in sync ────────
+  // Pass a number to set an exact count, or pass a function (prevCount) => newCount
+  // for incremental updates (e.g. when SSE fires before a REST refresh completes).
+  updateUnreadMessages = (valueOrUpdater) => {
+    this.setState((prevState) => ({
+      unreadMessagesCount:
+        typeof valueOrUpdater === "function"
+          ? valueOrUpdater(prevState.unreadMessagesCount)
+          : valueOrUpdater,
+    }));
+  };
+
   render() {
     const { children } = this.props;
-    const { user ,  hasAgendaReminder, isChronometerOpen, reminderAgendas } = this.state;
-    const { getUser, userIsAuthenticated, userIsAdmin, userLogin, userLogout, userHasRole, isUserAlertedToRenewSubscription } =
-      this;
+    const {
+      user,
+      hasAgendaReminder,
+      isChronometerOpen,
+      reminderAgendas,
+      unreadMessagesCount,
+    } = this.state;
+    const {
+      getUser,
+      userIsAuthenticated,
+      userIsAdmin,
+      userLogin,
+      userLogout,
+      userHasRole,
+      isUserAlertedToRenewSubscription,
+      updateUnreadMessages,
+    } = this;
 
     return (
       <AuthContext.Provider
@@ -171,7 +175,10 @@ class AuthProvider extends Component {
           isUserAlertedToRenewSubscription,
           hasAgendaReminder,
           isChronometerOpen,
-          reminderAgendas
+          reminderAgendas,
+          // Shared unread count — Dashboard reads, message pages write
+          unreadMessagesCount,
+          updateUnreadMessages,
         }}
       >
         {children}
