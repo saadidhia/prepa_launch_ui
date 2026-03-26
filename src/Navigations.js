@@ -20,6 +20,8 @@ import{ News }from './components/admin/News'
 import { Content } from './components/user/subjects/Content'
 import { NewsRead } from './components/user/NewsRead'
 import {  NotVerifiedUsers } from './components/admin/Activate'
+import { Messages } from './components/user/Messages'
+import { MessagesAdmin } from './components/admin/MessagesAdmin'
 
 const navigations = [
      {
@@ -64,6 +66,12 @@ const navigations = [
         component: Notes,
         role: "user"
     },
+    {
+        text: "مراسلة الإدارة",
+        link: "messages",
+        component: Messages,
+        role: "user"
+    },
     /* {
         text: "تحفيز",
         link: "motivation",
@@ -87,6 +95,12 @@ const navigations = [
         text: "تسجيل",
         link: "register",
         component: SignUp,
+        role: "admin"
+    },
+    {
+        text: "الرسائل",
+        link: "messages-admin",
+        component: MessagesAdmin,
         role: "admin"
     },
     {
