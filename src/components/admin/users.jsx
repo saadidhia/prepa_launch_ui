@@ -215,6 +215,7 @@ const fetchActiveSessionsCount = async () => {
               <TableCell>Branch</TableCell>
               <TableCell>Option</TableCell>
               <TableCell>Phone</TableCell>
+              <TableCell>City</TableCell>
               <TableCell>Role</TableCell>
               <TableCell>Action</TableCell>
               <TableCell>étendre</TableCell>
@@ -239,6 +240,7 @@ const fetchActiveSessionsCount = async () => {
                   <TableCell>{user.field}</TableCell>
                   <TableCell>{user.option}</TableCell>
                   <TableCell>{user.numberPhone}</TableCell>
+                  <TableCell>{user.city}</TableCell>
                   <TableCell>{user.role}</TableCell>
                   <TableCell>
                     <Button

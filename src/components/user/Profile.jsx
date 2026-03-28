@@ -13,6 +13,7 @@ import WorkIcon from '@mui/icons-material/Work';
 import WcIcon from '@mui/icons-material/Wc';
 import VerifiedIcon from '@mui/icons-material/Verified';
 import ClassIcon from '@mui/icons-material/Class';
+import LocationOnIcon from '@mui/icons-material/LocationOn';
 import LockIcon from '@mui/icons-material/Lock';
 import LockResetIcon from '@mui/icons-material/LockReset';
 import VisibilityIcon from '@mui/icons-material/Visibility';
@@ -35,6 +36,7 @@ export function Profile() {
     const [successMessage, setSuccessMessage] = useState('');
     const [subscriptions, setSubscriptions] = useState([]);
     const [option, setOption] = useState('');
+    const [city, setCity] = useState('');
 
     // Password change state
     const [isChangingPassword, setIsChangingPassword] = useState(false);
@@ -47,7 +49,7 @@ export function Profile() {
     const [passwordError, setPasswordError] = useState('');
     const [passwordSuccess, setPasswordSuccess] = useState('');
     const [isPasswordLoading, setIsPasswordLoading] = useState(false);
-
+    
     const Auth = useAuth();
     const user = Auth.getUser();
 
@@ -65,6 +67,7 @@ export function Profile() {
             setNewNumberPhone(profileData.numberPhone);
             setOption(profileData.option);
             setGender(profileData.gender === "FEMALE" ? "أنثى" : "ذكر");
+            setCity(profileData.city);
     
             await fetchSubscriptions();
         } catch (error) {
@@ -354,6 +357,23 @@ export function Profile() {
                                     </Typography>
                                     <Typography variant="body2" sx={{ color: '#1a1a1a', fontWeight: '600' }}>
                                         {field}
+                                    </Typography>
+                                </Box>
+                            </Box>
+                        </Grid>
+
+                        {/* City */}
+                        <Grid item xs={12} md={6}>
+                            <Box sx={infoBoxStyle}>
+                                <Box sx={iconBoxStyle}>
+                                    <LocationOnIcon sx={{ color: 'white', fontSize: 24 }} />
+                                </Box>
+                                <Box sx={{ flex: 1 }}>
+                                    <Typography variant="caption" sx={{ color: '#6b7280', fontWeight: '600', display: 'block', marginBottom: '4px' }}>
+                                        المدينة
+                                    </Typography>
+                                    <Typography variant="body2" sx={{ color: '#1a1a1a', fontWeight: '600' }}>
+                                        {city || '-'}
                                     </Typography>
                                 </Box>
                             </Box>
