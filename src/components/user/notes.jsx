@@ -352,49 +352,36 @@ export function Notes() {
 
   const handleDrop = async (event, status) => {
     const cardId = event.dataTransfer.getData('cardId');
-    const cardType = event.dataTransfer.getData('cardType');
-    let movedCard;
+    if (!cardId) return;
 
-    if (cardType === 'created') {
-      if (status === 'CREATED') return;
-      movedCard = createdCards.find((card) => card.id === cardId);
-      setCreatedCards(createdCards.filter((card) => card.id !== cardId));
-    } else if (cardType === 'inProgress') {
-      if (status === 'INPROGRESS') return;
-      movedCard = inProgressCards.find((card) => card.id === cardId);
-      setInProgressCards(inProgressCards.filter((card) => card.id !== cardId));
-    } else if (cardType === 'finished') {
-      if (status === 'FINISHED') return;
-      movedCard = finishedCards.find((card) => card.id === cardId);
-      setFinishedCards(finishedCards.filter((card) => card.id !== cardId));
+    const movedCard = [...createdCards, ...inProgressCards, ...finishedCards]
+      .find((card) => String(card.id) === String(cardId));
+
+    if (!movedCard || movedCard.status === status) {
+      return;
     }
 
-    if (!movedCard) {
-      console.error('Card not found');
-      return;
+    const updatedMovedCard = { ...movedCard, status };
+
+    // Remove from all columns first to avoid temporary duplication, then add to target.
+    setCreatedCards((prev) => prev.filter((card) => String(card.id) !== String(cardId)));
+    setInProgressCards((prev) => prev.filter((card) => String(card.id) !== String(cardId)));
+    setFinishedCards((prev) => prev.filter((card) => String(card.id) !== String(cardId)));
+
+    if (status === 'CREATED') {
+      setCreatedCards((prev) => [...prev, updatedMovedCard]);
+    } else if (status === 'INPROGRESS') {
+      setInProgressCards((prev) => [...prev, updatedMovedCard]);
+    } else if (status === 'FINISHED') {
+      setFinishedCards((prev) => [...prev, updatedMovedCard]);
     }
 
     try {
       await candidatsApi.updateCardStatusById(user, movedCard.id, status);
     } catch (error) {
       console.error('Error updating card status:', error);
-      if (cardType === 'created') {
-        setCreatedCards([...createdCards, movedCard]);
-      } else if (cardType === 'inProgress') {
-        setInProgressCards([...inProgressCards, movedCard]);
-      } else if (cardType === 'finished') {
-        setFinishedCards([...finishedCards, movedCard]);
-      }
-      return;
-    }
-
-    movedCard.status = status;
-    if (status === 'CREATED') {
-      setCreatedCards([...createdCards, movedCard]);
-    } else if (status === 'INPROGRESS') {
-      setInProgressCards([...inProgressCards, movedCard]);
-    } else if (status === 'FINISHED') {
-      setFinishedCards([...finishedCards, movedCard]);
+      // Re-sync from backend on failure to keep UI consistent.
+      fetchCards();
     }
   };
 
@@ -950,7 +937,6 @@ export function Notes() {
           onDrop={(e) => handleDrop(e, 'CREATED')}
           onDragOver={(e) => e.preventDefault()}
           onTouchMove={(e) => e.preventDefault()}
-          onTouchEnd={(e) => handleTouchEnd(e, 'CREATED')}
           sx={{
             padding: '20px',
             borderRadius: '16px',
@@ -995,7 +981,6 @@ export function Notes() {
           onDrop={(e) => handleDrop(e, 'INPROGRESS')}
           onDragOver={(e) => e.preventDefault()}
           onTouchMove={(e) => e.preventDefault()}
-          onTouchEnd={(e) => handleTouchEnd(e, 'INPROGRESS')}
           sx={{
             padding: '20px',
             borderRadius: '16px',
@@ -1040,7 +1025,6 @@ export function Notes() {
           onDrop={(e) => handleDrop(e, 'FINISHED')}
           onDragOver={(e) => e.preventDefault()}
           onTouchMove={(e) => e.preventDefault()}
-          onTouchEnd={(e) => handleTouchEnd(e, 'FINISHED')}
           sx={{
             padding: '20px',
             borderRadius: '16px',
