@@ -22,31 +22,45 @@ import { NewsRead } from './components/user/NewsRead'
 import {  NotVerifiedUsers } from './components/admin/Activate'
 import { Messages } from './components/user/Messages'
 import { MessagesAdmin } from './components/admin/MessagesAdmin'
+import NewsIcon from './assets/css/icons/news.png'
+import BookIcon from './assets/css/icons/books.png'
+import CoursIcon from './assets/css/icons/cours.png'
+import SeriesIcon from './assets/css/icons/series.png'
+import MessageIcon from './assets/css/icons/message.png'
+import StatisticIcon from './assets/css/icons/statistic.png'
+import AgendaIcon from './assets/css/icons/agenda.png'
+import ChronometerIcon from './assets/css/icons/chronometer.png'
+import NotesIcon from './assets/css/icons/notes.png'
+import ExamsIcon from './assets/css/icons/exams.png'
 
 const navigations = [
      {
         text: "الكتب",
         link: "books",
         component: Content,
-        role: "user"
+        role: "user",
+        icon: BookIcon
     },
     {
         text: "الدروس",
         link: "cours",
         component: Cours,
-        role: "user"
+        role: "user",
+        icon: CoursIcon
     },
     {
         text: "تمارين",
         link: "series",
         component: Series,
-        role: "user"
+        role: "user",
+        icon: SeriesIcon
     },
     {
         text: "الإمتحانات",
         link: "exams",
         component: Exams,
-        role: "user"
+        role: "user",
+        icon: ExamsIcon
     },
    /* {
         text: "الملاحظات",
@@ -64,13 +78,15 @@ const navigations = [
         text: "ملاحظاتي",
         link: "notes",
         component: Notes,
-        role: "user"
+        role: "user",
+        icon: NotesIcon
     },
     {
         text: "مراسلة الإدارة",
         link: "messages",
         component: Messages,
-        role: "user"
+        role: "user",
+        icon: MessageIcon
     },
     /* {
         text: "تحفيز",
@@ -150,7 +166,8 @@ const navigations = [
         text: "مؤقت التركيز",
         link: "chronometer",
         component: Chronometer,
-        role: "user"
+        role: "user",
+        icon: ChronometerIcon
     },
     {
         text: "إحصائيات",
@@ -162,19 +179,22 @@ const navigations = [
         text: "تقدمك الدراسي",
         link: "progression",
         component: Progression,
-        role: "user"
+        role: "user",
+        icon: StatisticIcon
     },
     {
         text: "مواعيد الإمتحانات",
         link: "agenda",
         component: Agenda,
-        role: "user"
+        role: "user",
+        icon: AgendaIcon
     },
     {
         text:"الأخبار",
         link:"ournews",
         component: NewsRead,
-        role:"user"
+        role:"user",
+        icon: NewsIcon
     }
 ];
 
