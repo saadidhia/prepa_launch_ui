@@ -102,12 +102,25 @@ const SingleLevel = ({ item, handleNavigation, unreadCount = 0 }) => (
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'flex-start',
+      gap: '12px',
       boxShadow: '0px 4px 12px rgba(102, 126, 234, 0.2)',
       transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
       marginBottom: '6px',
       border: 'none',
     }}
   >
+    {item.icon && (
+      <img
+        src={item.icon}
+        alt={item.text}
+        style={{
+          width: '24px',
+          height: '24px',
+          objectFit: 'contain',
+          flexShrink: 0,
+        }}
+      />
+    )}
     <Box sx={{ position: 'relative', width: '100%' }}>
       <ListItemText
         primary={item.text}
