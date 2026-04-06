@@ -1,0 +1,195 @@
+.not-found-page {
+  --nf-bg-start: #667eea;
+  --nf-bg-mid: #667eea;
+  --nf-bg-end: #764ba2;
+  --nf-accent: #facc15;
+  --nf-text: #f8fafc;
+  --nf-muted: rgba(248, 250, 252, 0.82);
+
+  width: 100%;
+  min-height: 72vh;
+  display: grid;
+  place-items: center;
+  position: relative;
+  overflow: hidden;
+  border-radius: 24px;
+  padding: 18px;
+  background: radial-gradient(circle at 12% 16%, rgba(250, 204, 21, 0.26), transparent 38%),
+    radial-gradient(circle at 88% 22%, rgba(148, 163, 184, 0.24), transparent 42%),
+    linear-gradient(130deg, var(--nf-bg-start) 0%, var(--nf-bg-mid) 50%, var(--nf-bg-end) 100%);
+  box-shadow: 0 24px 50px rgba(102, 126, 234, 0.28);
+}
+
+.not-found-grid-overlay {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.08) 1px, transparent 1px);
+  background-size: 28px 28px;
+  opacity: 0.16;
+  mask-image: radial-gradient(circle at center, rgba(0, 0, 0, 0.8), transparent 80%);
+  pointer-events: none;
+}
+
+.not-found-page::before,
+.not-found-page::after {
+  content: '';
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.not-found-page::before {
+  width: 260px;
+  height: 260px;
+  right: -90px;
+  top: -70px;
+  background: rgba(255, 255, 255, 0.09);
+}
+
+.not-found-page::after {
+  width: 320px;
+  height: 320px;
+  left: -130px;
+  bottom: -120px;
+  background: rgba(30, 64, 175, 0.3);
+}
+
+.not-found-shell {
+  width: min(740px, calc(100% - 32px));
+  text-align: center;
+  color: var(--nf-text);
+  position: relative;
+  z-index: 1;
+  animation: nf-fade-in 0.65s ease-out;
+  background: linear-gradient(150deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.05));
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  border-radius: 22px;
+  padding: clamp(20px, 5vw, 38px);
+  backdrop-filter: blur(6px);
+  box-shadow: 0 18px 35px rgba(30, 41, 59, 0.25);
+}
+
+.not-found-badge {
+  display: inline-block;
+  margin-bottom: 8px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: rgba(250, 204, 21, 0.2);
+  border: 1px solid rgba(250, 204, 21, 0.45);
+  color: #fff7cc;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+.not-found-code {
+  margin: 0;
+  font-size: clamp(64px, 14vw, 152px);
+  line-height: 0.92;
+  letter-spacing: 0.02em;
+  font-weight: 800;
+  text-shadow: 0 14px 28px rgba(15, 23, 42, 0.35);
+}
+
+.not-found-code span {
+  color: var(--nf-accent);
+}
+
+.not-found-title {
+  margin: 14px 0 10px;
+  font-size: clamp(24px, 4.8vw, 38px);
+  font-weight: 700;
+}
+
+.not-found-message {
+  margin: 0 auto 12px;
+  max-width: 620px;
+  color: var(--nf-muted);
+  font-size: clamp(14px, 2.5vw, 18px);
+  line-height: 1.7;
+}
+
+.not-found-path {
+  margin: 0 auto 24px;
+  max-width: 100%;
+  width: fit-content;
+  color: rgba(241, 245, 249, 0.95);
+  background: rgba(15, 23, 42, 0.25);
+  border: 1px solid rgba(203, 213, 225, 0.28);
+  border-radius: 10px;
+  padding: 8px 12px;
+  font-size: 13px;
+  overflow-wrap: anywhere;
+}
+
+.not-found-actions {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.not-found-btn {
+  border: 1px solid transparent;
+  color: #0f172a;
+  text-decoration: none;
+  background: #f8fafc;
+  border-radius: 999px;
+  padding: 10px 18px;
+  font-weight: 700;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+  box-shadow: 0 12px 24px rgba(15, 23, 42, 0.22);
+}
+
+.not-found-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 16px 24px rgba(15, 23, 42, 0.3);
+}
+
+.not-found-btn.secondary {
+  color: var(--nf-text);
+  background: transparent;
+  border-color: rgba(248, 250, 252, 0.45);
+  box-shadow: none;
+}
+
+.not-found-btn.ghost {
+  color: #e2e8f0;
+  background: rgba(15, 23, 42, 0.22);
+  border-color: rgba(203, 213, 225, 0.28);
+  box-shadow: none;
+}
+
+.not-found-btn.secondary:hover {
+  background: rgba(248, 250, 252, 0.12);
+  box-shadow: 0 12px 20px rgba(15, 23, 42, 0.16);
+}
+
+.not-found-btn.ghost:hover {
+  background: rgba(15, 23, 42, 0.34);
+}
+
+@keyframes nf-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 768px) {
+  .not-found-page {
+    min-height: 68vh;
+    border-radius: 18px;
+  }
+
+  .not-found-shell {
+    width: min(740px, calc(100% - 8px));
+  }
+}

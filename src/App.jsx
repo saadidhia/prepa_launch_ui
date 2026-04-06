@@ -17,6 +17,7 @@ import { Connexion } from './components/connexion';
 import { Profile } from './components/user/Profile'
 import InterestedForm from './components/interestedForm';
 import Dashboard from "./components/dashboard";
+import NotFound from "./components/NotFound";
 import PrivateRoute from './PrivateRoute';
 import navigations from "./Navigations";
 import subjects from "./subjects"
@@ -134,7 +135,9 @@ const App = () => {
               ))
             )
             }
+            <Route path="*" element={<NotFound />} />
           </Route>
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </Router>
       </ChronometerProvider>
