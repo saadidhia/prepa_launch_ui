@@ -62,6 +62,14 @@ function getPreviewText(conversation) {
   return preview.length > 72 ? `${preview.slice(0, 72)}...` : preview;
 }
 
+function hasMessages(conversation) {
+  if (!conversation) return false;
+  if ((conversation.messages || []).length > 0) return true;
+  if ((conversation.lastMessage?.content || '').trim().length > 0) return true;
+  if (conversation.unreadAdminCount > 0 || conversation.unreadUserCount > 0) return true;
+  return false;
+}
+
 function normalizeSseType(value) {
   return `${value || ''}`.trim().toUpperCase().replace(/[-\s]/g, '_');
 }
@@ -153,6 +161,7 @@ export function MessagesAdmin() {
         const response = await messagesApi.getAdminConversations(authClient);
         const normalized = getConversationCollection(response.data)
           .map(normalizeConversation)
+          .filter(hasMessages)
           .sort((a, b) => {
             if (b.unreadAdminCount !== a.unreadAdminCount)
               return b.unreadAdminCount - a.unreadAdminCount;
