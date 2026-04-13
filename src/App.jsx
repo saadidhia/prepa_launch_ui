@@ -20,6 +20,7 @@ import Dashboard from "./components/dashboard";
 import NotFound from "./components/NotFound";
 import PrivateRoute from './PrivateRoute';
 import navigations from "./Navigations";
+import { ForLaterNotes } from './components/user/ForLaterNotes';
 import subjects from "./subjects"
 //import points from "./points"
 import concours from "./concours"
@@ -135,6 +136,7 @@ const App = () => {
               ))
             )
             }
+            <Route path="/dashboard/for-later" element={<PrivateRoute requiredRole="USER"><ForLaterNotes /></PrivateRoute>} />
             <Route path="*" element={<NotFound />} />
           </Route>
           <Route path="*" element={<NotFound />} />
