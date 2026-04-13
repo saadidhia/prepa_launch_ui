@@ -1,6 +1,6 @@
 import React, { useState, useRef, useMemo, useEffect } from 'react';
 import 'bootstrap-icons/font/bootstrap-icons.css';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import ReactDOMServer from 'react-dom/server';
 import ReactMarkdown from 'react-markdown';
 import {
@@ -33,6 +33,7 @@ import {
   Subject as SubjectIcon,
   Category as CategoryIcon,
   Functions as FunctionsIcon,
+  BookmarkAdd as BookmarkAddIcon,
 } from '@mui/icons-material';
 import SimpleMDEEditor from 'react-simplemde-editor';
 import 'easymde/dist/easymde.min.css';
@@ -63,6 +64,7 @@ export function Notes() {
     setMenuCardId(null);
   };
 
+  const navigate = useNavigate();
   const Auth = useAuth();
   const user = Auth.getUser();
   const [openCreate, setOpenCreate] = useState(false);
@@ -267,7 +269,7 @@ export function Notes() {
 
     try {
       const response = await candidatsApi.getCards(user);
-
+       console.log('API response:', response);
       if (!response || !response.data) {
         console.error('Invalid response from API');
         return;
@@ -381,6 +383,16 @@ export function Notes() {
     } catch (error) {
       console.error('Error updating card status:', error);
       // Re-sync from backend on failure to keep UI consistent.
+      fetchCards();
+    }
+  };
+
+  const handleMoveToForLater = async (card) => {
+    setFinishedCards((prev) => prev.filter((c) => String(c.id) !== String(card.id)));
+    try {
+      await candidatsApi.updateCardStatusById(user, card.id, 'FOR_LATER');
+    } catch (error) {
+      console.error('Error updating card status:', error);
       fetchCards();
     }
   };
@@ -585,6 +597,27 @@ export function Notes() {
             }}
           />
 
+          {card.created && (
+            <Typography
+              variant="caption"
+              sx={{
+                position: 'absolute',
+                top: '14px',
+                left: '36px',
+                color: '#9ca3af',
+                fontSize: '11px',
+              }}
+            >
+              {new Date(card.created).toLocaleString('fr-FR', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+              })}
+            </Typography>
+          )}
+
           <IconButton
             onClick={(e) => handleMenuOpen(e, card.id)}
             sx={{
@@ -643,7 +676,7 @@ export function Notes() {
               fontWeight: '700',
               color: '#1a1a1a',
               marginTop: '24px',
-              marginBottom: '12px',
+              marginBottom: '4px',
               fontSize: '16px',
               overflow: 'hidden',
               textOverflow: 'ellipsis',
@@ -697,6 +730,31 @@ export function Notes() {
               }}
             />
           </Box>
+
+          {columnType === 'finished' && (
+            <Button
+              variant="outlined"
+              size="small"
+              startIcon={<BookmarkAddIcon />}
+              onClick={() => handleMoveToForLater(card)}
+              sx={{
+                marginTop: '12px',
+                width: '100%',
+                borderRadius: '8px',
+                borderColor: '#764ba2',
+                color: '#764ba2',
+                fontWeight: '600',
+                fontSize: '12px',
+                textTransform: 'none',
+                '&:hover': {
+                  borderColor: '#764ba2',
+                  backgroundColor: 'rgba(118, 75, 162, 0.08)',
+                },
+              }}
+            >
+              حفظ للاحقاً
+            </Button>
+          )}
         </CardContent>
       </Card>
     );
@@ -725,11 +783,34 @@ export function Notes() {
             color: '#6b7280',
             fontSize: '16px',
             fontWeight: '500',
-            marginBottom: '24px',
+            marginBottom: '16px',
           }}
         >
           اكتب ملاحظات أو ملخصات لكل مادة
         </Typography>
+        <Button
+          variant="contained"
+          startIcon={<BookmarkAddIcon />}
+          onClick={() => navigate('/dashboard/for-later')}
+          sx={{
+            borderRadius: '12px',
+            padding: '10px 24px',
+            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+            color: 'white',
+            fontWeight: '700',
+            fontSize: '14px',
+            textTransform: 'none',
+            boxShadow: '0 4px 12px rgba(102, 126, 234, 0.35)',
+            '&:hover': {
+              background: 'linear-gradient(135deg, #5a6fd6 0%, #6a3d9a 100%)',
+              boxShadow: '0 6px 16px rgba(102, 126, 234, 0.45)',
+              transform: 'translateY(-2px)',
+            },
+            transition: 'all 0.3s ease',
+          }}
+        >
+          محفوظة للاحقاً
+        </Button>
       </Box>
 
       <Box sx={{ marginBottom: '32px' }}>

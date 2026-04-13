@@ -5,6 +5,7 @@ export const candidatsApi = {
     getMotivations,
     createNote,
     getCards,
+    getForLaterCards,
     deleteCard,
     getCardById,
     updateCardById,
@@ -66,6 +67,15 @@ function createNote(user, card){
       'Content-type': 'application/json'
     }
   })
+}
+
+function getForLaterCards(user) {
+  return instance.get('/api/cards/for-later', {
+    headers: {
+      'Authorization': bearerAuth(user),
+      'Content-type': 'application/json'
+    }
+  });
 }
 
 function getCards(user) {
