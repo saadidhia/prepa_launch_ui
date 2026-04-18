@@ -24,7 +24,8 @@ export const adminApi = {
   createNews,
   deleteNews,
   getNotVerifiedUsers,
-  verifyUser
+  verifyUser,
+  getCandidatesPerMonth
 }
 
 export const instance = axios.create({
@@ -234,5 +235,15 @@ function deleteNews(admin, newsId){
       'Authorization': bearerAuth(admin),
       'Content-type': 'application/json'
     }
+  })
+}
+
+function getCandidatesPerMonth(admin, year) {
+  return instance.get('/api/admin/stats/candidates-per-month', {
+    headers: {
+      'Authorization': bearerAuth(admin),
+      'Content-type': 'application/json'
+    },
+    params: { year }
   })
 }
