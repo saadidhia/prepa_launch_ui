@@ -30,10 +30,39 @@ export function UsersStat() {
     const [dessin, setDessin] = useState(0);
     const [chinois, setChinois] = useState(0);
     const [cityStats, setCityStats] = useState([]);
+    const [monthlyStats, setMonthlyStats] = useState([]);
 
     const [loading, setLoading] = useState(true);
 
-    const fetchStatics = async () => { 
+    const MONTH_NAMES = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+    const fetchMonthlyStats = async () => {
+        try {
+            const currentYear = new Date().getFullYear();
+            const prevYear = currentYear - 1;
+            const [resPrev, resCurrent] = await Promise.all([
+                adminApi.getCandidatesPerMonth(admin, prevYear),
+                adminApi.getCandidatesPerMonth(admin, currentYear),
+            ]);
+            // Jun prevYear → Jul currentYear (14 months)
+            const months = Array.from({ length: 14 }, (_, i) => {
+                const monthIndex = (5 + i) % 12; // starts at June (index 5)
+                const year = i < 7 ? prevYear : currentYear; // Jun–Dec prevYear, Jan–Jul currentYear
+                return { month: `${MONTH_NAMES[monthIndex]} ${year}`, count: 0 };
+            });
+            const prevMap = Object.fromEntries(resPrev.data.map(d => [d.month, d.count]));
+            const currMap = Object.fromEntries(resCurrent.data.map(d => [d.month, d.count]));
+            months.forEach((entry, i) => {
+                const monthNum = ((5 + i) % 12) + 1;
+                entry.count = i < 7 ? (prevMap[monthNum] ?? 0) : (currMap[monthNum] ?? 0);
+            });
+            setMonthlyStats(months);
+        } catch (error) {
+            console.error('Error fetching monthly stats', error);
+        }
+    };
+
+    const fetchStatics = async () => {
         try {
             const response = await adminApi.getStatics(admin);
             const data = response.data;
@@ -77,6 +106,7 @@ export function UsersStat() {
 
     useEffect(() => {
         fetchStatics();
+        fetchMonthlyStats();
     }, []);
 
     if (loading) {
@@ -121,6 +151,37 @@ export function UsersStat() {
                         </Paper>
                     </Grid>
                 ))}
+
+                <Grid item xs={12}>
+                    <Paper elevation={3}>
+                        <Box p={3}>
+                            <Typography variant="h5" gutterBottom>
+                                New Registrations — Jun {new Date().getFullYear() - 1} → Jul {new Date().getFullYear()}
+                            </Typography>
+                            {monthlyStats.every(m => m.count === 0) ? (
+                                <Box sx={{ height: 350, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: 'text.secondary' }}>
+                                    <Typography variant="h6">No data available</Typography>
+                                    <Typography variant="body2">No registrations recorded from Jun {new Date().getFullYear() - 1} to Jul {new Date().getFullYear()}.</Typography>
+                                </Box>
+                            ) : (
+                                <Box sx={{ width: '100%', height: 350 }}>
+                                    <ResponsiveContainer>
+                                        <BarChart
+                                            data={monthlyStats}
+                                            margin={{ top: 10, right: 20, left: 0, bottom: 60 }}
+                                        >
+                                            <CartesianGrid strokeDasharray="3 3" />
+                                            <XAxis dataKey="month" angle={-35} textAnchor="end" interval={0} height={70} tick={{ fontSize: 11 }} />
+                                            <YAxis allowDecimals={false} />
+                                            <Tooltip />
+                                            <Bar dataKey="count" name="Users" fill="#2e7d32" radius={[4, 4, 0, 0]} />
+                                        </BarChart>
+                                    </ResponsiveContainer>
+                                </Box>
+                            )}
+                        </Box>
+                    </Paper>
+                </Grid>
 
                 {cityStats.length > 0 && (
                     <Grid item xs={12}>
