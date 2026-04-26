@@ -197,16 +197,33 @@ export function useMonitoring() {
     setCurrentAlert(null)
 
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: { width: 320, height: 240, facingMode: 'user' },
-      })
-      streamRef.current = stream
+      // Reuse the stream if already obtained via requestCameraAccess
+      if (!streamRef.current) {
+        const stream = await navigator.mediaDevices.getUserMedia({
+          video: { width: 320, height: 240, facingMode: 'user' },
+        })
+        streamRef.current = stream
+      }
       setIsActive(true) // renders the <video> element; the useEffect above then sets srcObject
       detectionIntervalRef.current = setInterval(runDetection, DETECTION_INTERVAL_MS)
     } catch (err) {
       handleLogError(err)
     }
   }, [runDetection])
+
+  const requestCameraAccess = useCallback(async () => {
+    if (streamRef.current) return true
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: { width: 320, height: 240, facingMode: 'user' },
+      })
+      streamRef.current = stream
+      return true
+    } catch (err) {
+      handleLogError(err)
+      return false
+    }
+  }, [])
 
   const stopMonitoring = useCallback(() => {
     clearInterval(detectionIntervalRef.current)
@@ -224,6 +241,7 @@ export function useMonitoring() {
   return {
     videoRef,
     canvasRef,
+    requestCameraAccess,
     modelsLoaded,
     modelsLoading,
     isActive,

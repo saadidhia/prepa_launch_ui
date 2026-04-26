@@ -27,6 +27,7 @@ import concours from "./concours"
 
 import "./App.css";
 import { ChronometerProvider } from "./components/context/ChronometerContext";
+import { MonitoringProvider } from "./components/context/MonitoringContext";
 
 export const scroll = new SmoothScroll('a[href*="#"]', {
   speed: 1000,
@@ -44,6 +45,7 @@ const App = () => {
   return (
     <AuthProvider>
     <ChronometerProvider>
+    <MonitoringProvider>
     
       <Router>
         <Routes>
@@ -142,6 +144,7 @@ const App = () => {
           <Route path="*" element={<NotFound />} />
         </Routes>
       </Router>
+      </MonitoringProvider>
       </ChronometerProvider>
     </AuthProvider>
     
