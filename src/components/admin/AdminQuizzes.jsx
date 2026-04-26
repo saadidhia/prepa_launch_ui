@@ -3,6 +3,12 @@ import { useAuth } from '../context/AuthContext'
 import { quizzesApi } from '../../apis/quizzesApi'
 import { handleLogError } from '../../misc/Helpers'
 
+const FIELDS = ['MATH', 'SCIENCE', 'LETTER', 'TECH', 'ECO', 'INFO', 'SPORT']
+const FIELD_LABELS = {
+  MATH: 'رياضيات', SCIENCE: 'علوم', LETTER: 'آداب',
+  TECH: 'تقنية', ECO: 'اقتصاد', INFO: 'إعلامية', SPORT: 'رياضة',
+}
+
 const SUBJECTS = [
   'MATH', 'PHYSIQUE', 'SCIENCE', 'TECHNIQUE', 'INFORMATIQUE', 'ARABE',
   'PHILOSOPHIE', 'FRANCAIS', 'ANGLAIS', 'OPTION', 'HISTORY', 'BASES_DE_DONNEES',
@@ -22,7 +28,7 @@ const SUBJECT_LABELS = {
 const emptyAnswer = () => ({ text: '', correct: false })
 const emptyQuestion = () => ({ text: '', answers: [emptyAnswer(), emptyAnswer(), emptyAnswer(), emptyAnswer()] })
 const emptyForm = () => ({
-  title: '', subject: 'MATH', level: 'BAC', courseName: '',
+  field: 'MATH', subject: 'MATH', level: 'BAC', courseName: '',
   questions: [emptyQuestion()],
 })
 
@@ -41,6 +47,11 @@ export function AdminQuizzes() {
   const [form, setForm] = useState(emptyForm())
   const [editingId, setEditingId] = useState(null)
   const [saving, setSaving] = useState(false)
+
+  // Filters
+  const [filterField, setFilterField]     = useState('')
+  const [filterSubject, setFilterSubject] = useState('')
+  const [filterLevel, setFilterLevel]     = useState('')
 
   // Attempts
   const [attemptsQuiz, setAttemptsQuiz] = useState(null)
@@ -92,8 +103,8 @@ export function AdminQuizzes() {
   }
 
   // ── Delete ───────────────────────────────────────────────────
-  const handleDelete = async (quizId, title) => {
-    if (!window.confirm(`هل تريد حذف الاختبار "${title}"؟`)) return
+  const handleDelete = async (quizId, courseName) => {
+    if (!window.confirm(`هل تريد حذف الاختبار "${courseName || ''}"؟`)) return
     try {
       await quizzesApi.adminDeleteQuiz(user, quizId)
       setQuizzes(prev => prev.filter(q => q.id !== quizId))
@@ -107,7 +118,7 @@ export function AdminQuizzes() {
   const openEdit = (quiz) => {
     setEditingId(quiz.id)
     setForm({
-      title: quiz.title,
+      field: quiz.field || 'MATH',
       subject: quiz.subject,
       level: quiz.level,
       courseName: quiz.courseName || '',
@@ -181,6 +192,11 @@ export function AdminQuizzes() {
   // LIST VIEW
   // ════════════════════════════════════════════════════════════
   if (view === 'list') {
+    const filtered = quizzes.filter(q =>
+      (!filterField   || q.field   === filterField) &&
+      (!filterSubject || q.subject === filterSubject) &&
+      (!filterLevel   || q.level   === filterLevel)
+    )
     return (
       <div style={s.page} dir="rtl">
         <div style={s.header}>
@@ -196,6 +212,28 @@ export function AdminQuizzes() {
         {success && <p style={s.successMsg}>✅ {success}</p>}
         {error && <p style={s.errorMsg}>⚠️ {error}</p>}
 
+        {/* Filters */}
+        <div style={s.filtersRow}>
+          <select style={s.filterSelect} value={filterField} onChange={e => setFilterField(e.target.value)}>
+            <option value="">كل الفئات</option>
+            {FIELDS.map(f => <option key={f} value={f}>{f}</option>)}
+          </select>
+          <select style={s.filterSelect} value={filterSubject} onChange={e => setFilterSubject(e.target.value)}>
+            <option value="">كل المواد</option>
+            {SUBJECTS.map(s => <option key={s} value={s}>{s}</option>)}
+          </select>
+          <select style={s.filterSelect} value={filterLevel} onChange={e => setFilterLevel(e.target.value)}>
+            <option value="">كل المستويات</option>
+            <option value="BAC">BAC</option>
+            <option value="TROISIEME">TROISIEME</option>
+          </select>
+          {(filterField || filterSubject || filterLevel) && (
+            <button style={s.resetBtn} onClick={() => { setFilterField(''); setFilterSubject(''); setFilterLevel('') }}>
+              ✕ إعادة تعيين
+            </button>
+          )}
+        </div>
+
         {loading ? (
           <div style={s.center}><Spinner /></div>
         ) : quizzes.length === 0 ? (
@@ -208,7 +246,7 @@ export function AdminQuizzes() {
             <table style={s.table}>
               <thead>
                 <tr style={s.thead}>
-                  <th style={s.th}>العنوان</th>
+                  <th style={s.th}>الفئة</th>
                   <th style={s.th}>المادة</th>
                   <th style={s.th}>المستوى</th>
                   <th style={s.th}>الدرس</th>
@@ -218,14 +256,18 @@ export function AdminQuizzes() {
                 </tr>
               </thead>
               <tbody>
-                {quizzes.map((quiz, i) => (
+                {filtered.length === 0 ? (
+                  <tr><td colSpan={7} style={{ ...s.td, textAlign: 'center', color: '#9ca3af', padding: '2rem' }}>لا توجد نتائج</td></tr>
+                ) : filtered.map((quiz, i) => (
                   <tr key={quiz.id} style={{ background: i % 2 === 0 ? '#fff' : '#f9fafb' }}>
-                    <td style={s.td}>{quiz.title}</td>
                     <td style={s.td}>
-                      <span style={s.subjectChip}>{SUBJECT_LABELS[quiz.subject] || quiz.subject}</span>
+                      <span style={s.subjectChip}>{quiz.field || '—'}</span>
                     </td>
                     <td style={s.td}>
-                      <span style={s.levelChip}>{quiz.level === 'BAC' ? 'باك' : 'التاسعة'}</span>
+                      <span style={s.subjectChip}>{quiz.subject}</span>
+                    </td>
+                    <td style={s.td}>
+                      <span style={s.levelChip}>{quiz.level}</span>
                     </td>
                     <td style={s.td}>{quiz.courseName || '—'}</td>
                     <td style={{ ...s.td, textAlign: 'center' }}>{quiz.questions?.length || 0}</td>
@@ -236,7 +278,7 @@ export function AdminQuizzes() {
                       <div style={s.actions}>
                         <button style={s.editBtn} onClick={() => openEdit(quiz)}>تعديل</button>
                         <button style={s.attemptsBtn} onClick={() => openAttempts(quiz)}>المحاولات</button>
-                        <button style={s.deleteBtn} onClick={() => handleDelete(quiz.id, quiz.title)}>حذف</button>
+                        <button style={s.deleteBtn} onClick={() => handleDelete(quiz.id, quiz.courseName)}>حذف</button>
                       </div>
                     </td>
                   </tr>
@@ -266,13 +308,10 @@ export function AdminQuizzes() {
           {/* Meta fields */}
           <div style={s.metaGrid}>
             <div style={s.field}>
-              <label style={s.label}>عنوان الاختبار *</label>
-              <input
-                style={s.input} required
-                value={form.title}
-                onChange={e => setField('title', e.target.value)}
-                placeholder="مثال: الدوال المثلثية - الفصل 2"
-              />
+              <label style={s.label}>الفئة *</label>
+              <select style={s.select} value={form.field} onChange={e => setField('field', e.target.value)}>
+                {FIELDS.map(f => <option key={f} value={f}>{f}</option>)}
+              </select>
             </div>
             <div style={s.field}>
               <label style={s.label}>الدرس</label>
@@ -286,14 +325,14 @@ export function AdminQuizzes() {
             <div style={s.field}>
               <label style={s.label}>المادة *</label>
               <select style={s.select} value={form.subject} onChange={e => setField('subject', e.target.value)}>
-                {SUBJECTS.map(s => <option key={s} value={s}>{SUBJECT_LABELS[s] || s}</option>)}
+                {SUBJECTS.map(s => <option key={s} value={s}>{s}</option>)}
               </select>
             </div>
             <div style={s.field}>
               <label style={s.label}>المستوى *</label>
               <select style={s.select} value={form.level} onChange={e => setField('level', e.target.value)}>
-                <option value="BAC">باك</option>
-                <option value="TROISIEME">التاسعة أساسي</option>
+                <option value="BAC">BAC</option>
+                <option value="TROISIEME">TROISIEME</option>
               </select>
             </div>
           </div>
@@ -381,7 +420,7 @@ export function AdminQuizzes() {
         <div style={s.header}>
           <div>
             <h1 style={s.headerTitle}>محاولات الاختبار</h1>
-            <p style={s.headerSub}>{attemptsQuiz?.title}</p>
+            <p style={s.headerSub}>{attemptsQuiz?.courseName || FIELD_LABELS[attemptsQuiz?.field] || ''}</p>
           </div>
           <button style={s.backBtn} onClick={() => setView('list')}>← رجوع</button>
         </div>
@@ -501,6 +540,18 @@ const s = {
   backBtn: {
     background: 'none', border: 'none', color: '#667eea', cursor: 'pointer',
     fontSize: '0.95rem', padding: 0, fontWeight: 600,
+  },
+  filtersRow: {
+    display: 'flex', gap: 10, marginBottom: '1rem', flexWrap: 'wrap', alignItems: 'center',
+  },
+  filterSelect: {
+    padding: '0.5rem 0.8rem', border: '1.5px solid #d1d5db', borderRadius: '8px',
+    fontSize: '0.9rem', color: '#1f2937', background: '#fff', cursor: 'pointer',
+  },
+  resetBtn: {
+    padding: '0.5rem 1rem', background: '#fef2f2', color: '#dc2626',
+    border: '1px solid #fca5a5', borderRadius: '8px', cursor: 'pointer',
+    fontSize: '0.85rem', fontWeight: 600,
   },
   successMsg: {
     color: '#16a34a', background: '#f0fdf4', padding: '0.75rem 1rem',

@@ -8,6 +8,7 @@ export const quizzesApi = {
   submitAttempt,
   getMyAttempts,
   getMyAttemptsForQuiz,
+  getLastAttempt,
 
   // Admin endpoints
   adminGetQuizzes,
@@ -59,6 +60,15 @@ function getMyAttempts(user) {
 
 function getMyAttemptsForQuiz(user, quizId) {
   return instance.get(`/api/v1/quizzes/${quizId}/attempts/me`, {
+    headers: {
+      'Authorization': bearerAuth(user),
+      'Content-type': 'application/json'
+    }
+  })
+}
+
+function getLastAttempt(user, quizId) {
+  return instance.get(`/api/v1/quizzes/${quizId}/attempts/me/last`, {
     headers: {
       'Authorization': bearerAuth(user),
       'Content-type': 'application/json'

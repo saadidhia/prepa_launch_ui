@@ -71,12 +71,8 @@ export function Quizzes() {
       const res = await quizzesApi.getQuizzes(user, params)
       setQuizzes(res.status === 204 ? [] : res.data || [])
     } catch (err) {
-      handleLogError(err)
-      if (err.response?.status === 204) {
-        setQuizzes([])
-      } else {
-        setError('تعذّر تحميل الاختبارات.')
-      }
+      if (err.response?.status === 204) setQuizzes([])
+      else setError('تعذّر تحميل الاختبارات.')
     } finally {
       setLoading(false)
     }
@@ -86,22 +82,29 @@ export function Quizzes() {
     if (view === 'list') fetchQuizzes()
   }, [view, fetchQuizzes])
 
-  // ── Open quiz start screen ───────────────────────────────────
-  const openQuiz = async (quizId) => {
+  // ── Open quiz ────────────────────────────────────────────────
+  // hasAttempt = quiz.attemptCount > 0 from the list; forceStart skips to start screen
+  const openQuiz = async (quizId, forceStart = false, hasAttempt = false) => {
     setLoading(true)
     setError('')
     try {
-      console.log('openQuiz — quizId:', quizId, '— token:', user?.accessToken?.slice(0, 20) + '...')
       const res = await quizzesApi.getQuizById(user, quizId)
       setSelectedQuiz(res.data)
-      setView('start')
+
+      if (!forceStart && hasAttempt) {
+        const lastRes = await quizzesApi.getLastAttempt(user, quizId)
+        setResult(lastRes.data)
+        setView('results')
+      } else {
+        setView('start')
+      }
     } catch (err) {
-      console.error('getQuizById error — status:', err.response?.status)
-      console.error('getQuizById error — body:', JSON.stringify(err.response?.data))
-      console.error('getQuizById error — headers:', JSON.stringify(err.response?.headers))
-      console.error('getQuizById error — message:', err.message)
       handleLogError(err)
-      setError('تعذّر تحميل الاختبار.')
+      if (err.response?.status === 403) {
+        setError('هذا الاختبار غير متاح لفئتك أو مستواك الدراسي.')
+      } else {
+        setError('تعذّر تحميل الاختبار.')
+      }
     } finally {
       setLoading(false)
     }
@@ -113,6 +116,10 @@ export function Quizzes() {
     setAnswers({})
     setSelectedAnswer(null)
     setTimeLeft(15)
+    setSelectedQuiz(prev => ({
+      ...prev,
+      questions: [...prev.questions].sort(() => Math.random() - 0.5),
+    }))
     setView('taking')
   }
 
@@ -189,11 +196,21 @@ export function Quizzes() {
         timerEnabled,
         answers: answersPayload,
       })
-      setResult(res.data)
+      const attempt = res.data
+      setResult(attempt)
+      setQuizzes(prev => prev.map(q =>
+        q.id === attempt.quizId
+          ? { ...q, attemptCount: (q.attemptCount || 0) + 1, lastScore: attempt.score, lastPercentage: attempt.percentage }
+          : q
+      ))
       setView('results')
     } catch (err) {
       handleLogError(err)
-      setError('حدث خطأ أثناء إرسال الإجاباتك.')
+      if (err.response?.status === 403) {
+        setError('هذا الاختبار غير متاح لفئتك أو مستواك الدراسي.')
+      } else {
+        setError('حدث خطأ أثناء إرسال الإجاباتك.')
+      }
       setView('list')
     } finally {
       setSubmitting(false)
@@ -244,9 +261,9 @@ export function Quizzes() {
             value={filterSubject}
             onChange={e => setFilterSubject(e.target.value)}
           >
-            <option value="">كل المواد</option>
-            {Object.entries(SUBJECT_LABELS).map(([k, v]) => (
-              <option key={k} value={k}>{v}</option>
+            <option value="">All subjects</option>
+            {Object.keys(SUBJECT_LABELS).map(k => (
+              <option key={k} value={k}>{k}</option>
             ))}
           </select>
           <input
@@ -270,7 +287,7 @@ export function Quizzes() {
         ) : (
           <div style={s.grid}>
             {quizzes.map(quiz => (
-              <QuizCard key={quiz.id} quiz={quiz} onStart={() => openQuiz(quiz.id)} />
+              <QuizCard key={quiz.id} quiz={quiz} onStart={() => openQuiz(quiz.id, true, quiz.attemptCount > 0)} />
             ))}
           </div>
         )}
@@ -407,10 +424,16 @@ export function Quizzes() {
   if (view === 'results' && result) {
     const pct = result.percentage || 0
     const color = scoreColor(pct)
+    const subjectColor = SUBJECT_COLORS[result.quizSubject] || '#667eea'
     return (
       <div style={s.page} dir="rtl">
         <div style={s.resultCard}>
-          <h2 style={s.resultTitle}>{result.quizTitle}</h2>
+          <div style={{ textAlign: 'center', marginBottom: 12 }}>
+            <span style={{ ...s.subjectBadge, background: subjectColor, display: 'inline-block' }}>
+              {SUBJECT_LABELS[result.quizSubject] || result.quizSubject}
+            </span>
+          </div>
+          <h2 style={s.resultTitle}>{result.quizCourseName}</h2>
 
           <div style={s.scoreCircle}>
             <svg width="140" height="140" viewBox="0 0 140 140">
@@ -459,9 +482,9 @@ export function Quizzes() {
                     إجابتك: {qr.selectedAnswerText}
                   </p>
                 )}
-                {!qr.correct && qr.correctAnswers?.length > 0 && (
+                {!qr.correct && qr.correctAnswerTexts?.length > 0 && (
                   <p style={{ ...s.qrAnswer, color: '#16a34a' }}>
-                    الإجابة الصحيحة: {qr.correctAnswers.join('، ')}
+                    الإجابة الصحيحة: {qr.correctAnswerTexts.join('، ')}
                   </p>
                 )}
                 {!qr.selectedAnswerText && (
@@ -472,7 +495,7 @@ export function Quizzes() {
           </div>
 
           <div style={s.resultActions}>
-            <button style={s.retryBtn} onClick={() => openQuiz(result.quizId)}>
+            <button style={s.retryBtn} onClick={() => openQuiz(result.quizId, true, true)}>
               أعد المحاولة
             </button>
             <button style={s.backToListBtn} onClick={() => setView('list')}>
@@ -510,8 +533,17 @@ export function Quizzes() {
               return (
                 <div key={attempt.id} style={s.historyCard}>
                   <div style={s.historyLeft}>
-                    <p style={s.historyTitle}>{attempt.quizTitle}</p>
+                    <p style={s.historyTitle}>{attempt.quizCourseName}</p>
                     <p style={s.historyDate}>
+                      <span style={{
+                        display: 'inline-block',
+                        background: SUBJECT_COLORS[attempt.quizSubject] || '#667eea',
+                        color: '#fff', borderRadius: 10,
+                        padding: '1px 8px', fontSize: '0.75rem', fontWeight: 700,
+                        marginLeft: 6,
+                      }}>
+                        {SUBJECT_LABELS[attempt.quizSubject] || attempt.quizSubject}
+                      </span>
                       {new Date(attempt.createdAt).toLocaleDateString('ar-TN', {
                         year: 'numeric', month: 'long', day: 'numeric'
                       })}
@@ -538,21 +570,41 @@ export function Quizzes() {
 
 function QuizCard({ quiz, onStart }) {
   const color = SUBJECT_COLORS[quiz.subject] || '#667eea'
+  const attempted = quiz.attemptCount > 0
+  const pct = quiz.lastPercentage || 0
+  const pctColor = pct >= 80 ? '#16a34a' : pct >= 50 ? '#d97706' : '#dc2626'
+  const pctBg   = pct >= 80 ? '#dcfce7' : pct >= 50 ? '#fef9c3' : '#fee2e2'
   return (
     <div style={s.quizCard} dir="rtl">
-      <div style={{ ...s.quizCardTop, background: color }}>
+      <div style={{ ...s.quizCardTop, background: color, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <span style={s.quizSubject}>{SUBJECT_LABELS[quiz.subject] || quiz.subject}</span>
+        {attempted ? (
+          <span style={{ background: 'rgba(255,255,255,0.25)', color: '#fff', borderRadius: 10, padding: '2px 8px', fontSize: '0.75rem', fontWeight: 700 }}>
+            ✓ جربته
+          </span>
+        ) : (
+          <span style={{ background: 'rgba(255,255,255,0.15)', color: 'rgba(255,255,255,0.85)', borderRadius: 10, padding: '2px 8px', fontSize: '0.75rem' }}>
+            لم تجربه
+          </span>
+        )}
       </div>
       <div style={s.quizCardBody}>
-        <h3 style={s.quizTitle}>{quiz.title}</h3>
-        {quiz.courseName && <p style={s.quizCourse}>{quiz.courseName}</p>}
+        <h3 style={s.quizTitle}>{quiz.courseName || quiz.title}</h3>
         <div style={s.quizMeta}>
           <span>{quiz.questionCount || 0} سؤال</span>
-          <span style={s.quizLevel}>{quiz.level === 'BAC' ? 'باك' : 'التاسعة'}</span>
+          <span style={s.quizLevel}>{quiz.level}</span>
         </div>
+        {attempted && (
+          <div style={{ marginTop: 8, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <span style={{ fontSize: '0.8rem', color: '#6b7280' }}>آخر نتيجة</span>
+            <span style={{ background: pctBg, color: pctColor, borderRadius: 10, padding: '2px 10px', fontSize: '0.82rem', fontWeight: 700 }}>
+              {quiz.lastScore}/{quiz.questionCount} — {pct.toFixed(0)}%
+            </span>
+          </div>
+        )}
       </div>
       <button style={{ ...s.startQuizBtn, background: color }} onClick={onStart}>
-        ابدأ الاختبار
+        {attempted ? 'أعد المحاولة' : 'ابدأ الاختبار'}
       </button>
     </div>
   )
@@ -615,6 +667,12 @@ const s = {
   errorMsg: {
     color: '#dc2626', background: '#fef2f2', padding: '0.75rem 1rem',
     borderRadius: '8px', textAlign: 'right', margin: '0 0 1rem',
+  },
+  profileAlert: {
+    display: 'flex', alignItems: 'center', gap: 10, direction: 'rtl',
+    background: '#fffbeb', border: '1.5px solid #f59e0b', borderRadius: '10px',
+    padding: '0.9rem 1.1rem', marginBottom: '1.25rem',
+    color: '#92400e', fontSize: '0.95rem', fontWeight: 600, lineHeight: 1.5,
   },
   empty: {
     textAlign: 'center', padding: '4rem 0', color: '#6b7280',
@@ -758,6 +816,7 @@ const s = {
     background: '#fff', borderRadius: '16px',
     boxShadow: '0 4px 24px rgba(0,0,0,0.08)',
     padding: '2rem', maxWidth: 600, margin: '0 auto',
+    overflow: 'hidden', wordBreak: 'break-word',
   },
   resultTitle: {
     fontSize: '1.3rem', fontWeight: 700, color: '#1a1a2e',
@@ -772,6 +831,7 @@ const s = {
   qrRow: {
     background: '#f9fafb', borderRadius: '8px', padding: '0.85rem 1rem',
     paddingRight: '1rem', paddingLeft: '0.5rem',
+    overflow: 'hidden', wordBreak: 'break-word',
   },
   qrTop: {
     display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6,
