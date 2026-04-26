@@ -137,10 +137,13 @@ export const ChronometerProvider = ({ children }) => {
             localStorage.setItem("chronometerId", newChronometerId);
             setIsRunning(true);
             setIsPaused(false);
-            setTime(0); // Start from zero
+            setTime(0);
             localStorage.removeItem("elapsedTime");
+
+            return response.data; // caller can read monitoringSessionId from here
         } catch (error) {
             console.error("Failed to start timer:", error);
+            return null;
         }
     };
 

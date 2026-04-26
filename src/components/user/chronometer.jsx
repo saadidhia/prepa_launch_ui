@@ -46,6 +46,8 @@ const columns = [
   { id: 'elapsedTime', label: 'المدة' },
   { id: 'subject', label: 'المادة' },
   { id: 'description', label: 'الوصف' },
+  { id: 'distractionPhone', label: '📵 هاتف' },
+  { id: 'distractionFace', label: '👁 غياب وجه' },
 ];
 
 const Chronometer = () => {
@@ -117,7 +119,9 @@ const Chronometer = () => {
         }
 
         const elapsedTime = formatDuration(timer.elapsedTime);
-        return { ...timer, day, start, day_fin, stop, elapsedTime };
+        const distractionPhone = timer.cameraControlEnabled ? (timer.phoneDetectedCount ?? 0) : '—';
+        const distractionFace  = timer.cameraControlEnabled ? (timer.faceAbsentCount ?? 0) : '—';
+        return { ...timer, day, start, day_fin, stop, elapsedTime, distractionPhone, distractionFace };
       });
 
       setTimers(processedData);

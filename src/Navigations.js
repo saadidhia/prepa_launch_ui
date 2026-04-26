@@ -2,6 +2,9 @@ import { Cours } from './components/user/cours'
 import { Exams } from './components/user/exams'
 import { Series } from './components/user/series'
 import { Notes } from './components/user/notes'
+import { Quizzes } from './components/user/Quizzes'
+import { AdminQuizzes } from './components/admin/AdminQuizzes'
+import { AdminMonitoring } from './components/admin/AdminMonitoring'
 import { Users } from './components/admin/users'
 import { SignUp } from './components/admin/signUp';
 import { NotifCandidates } from './components/admin/notifCandidates';
@@ -195,7 +198,26 @@ const navigations = [
         component: NewsRead,
         role:"user",
         icon: NewsIcon
-    }
+    },
+    {
+        text: "أسئلة تقييمية",
+        link: "quizzes",
+        component: Quizzes,
+        role: "user",
+        icon: ExamsIcon
+    },
+    {
+        text: "إدارة الاختبارات",
+        link: "quizzes-admin",
+        component: AdminQuizzes,
+        role: "admin"
+    },
+   /* {
+        text: "مراقبة التركيز",
+        link: "monitoring-admin",
+        component: AdminMonitoring,
+        role: "admin"
+    },*/
 ];
 
 export default navigations
