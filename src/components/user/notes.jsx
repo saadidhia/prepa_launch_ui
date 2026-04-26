@@ -860,10 +860,8 @@ export function Notes() {
               fullWidth
               value={title}
               onChange={(e) => {
-                const inputValue = e.target.value;
-                const alphabeticInput = inputValue.replace(/[^a-zA-Z ]/g, '');
-                if (alphabeticInput.length <= 100) {
-                  setTitle(alphabeticInput);
+                if (e.target.value.length <= 100) {
+                  setTitle(e.target.value);
                 }
               }}
               inputProps={{
