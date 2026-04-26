@@ -28,7 +28,7 @@ import Stopwatch from './timer/Stopwatch';
 import { useChronometer } from '../context/ChronometerContext';
 import subjects from '../../subjects';
 import { useAuth } from '../context/AuthContext';
-import { useMonitoring, EVENT_META } from './useMonitoring';
+import { useMonitoring, EVENT_META } from '../context/MonitoringContext';
 
 function TimerForm({ fetchTimers }) {
   const { isRunning, startTimer, stopTimer } = useChronometer();
@@ -40,11 +40,12 @@ function TimerForm({ fetchTimers }) {
   const user = Auth.getUser();
   const userSubjects = subjects.filter(s => s.section.includes(user.data.field));
 
+  const [cameraError, setCameraError] = useState(false);
+
   const {
-    videoRef, canvasRef,
     modelsLoaded, modelsLoading,
     isActive, currentAlert, eventCounts, recentAlerts,
-    startMonitoring, stopMonitoring,
+    startMonitoring, stopMonitoring, requestCameraAccess,
   } = useMonitoring();
 
   // Reset toggle whenever the chronometer stops (from any source — including إيقاف نهائي).
@@ -67,6 +68,16 @@ function TimerForm({ fetchTimers }) {
 
   const handleStart = async () => {
     if (!textInput || !subject) return;
+    setCameraError(false);
+
+    if (cameraEnabled) {
+      const granted = await requestCameraAccess();
+      if (!granted) {
+        setCameraError(true);
+        return;
+      }
+    }
+
     const data = await startTimer({
       description: textInput,
       subject,
@@ -224,7 +235,7 @@ function TimerForm({ fetchTimers }) {
             control={
               <Switch
                 checked={cameraEnabled}
-                onChange={(e) => setCameraEnabled(e.target.checked)}
+                onChange={(e) => { setCameraEnabled(e.target.checked); setCameraError(false); }}
                 disabled={isRunning || modelsLoading}
                 sx={{
                   '& .MuiSwitch-switchBase.Mui-checked': { color: '#667eea' },
@@ -252,137 +263,74 @@ function TimerForm({ fetchTimers }) {
           )}
         </Box>
 
-        {/* Row 3: Camera panel (shown when active) */}
+        {/* Camera permission denied error */}
+        {cameraError && (
+          <Box
+            sx={{
+              mt: '12px',
+              px: '16px', py: '10px',
+              borderRadius: '10px',
+              background: '#fef2f2',
+              border: '1.5px solid #fca5a5',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+            }}
+          >
+            <VideocamOffIcon sx={{ color: '#ef4444', fontSize: 18 }} />
+            <Typography variant="body2" sx={{ color: '#dc2626', fontSize: '13px', fontWeight: 600 }}>
+              لم يتم منح إذن الكاميرا. يرجى السماح بالوصول إليها ثم المحاولة مجدداً.
+            </Typography>
+          </Box>
+        )}
+
+        {/* Row 3: Distraction stats (camera feed is in the floating widget) */}
         {isActive && (
           <Box
             sx={{
               mt: '20px',
-              borderRadius: '16px',
-              overflow: 'hidden',
+              borderRadius: '12px',
               border: '2px solid rgba(102,126,234,0.2)',
+              bgcolor: 'white',
+              p: 2,
               display: 'flex',
-              gap: 0,
+              alignItems: 'center',
+              gap: 2,
               flexWrap: 'wrap',
             }}
           >
-            {/* Camera feed */}
-            <Box
-              sx={{
-                position: 'relative',
-                bgcolor: '#0f172a',
-                flex: '0 0 auto',
-                width: { xs: '100%', sm: 280 },
-                height: 200,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}
-            >
-              <video
-                ref={videoRef}
-                muted
-                playsInline
-                style={{
-                  width: '100%',
-                  height: '100%',
-                  objectFit: 'cover',
-                  transform: 'scaleX(-1)',
+            {currentAlert ? (
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                <WarningAmberIcon sx={{ fontSize: 18, color: EVENT_META[currentAlert]?.color }} />
+                <Typography variant="caption" fontWeight={700} sx={{ color: EVENT_META[currentAlert]?.color }}>
+                  {EVENT_META[currentAlert]?.label}
+                </Typography>
+              </Box>
+            ) : (
+              <Chip
+                icon={<CheckCircleIcon sx={{ fontSize: '14px !important', color: 'white !important' }} />}
+                label="مركّز"
+                size="small"
+                sx={{ bgcolor: '#22c55e', color: '#fff', fontWeight: 700, fontSize: 11, height: 24 }}
+              />
+            )}
+            <Typography variant="caption" sx={{ color: '#6b7280', fontWeight: 700, mr: 'auto' }}>
+              التشتيتات: {totalDistractions}
+            </Typography>
+            {Object.entries(EVENT_META).map(([type, meta]) => (
+              <Chip
+                key={type}
+                label={`${meta.label}: ${eventCounts[type] || 0}`}
+                size="small"
+                sx={{
+                  height: 20, fontSize: 10, fontWeight: 700,
+                  bgcolor: eventCounts[type] ? meta.bg : '#f3f4f6',
+                  color: eventCounts[type] ? meta.color : '#9ca3af',
+                  border: `1px solid ${eventCounts[type] ? meta.color + '40' : '#e5e7eb'}`,
+                  '& .MuiChip-label': { px: 1 },
                 }}
               />
-              <canvas
-                ref={canvasRef}
-                style={{
-                  position: 'absolute',
-                  top: 0, left: 0,
-                  width: '100%', height: '100%',
-                  transform: 'scaleX(-1)',
-                }}
-              />
-
-              {/* Alert / Focused badge */}
-              {currentAlert ? (
-                <Box
-                  sx={{
-                    position: 'absolute',
-                    top: 8, left: 8, right: 8,
-                    bgcolor: EVENT_META[currentAlert]?.color,
-                    color: '#fff',
-                    borderRadius: '8px',
-                    px: 1.5, py: 0.5,
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 0.5,
-                  }}
-                >
-                  <WarningAmberIcon sx={{ fontSize: 18 }} />
-                  <Typography variant="caption" fontWeight={700}>
-                    {EVENT_META[currentAlert]?.label}
-                  </Typography>
-                </Box>
-              ) : (
-                <Chip
-                  icon={<CheckCircleIcon sx={{ fontSize: '14px !important', color: 'white !important' }} />}
-                  label="مركّز"
-                  size="small"
-                  sx={{
-                    position: 'absolute',
-                    top: 8, left: 8,
-                    bgcolor: '#22c55e',
-                    color: '#fff',
-                    fontWeight: 700,
-                    fontSize: 11,
-                    height: 24,
-                  }}
-                />
-              )}
-            </Box>
-
-            {/* Stats panel */}
-            <Box
-              sx={{
-                flex: 1,
-                minWidth: 160,
-                bgcolor: 'white',
-                p: 2,
-                display: 'flex',
-                flexDirection: 'column',
-                gap: 1,
-              }}
-            >
-              <Typography variant="caption" sx={{ fontWeight: 700, color: '#374151', mb: 0.5 }}>
-                التشتيتات ({totalDistractions})
-              </Typography>
-              {Object.entries(EVENT_META).map(([type, meta]) => (
-                <Box key={type} sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                  <Typography variant="caption" sx={{ color: '#6b7280', fontSize: 11 }}>
-                    {meta.label}
-                  </Typography>
-                  <Chip
-                    label={eventCounts[type] || 0}
-                    size="small"
-                    sx={{
-                      height: 18,
-                      fontSize: 10,
-                      fontWeight: 700,
-                      bgcolor: eventCounts[type] ? meta.bg : '#f3f4f6',
-                      color: eventCounts[type] ? meta.color : '#9ca3af',
-                      border: `1px solid ${eventCounts[type] ? meta.color + '40' : '#e5e7eb'}`,
-                      '& .MuiChip-label': { px: 1 },
-                    }}
-                  />
-                </Box>
-              ))}
-
-              {/* Last alert */}
-              {recentAlerts.length > 0 && (
-                <Box sx={{ mt: 'auto', pt: 1, borderTop: '1px solid #f3f4f6' }}>
-                  <Typography variant="caption" sx={{ color: '#9ca3af', fontSize: 10 }}>
-                    آخر تنبيه: {EVENT_META[recentAlerts[0].type]?.label} —{' '}
-                    {recentAlerts[0].time.toLocaleTimeString('ar')}
-                  </Typography>
-                </Box>
-              )}
-            </Box>
+            ))}
           </Box>
         )}
 
