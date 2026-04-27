@@ -45,8 +45,8 @@ export function Quizzes() {
   const [selectedQuiz, setSelectedQuiz] = useState(null) // full quiz with questions
   const [timerEnabled, setTimerEnabled] = useState(true)
   const [currentIndex, setCurrentIndex] = useState(0)
-  const [answers, setAnswers] = useState({}) // { questionId: answerId | null }
-  const [selectedAnswer, setSelectedAnswer] = useState(null) // current question selection
+  const [answers, setAnswers] = useState({}) // { questionId: uuid[] }
+  const [selectedAnswers, setSelectedAnswers] = useState([]) // current question selections
   const [timeLeft, setTimeLeft] = useState(15)
   const [submitting, setSubmitting] = useState(false)
 
@@ -114,7 +114,7 @@ export function Quizzes() {
   const startQuiz = () => {
     setCurrentIndex(0)
     setAnswers({})
-    setSelectedAnswer(null)
+    setSelectedAnswers([])
     setTimeLeft(15)
     setSelectedQuiz(prev => ({
       ...prev,
@@ -128,7 +128,7 @@ export function Quizzes() {
     const questions = selectedQuiz?.questions || []
     if (idx < questions.length - 1) {
       setCurrentIndex(idx + 1)
-      setSelectedAnswer(null)
+      setSelectedAnswers([])
       setTimeLeft(15)
     } else {
       doSubmit(currentAnswers)
@@ -140,7 +140,7 @@ export function Quizzes() {
     const question = questions[currentIndex]
     if (!question) return
     const updated = { ...answers }
-    if (!(question.id in updated)) updated[question.id] = null
+    if (!(question.id in updated)) updated[question.id] = []
     setAnswers(updated)
     advanceOrSubmit(updated, currentIndex)
   }
@@ -162,20 +162,22 @@ export function Quizzes() {
     return () => clearInterval(timerRef.current)
   }, [view, currentIndex, timerEnabled])
 
-  // ── Handle answer selection ──────────────────────────────────
+  // ── Handle answer selection (toggle for multiple) ─────────────
   const selectAnswer = (answerId) => {
-    setSelectedAnswer(answerId)
+    setSelectedAnswers(prev =>
+      prev.includes(answerId) ? prev.filter(id => id !== answerId) : [...prev, answerId]
+    )
   }
 
   const handleNext = () => {
     clearInterval(timerRef.current)
     const questions = selectedQuiz?.questions || []
     const question = questions[currentIndex]
-    const updated = { ...answers, [question.id]: selectedAnswer ?? null }
+    const updated = { ...answers, [question.id]: selectedAnswers }
     setAnswers(updated)
     if (currentIndex < questions.length - 1) {
       setCurrentIndex(currentIndex + 1)
-      setSelectedAnswer(null)
+      setSelectedAnswers([])
       setTimeLeft(15)
     } else {
       doSubmit(updated)
@@ -189,7 +191,7 @@ export function Quizzes() {
     const questions = selectedQuiz?.questions || []
     const answersPayload = questions.map(q => ({
       questionId: q.id,
-      selectedAnswerId: finalAnswers[q.id] ?? null,
+      selectedAnswerIds: finalAnswers[q.id] ?? [],
     }))
     try {
       const res = await quizzesApi.submitAttempt(user, selectedQuiz.id, {
@@ -348,7 +350,7 @@ export function Quizzes() {
   if (view === 'taking') {
     if (submitting) {
       return (
-        <div style={{ ...s.page, ...s.center }} dir="rtl">
+        <div style={{ ...s.takingPage, ...s.center }} dir="rtl">
           <Spinner />
           <p style={{ marginTop: 16, color: '#6b7280' }}>جارٍ إرسال الإجابات...</p>
         </div>
@@ -358,62 +360,72 @@ export function Quizzes() {
     const timerColor = timeLeft > 8 ? '#22c55e' : timeLeft > 4 ? '#f59e0b' : '#ef4444'
 
     return (
-      <div style={s.page} dir="rtl">
+      <div style={s.takingPage} dir="rtl">
         {/* Progress bar */}
         <div style={s.progressBar}>
           <div style={{ ...s.progressFill, width: `${progress}%` }} />
         </div>
 
-        <div style={s.takingHeader}>
-          <span style={s.questionCounter}>
-            السؤال {currentIndex + 1} / {questions.length}
-          </span>
-          {timerEnabled && (
-            <div style={s.timerCircle}>
-              <svg width="52" height="52" viewBox="0 0 52 52">
-                <circle cx="26" cy="26" r="22" fill="none" stroke="#e5e7eb" strokeWidth="4" />
-                <circle
-                  cx="26" cy="26" r="22" fill="none"
-                  stroke={timerColor} strokeWidth="4"
-                  strokeDasharray={`${2 * Math.PI * 22}`}
-                  strokeDashoffset={`${2 * Math.PI * 22 * (1 - timerPct / 100)}`}
-                  strokeLinecap="round"
-                  style={{ transform: 'rotate(-90deg)', transformOrigin: 'center', transition: 'stroke-dashoffset 0.9s linear, stroke 0.3s' }}
-                />
-                <text x="26" y="31" textAnchor="middle" fontSize="14" fontWeight="bold" fill={timerColor}>
-                  {timeLeft}
-                </text>
-              </svg>
+        <div style={s.takingWrap}>
+          {/* Header: counter + timer */}
+          <div style={s.takingHeader}>
+            <div style={s.questionCounterBox}>
+              <span style={s.questionCounterNum}>{currentIndex + 1}</span>
+              <span style={s.questionCounterSep}>/</span>
+              <span style={s.questionCounterTotal}>{questions.length}</span>
+              <span style={s.questionCounterLabel}>سؤال</span>
             </div>
-          )}
-        </div>
+            {timerEnabled && (
+              <div style={s.timerCircle}>
+                <svg width="68" height="68" viewBox="0 0 68 68">
+                  <circle cx="34" cy="34" r="28" fill="none" stroke="#e5e7eb" strokeWidth="5" />
+                  <circle
+                    cx="34" cy="34" r="28" fill="none"
+                    stroke={timerColor} strokeWidth="5"
+                    strokeDasharray={`${2 * Math.PI * 28}`}
+                    strokeDashoffset={`${2 * Math.PI * 28 * (1 - timerPct / 100)}`}
+                    strokeLinecap="round"
+                    style={{ transform: 'rotate(-90deg)', transformOrigin: 'center', transition: 'stroke-dashoffset 0.9s linear, stroke 0.3s' }}
+                  />
+                  <text x="34" y="40" textAnchor="middle" fontSize="18" fontWeight="800" fill={timerColor}>
+                    {timeLeft}
+                  </text>
+                </svg>
+              </div>
+            )}
+          </div>
 
-        <div style={s.questionCard}>
-          <p style={s.questionText}>{currentQuestion?.text}</p>
-        </div>
+          {/* Question */}
+          <div style={s.questionCard}>
+            <p style={s.questionText}>{currentQuestion?.text}</p>
+          </div>
 
-        <div style={s.answersGrid}>
-          {currentQuestion?.answers?.map((ans, i) => {
-            const isSelected = selectedAnswer === ans.id
-            return (
-              <button
-                key={ans.id}
-                style={{
-                  ...s.answerBtn,
-                  ...(isSelected ? s.answerBtnSelected : {}),
-                }}
-                onClick={() => selectAnswer(ans.id)}
-              >
-                <span style={s.answerLabel}>{['أ', 'ب', 'ج', 'د'][i]}</span>
-                <span style={s.answerText}>{ans.text}</span>
-              </button>
-            )
-          })}
-        </div>
+          {/* Hint */}
+          <p style={s.multiHint}>يمكنك اختيار أكثر من إجابة</p>
 
-        <button style={s.nextBtn} onClick={handleNext}>
-          {currentIndex < questions.length - 1 ? 'التالي ←' : 'إنهاء الاختبار'}
-        </button>
+          {/* Answers */}
+          <div style={s.answersGrid}>
+            {currentQuestion?.answers?.map((ans, i) => {
+              const isSelected = selectedAnswers.includes(ans.id)
+              return (
+                <button
+                  key={ans.id}
+                  style={{ ...s.answerBtn, ...(isSelected ? s.answerBtnSelected : {}) }}
+                  onClick={() => selectAnswer(ans.id)}
+                >
+                  <span style={{ ...s.answerLabel, ...(isSelected ? s.answerLabelSelected : {}) }}>
+                    {isSelected ? '✓' : ['أ', 'ب', 'ج', 'د'][i]}
+                  </span>
+                  <span style={s.answerText}>{ans.text}</span>
+                </button>
+              )
+            })}
+          </div>
+
+          <button style={s.nextBtn} onClick={handleNext}>
+            {currentIndex < questions.length - 1 ? 'السؤال التالي ←' : 'إنهاء الاختبار ✓'}
+          </button>
+        </div>
       </div>
     )
   }
@@ -477,18 +489,22 @@ export function Quizzes() {
                   </span>
                 </div>
                 <p style={s.qrText}>{qr.questionText}</p>
-                {qr.selectedAnswerText && (
-                  <p style={{ ...s.qrAnswer, color: qr.correct ? '#16a34a' : '#dc2626' }}>
-                    إجابتك: {qr.selectedAnswerText}
-                  </p>
-                )}
+                {(() => {
+                  const selected = qr.selectedAnswerTexts?.length > 0
+                    ? qr.selectedAnswerTexts.join('، ')
+                    : qr.selectedAnswerText || null
+                  return selected ? (
+                    <p style={{ ...s.qrAnswer, color: qr.correct ? '#16a34a' : '#dc2626' }}>
+                      إجابتك: {selected}
+                    </p>
+                  ) : (
+                    <p style={{ ...s.qrAnswer, color: '#9ca3af' }}>لم تُجب (انتهى الوقت)</p>
+                  )
+                })()}
                 {!qr.correct && qr.correctAnswerTexts?.length > 0 && (
                   <p style={{ ...s.qrAnswer, color: '#16a34a' }}>
                     الإجابة الصحيحة: {qr.correctAnswerTexts.join('، ')}
                   </p>
-                )}
-                {!qr.selectedAnswerText && (
-                  <p style={{ ...s.qrAnswer, color: '#9ca3af' }}>لم تُجب (انتهى الوقت)</p>
                 )}
               </div>
             ))}
@@ -765,51 +781,87 @@ const s = {
     cursor: 'pointer', fontSize: '1.1rem', fontWeight: 700, width: '100%',
   },
   // Taking screen
+  takingPage: {
+    minHeight: '100vh', background: 'linear-gradient(160deg, #f0f4ff 0%, #f8f9fa 100%)',
+    fontFamily: "'Segoe UI', Tahoma, Arial, sans-serif",
+  },
+  takingWrap: {
+    maxWidth: 780, margin: '0 auto', padding: '1.5rem 1.25rem 3rem',
+  },
   progressBar: {
-    height: 6, background: '#e5e7eb', borderRadius: 3, marginBottom: '1.5rem', overflow: 'hidden',
+    height: 8, background: '#e5e7eb', overflow: 'hidden',
+    position: 'sticky', top: 0, zIndex: 10,
   },
   progressFill: {
     height: '100%', background: 'linear-gradient(90deg, #667eea, #764ba2)',
-    borderRadius: 3, transition: 'width 0.3s',
+    transition: 'width 0.4s ease',
   },
   takingHeader: {
-    display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16,
+    display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+    marginBottom: '1.75rem', paddingTop: '0.5rem',
   },
-  questionCounter: {
-    fontSize: '0.9rem', color: '#6b7280', fontWeight: 600,
+  questionCounterBox: {
+    display: 'flex', alignItems: 'baseline', gap: 5,
+  },
+  questionCounterNum: {
+    fontSize: '2.2rem', fontWeight: 800, color: '#667eea', lineHeight: 1,
+  },
+  questionCounterSep: {
+    fontSize: '1.2rem', color: '#d1d5db', fontWeight: 400,
+  },
+  questionCounterTotal: {
+    fontSize: '1.1rem', color: '#9ca3af', fontWeight: 600,
+  },
+  questionCounterLabel: {
+    fontSize: '0.9rem', color: '#9ca3af', fontWeight: 500, marginRight: 4,
   },
   timerCircle: { flexShrink: 0 },
   questionCard: {
-    background: '#fff', borderRadius: '12px', padding: '1.5rem',
-    boxShadow: '0 2px 12px rgba(0,0,0,0.06)', marginBottom: '1.25rem',
+    background: '#fff', borderRadius: '20px', padding: '2rem 2.25rem',
+    boxShadow: '0 4px 24px rgba(102,126,234,0.10)',
+    borderRight: '5px solid #667eea',
+    marginBottom: '1.5rem',
   },
   questionText: {
-    fontSize: '1.1rem', color: '#1a1a2e', lineHeight: 1.7, margin: 0, fontWeight: 600,
+    fontSize: '1.45rem', color: '#1a1a2e', lineHeight: 1.75, margin: 0,
+    fontWeight: 700, letterSpacing: '0.01em',
+  },
+  multiHint: {
+    fontSize: '0.88rem', color: '#a0aec0', textAlign: 'center',
+    margin: '0 0 1.25rem', fontWeight: 500,
   },
   answersGrid: {
-    display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: '1.5rem',
+    display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14, marginBottom: '2rem',
   },
   answerBtn: {
-    background: '#fff', border: '2px solid #e5e7eb', borderRadius: '10px',
-    padding: '0.85rem 1rem', cursor: 'pointer', textAlign: 'right',
-    display: 'flex', gap: 10, alignItems: 'center',
-    transition: 'border-color 0.15s, background 0.15s',
-    fontSize: '0.95rem', color: '#1f2937',
+    background: '#fff', border: '2.5px solid #e5e7eb', borderRadius: '16px',
+    padding: '1.1rem 1.25rem', cursor: 'pointer', textAlign: 'right',
+    display: 'flex', gap: 14, alignItems: 'center', minHeight: 72,
+    transition: 'border-color 0.15s, background 0.15s, box-shadow 0.15s',
+    fontSize: '1.05rem', color: '#1f2937', fontWeight: 500,
+    boxShadow: '0 1px 4px rgba(0,0,0,0.04)',
   },
   answerBtnSelected: {
     borderColor: '#667eea', background: '#eef2ff',
+    boxShadow: '0 4px 16px rgba(102,126,234,0.15)',
   },
   answerLabel: {
-    flexShrink: 0, width: 28, height: 28, borderRadius: '50%',
+    flexShrink: 0, width: 38, height: 38, borderRadius: '50%',
     background: '#f3f4f6', display: 'flex', alignItems: 'center',
-    justifyContent: 'center', fontSize: '0.8rem', fontWeight: 700, color: '#4b5563',
+    justifyContent: 'center', fontSize: '0.95rem', fontWeight: 800, color: '#6b7280',
+    transition: 'background 0.15s, color 0.15s',
   },
-  answerText: { flex: 1 },
+  answerLabelSelected: {
+    background: '#667eea', color: '#fff',
+  },
+  answerText: { flex: 1, lineHeight: 1.5 },
   nextBtn: {
-    width: '100%', padding: '0.9rem',
+    width: '100%', padding: '1.1rem',
     background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-    color: '#fff', border: 'none', borderRadius: '10px',
-    cursor: 'pointer', fontSize: '1rem', fontWeight: 700,
+    color: '#fff', border: 'none', borderRadius: '14px',
+    cursor: 'pointer', fontSize: '1.1rem', fontWeight: 700,
+    boxShadow: '0 4px 16px rgba(102,126,234,0.3)',
+    letterSpacing: '0.02em',
   },
   // Results
   resultCard: {
