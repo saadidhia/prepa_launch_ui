@@ -28,7 +28,7 @@ const SUBJECT_LABELS = {
 const emptyAnswer = () => ({ text: '', correct: false })
 const emptyQuestion = () => ({ text: '', answers: [emptyAnswer(), emptyAnswer(), emptyAnswer(), emptyAnswer()] })
 const emptyForm = () => ({
-  field: 'MATH', subject: 'MATH', level: 'BAC', courseName: '',
+  fields: ['MATH'], subject: 'MATH', level: 'BAC', courseName: '',
   questions: [emptyQuestion()],
 })
 
@@ -118,7 +118,7 @@ export function AdminQuizzes() {
   const openEdit = (quiz) => {
     setEditingId(quiz.id)
     setForm({
-      field: quiz.field || 'MATH',
+      fields: Array.isArray(quiz.fields) ? quiz.fields : (quiz.field ? [quiz.field] : ['MATH']),
       subject: quiz.subject,
       level: quiz.level,
       courseName: quiz.courseName || '',
@@ -151,6 +151,16 @@ export function AdminQuizzes() {
 
   // ── Form helpers ─────────────────────────────────────────────
   const setField = (field, val) => setForm(f => ({ ...f, [field]: val }))
+
+  const toggleField = (fieldValue) =>
+    setForm(f => {
+      const already = f.fields.includes(fieldValue)
+      if (already && f.fields.length === 1) return f // keep at least one selected
+      return {
+        ...f,
+        fields: already ? f.fields.filter(v => v !== fieldValue) : [...f.fields, fieldValue],
+      }
+    })
 
   const setQuestionText = (qi, val) =>
     setForm(f => {
@@ -193,7 +203,7 @@ export function AdminQuizzes() {
   // ════════════════════════════════════════════════════════════
   if (view === 'list') {
     const filtered = quizzes.filter(q =>
-      (!filterField   || q.field   === filterField) &&
+      (!filterField   || (Array.isArray(q.fields) ? q.fields.includes(filterField) : q.field === filterField)) &&
       (!filterSubject || q.subject === filterSubject) &&
       (!filterLevel   || q.level   === filterLevel)
     )
@@ -261,7 +271,12 @@ export function AdminQuizzes() {
                 ) : filtered.map((quiz, i) => (
                   <tr key={quiz.id} style={{ background: i % 2 === 0 ? '#fff' : '#f9fafb' }}>
                     <td style={s.td}>
-                      <span style={s.subjectChip}>{quiz.field || '—'}</span>
+                      <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
+                        {(Array.isArray(quiz.fields) ? quiz.fields : quiz.field ? [quiz.field] : []).map(f => (
+                          <span key={f} style={s.subjectChip}>{f}</span>
+                        ))}
+                        {!quiz.fields?.length && !quiz.field && '—'}
+                      </div>
                     </td>
                     <td style={s.td}>
                       <span style={s.subjectChip}>{quiz.subject}</span>
@@ -307,11 +322,24 @@ export function AdminQuizzes() {
         <form onSubmit={handleSave} style={s.form}>
           {/* Meta fields */}
           <div style={s.metaGrid}>
-            <div style={s.field}>
-              <label style={s.label}>الفئة *</label>
-              <select style={s.select} value={form.field} onChange={e => setField('field', e.target.value)}>
-                {FIELDS.map(f => <option key={f} value={f}>{f}</option>)}
-              </select>
+            <div style={{ ...s.field, gridColumn: '1 / -1' }}>
+              <label style={s.label}>الفئة * <span style={{ color: '#9ca3af', fontWeight: 400 }}>(يمكن اختيار أكثر من فئة)</span></label>
+              <div style={s.fieldsCheckboxGroup}>
+                {FIELDS.map(f => {
+                  const checked = form.fields.includes(f)
+                  return (
+                    <label key={f} style={{ ...s.fieldCheckboxLabel, ...(checked ? s.fieldCheckboxLabelActive : {}) }}>
+                      <input
+                        type="checkbox"
+                        checked={checked}
+                        onChange={() => toggleField(f)}
+                        style={{ accentColor: '#667eea' }}
+                      />
+                      {f}
+                    </label>
+                  )
+                })}
+              </div>
             </div>
             <div style={s.field}>
               <label style={s.label}>الدرس</label>
@@ -420,7 +448,11 @@ export function AdminQuizzes() {
         <div style={s.header}>
           <div>
             <h1 style={s.headerTitle}>محاولات الاختبار</h1>
-            <p style={s.headerSub}>{attemptsQuiz?.courseName || FIELD_LABELS[attemptsQuiz?.field] || ''}</p>
+            <p style={s.headerSub}>
+              {attemptsQuiz?.courseName || (Array.isArray(attemptsQuiz?.fields)
+                ? attemptsQuiz.fields.map(f => FIELD_LABELS[f] || f).join('، ')
+                : FIELD_LABELS[attemptsQuiz?.field] || '')}
+            </p>
           </div>
           <button style={s.backBtn} onClick={() => setView('list')}>← رجوع</button>
         </div>
@@ -692,6 +724,21 @@ const s = {
     background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
     color: '#fff', border: 'none', borderRadius: '10px',
     cursor: 'pointer', fontSize: '1rem', fontWeight: 700,
+  },
+
+  // Fields multi-select
+  fieldsCheckboxGroup: {
+    display: 'flex', flexWrap: 'wrap', gap: 8, marginTop: 4,
+  },
+  fieldCheckboxLabel: {
+    display: 'flex', alignItems: 'center', gap: 6,
+    padding: '5px 12px', borderRadius: '8px', cursor: 'pointer',
+    border: '1.5px solid #d1d5db', background: '#fff',
+    fontSize: '0.88rem', fontWeight: 600, color: '#374151',
+    userSelect: 'none',
+  },
+  fieldCheckboxLabelActive: {
+    borderColor: '#667eea', background: '#eef2ff', color: '#4338ca',
   },
 
   // Attempts
