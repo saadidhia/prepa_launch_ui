@@ -269,7 +269,7 @@ export function Notes() {
 
     try {
       const response = await candidatsApi.getCards(user);
-       console.log('API response:', response);
+     //  console.log('API response:', response);
       if (!response || !response.data) {
         console.error('Invalid response from API');
         return;

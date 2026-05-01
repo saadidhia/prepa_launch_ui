@@ -12,7 +12,8 @@ export const ChronometerProvider = ({ children }) => {
     const [isRunning, setIsRunning] = useState(false);
     const [chronometerId, setChronometerId] = useState(null);
     const [isPaused, setIsPaused] = useState(false);
-    
+    const [documentUrl, setDocumentUrl] = useState(null);
+
     // CRITICAL: Use a single ref for the interval to prevent duplicates
     const intervalRef = useRef(null);
     
@@ -72,6 +73,7 @@ export const ChronometerProvider = ({ children }) => {
             setChronometerId(storedChronometerId);
             setIsRunning(running);
             setIsPaused(pause);
+            setDocumentUrl(localStorage.getItem("documentUrl") || null);
 
             // Parse elapsed time (handle both ISO 8601 duration and milliseconds)
             const elapsedMs = parseDuration(elapsedTime);
@@ -116,33 +118,43 @@ export const ChronometerProvider = ({ children }) => {
     /**
      * Start a new chronometer
      */
-    const startTimer = async (chronometerRequest) => {
-        // Prevent starting if already running
+    const startTimer = async ({ description, subject, cameraControlEnabled, file }) => {
         if (isRunning) {
             console.warn("Timer is already running");
             return;
         }
 
         try {
-            const response = await instance.post('/api/v1/chronometers/start', chronometerRequest, {
+            const formData = new FormData();
+            formData.append('description', description);
+            formData.append('subject', subject);
+            formData.append('cameraControlEnabled', String(Boolean(cameraControlEnabled)));
+            if (file) formData.append('document', file);
+
+            const response = await instance.post('/api/v1/chronometers/start', formData, {
                 headers: {
                     'Authorization': bearerAuth(user),
-                    'Content-type': 'application/json'
+                    // Content-Type intentionally omitted — browser sets multipart/form-data with boundary
                 }
             });
-            
+
             const newChronometerId = response.data.id;
+            const docUrl = response.data.documentUrl || null;
 
             setChronometerId(newChronometerId);
             localStorage.setItem("chronometerId", newChronometerId);
+            setDocumentUrl(docUrl);
+            if (docUrl) localStorage.setItem("documentUrl", docUrl);
+            else localStorage.removeItem("documentUrl");
             setIsRunning(true);
             setIsPaused(false);
             setTime(0);
             localStorage.removeItem("elapsedTime");
 
-            return response.data; // caller can read monitoringSessionId from here
+            return response.data;
         } catch (error) {
             console.error("Failed to start timer:", error);
+            if (error.response?.status === 413) return { __error: 'FILE_TOO_LARGE' };
             return null;
         }
     };
@@ -170,21 +182,25 @@ export const ChronometerProvider = ({ children }) => {
             setIsPaused(false);
             setTime(0);
             setChronometerId(null);
+            setDocumentUrl(null);
             localStorage.removeItem("chronometerId");
             localStorage.removeItem("elapsedTime");
-            
+            localStorage.removeItem("documentUrl");
+
             return response.data;
         } catch (error) {
             console.error("Failed to stop timer:", error);
-            
+
             // Clear state even if API fails
             clearCurrentInterval();
             setIsRunning(false);
             setIsPaused(false);
             setTime(0);
             setChronometerId(null);
+            setDocumentUrl(null);
             localStorage.removeItem("chronometerId");
             localStorage.removeItem("elapsedTime");
+            localStorage.removeItem("documentUrl");
             
             return null;
         }
@@ -262,15 +278,16 @@ export const ChronometerProvider = ({ children }) => {
     }, [isRunning, isPaused]);
 
     return (
-        <ChronometerContext.Provider value={{ 
-            time, 
-            isRunning, 
-            isPaused, 
+        <ChronometerContext.Provider value={{
+            time,
+            isRunning,
+            isPaused,
             chronometerId,
-            startTimer, 
-            stopTimer, 
-            pauseTimer, 
-            resumeTimer 
+            documentUrl,
+            startTimer,
+            stopTimer,
+            pauseTimer,
+            resumeTimer,
         }}>
             {children}
         </ChronometerContext.Provider>
