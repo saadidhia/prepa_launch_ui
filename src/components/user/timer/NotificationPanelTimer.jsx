@@ -162,13 +162,13 @@ const NotificationPanelTimer = () => {
         right: '10px',
         background: isPaused
           ? 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)'
-          : 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+          : 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
         padding: '12px 14px',
         borderRadius: '16px',
         color: 'white',
         boxShadow: isPaused
           ? '0 8px 24px rgba(245,158,11,0.4)'
-          : '0 8px 24px rgba(16,185,129,0.4)',
+          : '0 8px 24px rgba(102,126,234,0.4)',
         zIndex: 1000,
         display: 'flex',
         flexDirection: 'column',

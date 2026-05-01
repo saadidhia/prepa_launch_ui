@@ -8,14 +8,14 @@ export const filesApi = {
 }
 
 function getPdfs(user, subFolderName) {
-  console.log("Fetching PDFs for subFolderName:", subFolderName);
+ // console.log("Fetching PDFs for subFolderName:", subFolderName);
   
   // Check if subFolderName ends with "option" (case-insensitive)
   let finalSubFolderName = subFolderName;
   if (subFolderName.toLowerCase().endsWith('option')) {
     finalSubFolderName = `${subFolderName}/${user.data.option}`;
   }
-  console.log("Fetching PDFs for subFolderName:", finalSubFolderName );
+ // console.log("Fetching PDFs for subFolderName:", finalSubFolderName );
   return instance.get(`/api/files?folderPrefix=${user.data.level}/${user.data.field}/${finalSubFolderName}`, {
     headers: {
       'Authorization': bearerAuth(user),
