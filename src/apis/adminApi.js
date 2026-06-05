@@ -27,7 +27,8 @@ export const adminApi = {
   deleteNews,
   getNotVerifiedUsers,
   verifyUser,
-  getCandidatesPerMonth
+  getCandidatesPerMonth,
+  getTopChronometerUsers
 }
 
 export const instance = axios.create({
@@ -248,5 +249,14 @@ function getCandidatesPerMonth(admin, year) {
       'Content-type': 'application/json'
     },
     params: { year }
+  })
+}
+
+function getTopChronometerUsers(admin) {
+  return instance.get('/api/admin/top-users/chronometer', {
+    headers: {
+      'Authorization': bearerAuth(admin),
+      'Content-type': 'application/json'
+    }
   })
 }
