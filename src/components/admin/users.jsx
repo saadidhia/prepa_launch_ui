@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import {
   Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, TextField,
   Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Collapse, IconButton, Select, MenuItem, FormControl, InputLabel,
-  Tab
+  Tab, FormControlLabel, Checkbox
 } from '@mui/material';
 import { adminApi } from '../../apis/adminApi';
 import { useAuth } from '../context/AuthContext';
@@ -29,6 +29,7 @@ export function Users() {
   const [totalPages, setTotalPages] = useState(0);
   const [totalElements, setTotalElements] = useState(0);
   const [activeSessionsCount, setActiveSessionsCount] = useState(0);
+  const [activeOnly, setActiveOnly] = useState(false);
 
   const pageSize = 10;
 
@@ -53,7 +54,7 @@ const fetchActiveSessionsCount = async () => {
 
   const fetchUsers = async () => {
   try {
-    const response = await adminApi.getUsers(admin, page, pageSize, filter);
+    const response = await adminApi.getUsers(admin, page, pageSize, filter, activeOnly);
     const data = response.data;
     setUsers(data.content ?? []);
     // handle both flat and nested structure
@@ -68,7 +69,7 @@ const fetchActiveSessionsCount = async () => {
   useEffect(() => {
     fetchUsers();
     fetchActiveSessionsCount();
-  }, [deletedUser, page, filter]);
+  }, [deletedUser, page, filter, activeOnly]);
 
   const getLastSubscription = (subscriptions) => {
     return subscriptions
@@ -182,13 +183,13 @@ const fetchActiveSessionsCount = async () => {
 
       <div style={{ display: 'flex', gap: 16, alignItems: 'center', marginBottom: 8 }}>
         <TextField
-  label="Filter by Email"
-  value={filter}
-  onChange={(e) => {
-    setFilter(e.target.value);
-    setPage(0); // reset to first page on new search
-  }}
-/>
+          label="Filter by Email"
+          value={filter}
+          onChange={(e) => {
+            setFilter(e.target.value);
+            setPage(0);
+          }}
+        />
         <TextField
           label="Filter by Start Date"
           type="date"
@@ -199,6 +200,19 @@ const fetchActiveSessionsCount = async () => {
         {filterStartDate && (
           <Button size="small" onClick={() => setFilterStartDate('')}>Clear Date</Button>
         )}
+        <FormControlLabel
+          control={
+            <Checkbox
+              checked={activeOnly}
+              onChange={(e) => {
+                setActiveOnly(e.target.checked);
+                setPage(0);
+              }}
+              color="success"
+            />
+          }
+          label="Active only"
+        />
       </div>
 
       <TableContainer component={Paper}>

@@ -1,6 +1,8 @@
 import axios from 'axios'
+// eslint-disable-next-line
 import { config } from '../constants'
 import { bearerAuth } from './AuthApi'
+// eslint-disable-next-line
 import { create } from '@mui/material/styles/createTransitions'
 
 export const adminApi = {
@@ -32,7 +34,7 @@ export const instance = axios.create({
   baseURL: process.env.REACT_APP_API
 })
 
-function getUsers(admin, page=0 , size=10, email ) {
+function getUsers(admin, page=0 , size=10, email, activeOnly=false) {
   return instance.get('/api/admin', {
     headers: {
       'Authorization': bearerAuth(admin),
@@ -41,7 +43,8 @@ function getUsers(admin, page=0 , size=10, email ) {
     params: {
       page,
       size,
-      email
+      email,
+      activeOnly: activeOnly || undefined
     }
   })
 }
