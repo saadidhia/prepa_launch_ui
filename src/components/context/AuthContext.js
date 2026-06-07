@@ -75,7 +75,7 @@ class AuthProvider extends Component {
   checkAgendaReminder = async (user) => {
     try {
       const agendas = await candidatsApi.getAgendas(user);
-      console.log("Agendas fetched for reminder check:", agendas);
+    //  console.log("Agendas fetched for reminder check:", agendas);
       const now = new Date();
       const matchingAgendas = agendas.data.filter((agenda) => {
         const firstReminder = new Date(agenda.remindTime);
