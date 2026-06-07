@@ -28,7 +28,8 @@ export const adminApi = {
   getNotVerifiedUsers,
   verifyUser,
   getCandidatesPerMonth,
-  getTopChronometerUsers
+  getTopChronometerUsers,
+  exportUsersCSV
 }
 
 export const instance = axios.create({
@@ -258,5 +259,12 @@ function getTopChronometerUsers(admin) {
       'Authorization': bearerAuth(admin),
       'Content-type': 'application/json'
     }
+  })
+}
+
+function exportUsersCSV(admin) {
+  return instance.get('/api/admin/users/export', {
+    headers: { 'Authorization': bearerAuth(admin) },
+    responseType: 'blob'
   })
 }
