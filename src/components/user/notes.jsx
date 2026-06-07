@@ -656,7 +656,7 @@ export function Notes() {
               sx={{ gap: '8px' }}
             >
               <EditIcon fontSize="small" sx={{ color: '#667eea' }} />
-              Editer
+              تعديل
             </MenuItem>
             <MenuItem
               onClick={() => {
@@ -666,7 +666,7 @@ export function Notes() {
               sx={{ gap: '8px' }}
             >
               <DeleteIcon fontSize="small" sx={{ color: '#ef4444' }} />
-              Supprimer
+              حذف
             </MenuItem>
           </Menu>
 
