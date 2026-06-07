@@ -150,6 +150,21 @@ const fetchActiveSessionsCount = async () => {
     }
   };
 
+  const handleExportCSV = async () => {
+    try {
+      const response = await adminApi.exportUsersCSV(admin);
+      const url = URL.createObjectURL(response.data);
+      const a = document.createElement('a');
+      a.href = url;
+      const date = new Date().toISOString().split('T')[0];
+      a.download = `users_${date}.csv`;
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('Error exporting users:', error);
+    }
+  };
+
   const toggleRow = (userId) => {
     setOpenRows(prevState => ({ ...prevState, [userId]: !prevState[userId] }));
   };
@@ -179,6 +194,12 @@ const fetchActiveSessionsCount = async () => {
           <span style={{ display: 'inline-block', width: 12, height: 12, borderRadius: '50%', background: 'green', marginRight: 6 }}></span>
            {activeSessionsCount}
         </div>
+      </div>
+
+      <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 8 }}>
+        <Button variant="contained" color="success" onClick={handleExportCSV}>
+          Export CSV
+        </Button>
       </div>
 
       <div style={{ display: 'flex', gap: 16, alignItems: 'center', marginBottom: 8 }}>
