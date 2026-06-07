@@ -14,7 +14,6 @@ import { handleLogError } from '../../misc/Helpers'
 
 const EVENT_META = {
   FACE_ABSENT:    { label: 'وجه غائب',    color: '#ef4444' },
-  HEAD_DOWN:      { label: 'رأس منخفض',   color: '#f97316' },
   LOOKING_AWAY:   { label: 'نظرة بعيدة',  color: '#eab308' },
   PHONE_DETECTED: { label: 'هاتف مكتشف',  color: '#8b5cf6' },
 }

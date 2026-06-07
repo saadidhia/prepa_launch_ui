@@ -25,7 +25,6 @@ const DETECTION_INTERVAL_MS = 1000
 
 const EVENT_META = {
   FACE_ABSENT:    { label: 'وجه غائب',    color: '#ef4444', bg: '#fef2f2' },
-  HEAD_DOWN:      { label: 'رأس منخفض',   color: '#f97316', bg: '#fff7ed' },
   LOOKING_AWAY:   { label: 'نظرة بعيدة',  color: '#eab308', bg: '#fefce8' },
   PHONE_DETECTED: { label: 'هاتف مكتشف',  color: '#8b5cf6', bg: '#f5f3ff' },
 }
@@ -212,22 +211,13 @@ export function Monitoring() {
 
     // Named keypoints from MediaPipeFaceDetector:
     //   rightEye, leftEye, noseTip, mouthCenter, rightEarTragion, leftEarTragion
-    const rightEye    = kp.find(k => k.name === 'rightEye')
-    const leftEye     = kp.find(k => k.name === 'leftEye')
-    const noseTip     = kp.find(k => k.name === 'noseTip')
-    const mouthCenter = kp.find(k => k.name === 'mouthCenter')
+    const rightEye = kp.find(k => k.name === 'rightEye')
+    const leftEye  = kp.find(k => k.name === 'leftEye')
 
-    if (!rightEye || !leftEye || !noseTip || !mouthCenter) return
+    if (!rightEye || !leftEye) return
 
     const faceH = face.box.height
     const faceW = face.box.width
-
-    // --- HEAD_DOWN ---
-    // When head tilts down the face compresses: nose-to-mouth gap shrinks.
-    // Normal nose-to-mouth: ~25-35% of face height.
-    // When looking down at a phone: drops below ~12%.
-    const noseToMouth = mouthCenter.y - noseTip.y
-    if (noseToMouth < faceH * 0.14) reportEvent('HEAD_DOWN')
 
     // --- LOOKING_AWAY ---
     // When face turns sideways the apparent eye-to-eye distance shrinks.
