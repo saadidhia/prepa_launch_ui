@@ -42,7 +42,7 @@ export const Navigation = (props) => {
   }, []);
 
   const navItems = [
-    {label: "موعد بكالوريا 2026", href: "#baccalaureat"},
+    {label: "موعد بكالوريا 2027", href: "#baccalaureat"},
     { label: "ماذا نقدم ؟", href: "#features" },
     { label: "من نحن ؟", href: "#about" },
     { label: "عروضنا", href: "#services" },
