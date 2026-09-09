@@ -8,12 +8,21 @@ import {
 } from "@mui/material";
 import SchoolIcon from "@mui/icons-material/School";
 
-// Target date: Session Principale Bac Tunisia 2026 (typically early June)
-const TARGET_DATE = new Date("2026-06-03T08:00:00");
+// Session Principale Bac Tunisia is always the first Wednesday of June
+function getFirstWednesdayOfJune(year) {
+  const date = new Date(year, 5, 1, 8, 0, 0); // June 1st, 08:00
+  const dayOfWeek = date.getDay(); // 0 = Sunday, 3 = Wednesday
+  const offset = (3 - dayOfWeek + 7) % 7;
+  date.setDate(1 + offset);
+  return date;
+}
 
-// School year: Sept 2025 → June 2026
-const YEAR_START = new Date("2025-09-01");
-const YEAR_END = new Date("2026-06-30");
+// Target date: Session Principale Bac Tunisia 2027
+const TARGET_DATE = getFirstWednesdayOfJune(2027);
+
+// School year: Sept 2026 → June 2027
+const YEAR_START = new Date("2026-09-01");
+const YEAR_END = new Date("2027-06-30");
 
 function getTimeLeft(target) {
   const now = new Date();
@@ -192,7 +201,7 @@ export const Baccalaureat = (props) => {
                 color: "#1a1f3c",
               }}
             >
-              2026
+              2027
             </Box>
           </Typography>
 
