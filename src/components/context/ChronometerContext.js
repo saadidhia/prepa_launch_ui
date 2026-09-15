@@ -104,13 +104,30 @@ export const ChronometerProvider = ({ children }) => {
         const handleFocus = () => {
             fetchStatus();
         };
-        
+
+        // BUG FIX: ChronometerProvider is mounted once for the whole app
+        // lifetime (it wraps <Router>), so it never remounts on logout/login.
+        // Without this listener, its React state (isRunning/time/interval)
+        // kept ticking locally after logout even though the server-side timer
+        // and localStorage had already been cleared by AuthContext — making it
+        // look like "the chronometer is still running" after logging out.
+        const handleLogout = () => {
+            clearCurrentInterval();
+            setIsRunning(false);
+            setIsPaused(false);
+            setTime(0);
+            setChronometerId(null);
+            setDocumentUrl(null);
+        };
+
         document.addEventListener('visibilitychange', handleVisibilityChange);
         window.addEventListener('focus', handleFocus);
+        window.addEventListener('app:logout', handleLogout);
         
         return () => {
             document.removeEventListener('visibilitychange', handleVisibilityChange);
             window.removeEventListener('focus', handleFocus);
+            window.removeEventListener('app:logout', handleLogout);
             clearCurrentInterval();
         };
     }, []);
@@ -191,17 +208,14 @@ export const ChronometerProvider = ({ children }) => {
         } catch (error) {
             console.error("Failed to stop timer:", error);
 
-            // Clear state even if API fails
-            clearCurrentInterval();
-            setIsRunning(false);
-            setIsPaused(false);
-            setTime(0);
-            setChronometerId(null);
-            setDocumentUrl(null);
-            localStorage.removeItem("chronometerId");
-            localStorage.removeItem("elapsedTime");
-            localStorage.removeItem("documentUrl");
-            
+            // BUG FIX: previously this cleared local state/localStorage even when
+            // the stop request failed, which made the UI believe the chronometer
+            // was stopped while it kept running on the server (orphaned timer —
+            // its id was lost from localStorage so it could never be stopped again
+            // from this device). Instead, re-sync with the server so the UI
+            // reflects the real state and the interval restarts if it's still running.
+            await fetchStatus();
+
             return null;
         }
     };

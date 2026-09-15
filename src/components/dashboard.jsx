@@ -28,10 +28,14 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import TimerIcon from '@mui/icons-material/Timer';
 import WarningAmberIcon from '@mui/icons-material/WarningAmber';
+import Brightness4Icon from '@mui/icons-material/Brightness4';
+import Brightness7Icon from '@mui/icons-material/Brightness7';
+import Tooltip from '@mui/material/Tooltip';
 
 import navigations from '../Navigations';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from './context/AuthContext';
+import { useThemeMode } from './context/ThemeModeContext';
 import Logout from './small/logout';
 import NotificationPanelTimer from './user/timer/NotificationPanelTimer';
 import { getConversationCollection, messagesApi, normalizeConversation } from '../apis/messagesApi';
@@ -47,7 +51,8 @@ const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })(
       duration: theme.transitions.duration.leavingScreen,
     }),
     marginLeft: `-${drawerWidth}px`,
-    backgroundColor: '#f8f9fa',
+    backgroundColor: theme.palette.mode === 'dark' ? theme.palette.background.default : '#f8f9fa',
+    color: theme.palette.text.primary,
     minHeight: '100vh',
     ...(open && {
       transition: theme.transitions.create('margin', {
@@ -203,6 +208,7 @@ export default function Dashboard() {
   const navigate = useNavigate();
   const location = useLocation();
   const Auth = useAuth();
+  const { mode, toggleMode } = useThemeMode();
   const user = Auth.getUser();
   const userRole = user?.data?.rol?.[0] || '';
   const accessToken = user?.accessToken || '';
@@ -404,6 +410,22 @@ export default function Dashboard() {
               </Typography>
             </div>
             <div className="right-content" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+              <Tooltip title={mode === 'dark' ? 'الوضع الفاتح' : 'الوضع الداكن'}>
+                <IconButton
+                  color="inherit"
+                  aria-label="toggle dark mode"
+                  onClick={toggleMode}
+                  sx={{
+                    '&:hover': {
+                      backgroundColor: 'rgba(255, 255, 255, 0.15)',
+                      transform: 'scale(1.1)',
+                    },
+                    transition: 'all 0.3s ease',
+                  }}
+                >
+                  {mode === 'dark' ? <Brightness7Icon sx={{ fontSize: 26 }} /> : <Brightness4Icon sx={{ fontSize: 26 }} />}
+                </IconButton>
+              </Tooltip>
               <Logout />
               <IconButton
                 color="inherit"
@@ -430,7 +452,7 @@ export default function Dashboard() {
             '& .MuiDrawer-paper': {
               width: drawerWidth,
               boxSizing: 'border-box',
-              background: '#ffffff',
+              background: (theme) => theme.palette.mode === 'dark' ? theme.palette.background.paper : '#ffffff',
               borderRight: 'none',
               boxShadow: '4px 0 24px rgba(0, 0, 0, 0.08)',
             },

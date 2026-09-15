@@ -45,7 +45,7 @@ export const Services = () => {
   const pricingData = [
     {
       plan: "سنة دراسية كاملة",
-      price: "متاح حاليا للمتحصلين على كتاب Grintta بالباكالوريا 2026",
+      price: "متاح حاليا للمتحصلين على كتاب Grintta بالباكالوريا 2027",
       features: [
         "دروس",
         "امتحانات",
