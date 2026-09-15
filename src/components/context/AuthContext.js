@@ -89,6 +89,8 @@ class AuthProvider extends Component {
     }
   };
 
+  // Blocks logout while a chronometer is running/paused and shows a warning
+  // dialog instead, so the user must stop it explicitly before logging out.
   userLogout = () => {
     let user = localStorage.getItem("user");
     user = JSON.parse(user);
@@ -98,17 +100,24 @@ class AuthProvider extends Component {
       setTimeout(() => {
         this.setState({ isChronometerOpen: false });
       }, 5000);
-      return;
+      return false;
     }
 
     authApi.logout(user);
     localStorage.removeItem("user");
     localStorage.removeItem("chronometerId");
+    localStorage.removeItem("elapsedTime");
+    localStorage.removeItem("documentUrl");
+    localStorage.removeItem("monitoringSessionId");
+    localStorage.removeItem("autoStopAt");
     localStorage.removeItem("filter_stat");
 
     this.setState({ user: null, unreadMessagesCount: 0 }, () => {
       clearInterval(this.state.tokenCheckInterval);
     });
+    // Let ChronometerProvider (mounted once above <Router>, never remounted
+    // on logout) know it must clear its own in-memory running state too.
+    window.dispatchEvent(new Event("app:logout"));
     return true;
   };
 

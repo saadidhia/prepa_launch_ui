@@ -274,14 +274,14 @@ function TimerForm({ fetchTimers }) {
           )}
         </Box>
 
-        <CardContent sx={{ padding: '28px', backgroundColor: '#f8f9fa' }}>
+        <CardContent sx={{ padding: '28px', backgroundColor: (theme) => theme.palette.background.default }}>
 
           {/* Row 1: inputs + stopwatch */}
           <Box sx={{ display: 'flex', gap: '16px', alignItems: 'flex-end' }}>
             <Box sx={{ flex: 2 }}>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: '6px', mb: '10px' }}>
                 <DescriptionIcon sx={{ color: '#667eea', fontSize: 20 }} />
-                <Typography variant="subtitle2" sx={{ fontWeight: '700', color: '#1a1a1a', fontSize: '13px' }}>الوصف</Typography>
+                <Typography variant="subtitle2" sx={{ fontWeight: '700', color: 'text.primary', fontSize: '13px' }}>الوصف</Typography>
               </Box>
               <TextField
                 fullWidth
@@ -292,11 +292,12 @@ function TimerForm({ fetchTimers }) {
                 disabled={isRunning}
                 sx={{
                   '& .MuiOutlinedInput-root': {
-                    borderRadius: '12px', backgroundColor: 'white',
-                    '& fieldset': { borderColor: '#e5e7eb', borderWidth: '2px' },
+                    borderRadius: '12px', backgroundColor: 'background.paper', color: 'text.primary',
+                    '& fieldset': { borderColor: 'divider', borderWidth: '2px' },
                     '&:hover fieldset': { borderColor: '#667eea' },
                     '&.Mui-focused fieldset': { borderColor: '#667eea' },
-                    '&.Mui-disabled': { backgroundColor: '#f3f4f6' },
+                    '&.Mui-disabled': { backgroundColor: 'action.disabledBackground' },
+                    '& .MuiInputBase-input.Mui-disabled': { WebkitTextFillColor: 'text.secondary', opacity: 1 },
                   },
                   '& .MuiInputBase-input': { padding: '12px 16px', fontSize: '14px', fontWeight: '500' },
                 }}
@@ -306,7 +307,7 @@ function TimerForm({ fetchTimers }) {
             <Box sx={{ flex: 1 }}>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: '6px', mb: '10px' }}>
                 <SubjectIcon sx={{ color: '#667eea', fontSize: 20 }} />
-                <Typography variant="subtitle2" sx={{ fontWeight: '700', color: '#1a1a1a', fontSize: '13px' }}>المادة</Typography>
+                <Typography variant="subtitle2" sx={{ fontWeight: '700', color: 'text.primary', fontSize: '13px' }}>المادة</Typography>
               </Box>
               <FormControl fullWidth disabled={isRunning}>
                 <Select
@@ -314,11 +315,13 @@ function TimerForm({ fetchTimers }) {
                   onChange={(e) => setSubject(e.target.value)}
                   displayEmpty
                   sx={{
-                    borderRadius: '12px', backgroundColor: 'white',
-                    '& .MuiOutlinedInput-notchedOutline': { borderColor: '#e5e7eb', borderWidth: '2px' },
+                    borderRadius: '12px', backgroundColor: 'background.paper', color: 'text.primary',
+                    '& .MuiOutlinedInput-notchedOutline': { borderColor: 'divider', borderWidth: '2px' },
                     '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: '#667eea' },
                     '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: '#667eea' },
-                    '&.Mui-disabled': { backgroundColor: '#f3f4f6' },
+                    '&.Mui-disabled': { backgroundColor: 'action.disabledBackground' },
+                    '&.Mui-disabled .MuiSelect-select': { WebkitTextFillColor: 'text.secondary', color: 'text.secondary', opacity: 1 },
+                    '& .MuiSelect-icon': { color: 'text.secondary' },
                     '& .MuiSelect-select': { padding: '12px 16px', fontSize: '14px', fontWeight: '500' },
                   }}
                 >
@@ -348,7 +351,7 @@ function TimerForm({ fetchTimers }) {
                   }}
                 />
               }
-              label={<Typography variant="body2" sx={{ fontWeight: '600', color: '#374151', fontSize: '13px' }}>مراقبة التركيز بالكاميرا</Typography>}
+              label={<Typography variant="body2" sx={{ fontWeight: '600', color: 'text.primary', fontSize: '13px' }}>مراقبة التركيز بالكاميرا</Typography>}
               sx={{ m: 0 }}
             />
             {modelsLoading && (
@@ -376,7 +379,7 @@ function TimerForm({ fetchTimers }) {
             <Box sx={{ mt: '20px' }}>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: '6px', mb: '10px' }}>
                 <AlarmIcon sx={{ color: '#667eea', fontSize: 20 }} />
-                <Typography variant="subtitle2" sx={{ fontWeight: '700', color: '#1a1a1a', fontSize: '13px' }}>
+                <Typography variant="subtitle2" sx={{ fontWeight: '700', color: 'text.primary', fontSize: '13px' }}>
                   إيقاف تلقائي{' '}
                   <Typography component="span" variant="caption" sx={{ color: '#9ca3af', fontWeight: 400 }}>(اختياري)</Typography>
                 </Typography>
@@ -396,11 +399,12 @@ function TimerForm({ fetchTimers }) {
                         fontSize: '12px',
                         height: 32,
                         cursor: 'pointer',
-                        bgcolor: active ? '#667eea' : 'white',
-                        color: active ? 'white' : '#374151',
-                        border: `2px solid ${active ? '#667eea' : '#e5e7eb'}`,
+                        bgcolor: active ? '#667eea' : 'background.paper',
+                        color: active ? 'white' : 'text.primary',
+                        border: '2px solid',
+                        borderColor: active ? '#667eea' : 'divider',
                         transition: 'all 0.15s ease',
-                        '&:hover': { bgcolor: active ? '#5a6fd6' : '#f3f4f6', transform: 'translateY(-1px)' },
+                        '&:hover': { bgcolor: active ? '#5a6fd6' : 'action.hover', transform: 'translateY(-1px)' },
                         '& .MuiChip-label': { px: 1.5 },
                       }}
                     />
@@ -418,7 +422,7 @@ function TimerForm({ fetchTimers }) {
                     onChange={(e) => setCustomHours(e.target.value)}
                     inputProps={{ min: 0, max: 23 }}
                     size="small"
-                    sx={{ width: 90, '& .MuiOutlinedInput-root': { borderRadius: '10px', bgcolor: 'white' } }}
+                    sx={{ width: 90, '& .MuiOutlinedInput-root': { borderRadius: '10px', bgcolor: 'background.paper', color: 'text.primary' } }}
                   />
                   <Typography sx={{ color: '#9ca3af', fontWeight: 700 }}>:</Typography>
                   <TextField
@@ -428,7 +432,7 @@ function TimerForm({ fetchTimers }) {
                     onChange={(e) => setCustomMins(e.target.value)}
                     inputProps={{ min: 0, max: 59 }}
                     size="small"
-                    sx={{ width: 90, '& .MuiOutlinedInput-root': { borderRadius: '10px', bgcolor: 'white' } }}
+                    sx={{ width: 90, '& .MuiOutlinedInput-root': { borderRadius: '10px', bgcolor: 'background.paper', color: 'text.primary' } }}
                   />
                   <Typography variant="caption" sx={{ color: '#9ca3af' }}>
                     المجموع: {Math.floor((parseInt(customHours||0)*60 + parseInt(customMins||0)))} دقيقة
@@ -443,7 +447,7 @@ function TimerForm({ fetchTimers }) {
             <Box sx={{ mt: '20px' }}>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: '6px', mb: '10px' }}>
                 <ArticleIcon sx={{ color: '#667eea', fontSize: 20 }} />
-                <Typography variant="subtitle2" sx={{ fontWeight: '700', color: '#1a1a1a', fontSize: '13px' }}>
+                <Typography variant="subtitle2" sx={{ fontWeight: '700', color: 'text.primary', fontSize: '13px' }}>
                   وثيقة للمراجعة{' '}
                   <Typography component="span" variant="caption" sx={{ color: '#9ca3af', fontWeight: 400 }}>(اختياري)</Typography>
                 </Typography>
@@ -455,8 +459,8 @@ function TimerForm({ fetchTimers }) {
                 <Box
                   onClick={() => fileInputRef.current?.click()}
                   sx={{
-                    border: '2px dashed #e5e7eb', borderRadius: '12px', p: '14px 20px',
-                    display: 'flex', alignItems: 'center', gap: '14px', cursor: 'pointer', bgcolor: 'white',
+                    border: '2px dashed', borderColor: 'divider', borderRadius: '12px', p: '14px 20px',
+                    display: 'flex', alignItems: 'center', gap: '14px', cursor: 'pointer', bgcolor: 'background.paper',
                     transition: 'all 0.2s ease',
                     '&:hover': { borderColor: '#667eea', bgcolor: 'rgba(102,126,234,0.03)', transform: 'translateY(-1px)' },
                   }}
@@ -465,7 +469,7 @@ function TimerForm({ fetchTimers }) {
                     <UploadFileIcon sx={{ color: '#667eea', fontSize: 22 }} />
                   </Box>
                   <Box>
-                    <Typography variant="body2" sx={{ color: '#374151', fontSize: '13px', fontWeight: 600 }}>انقر لتحميل وثيقة</Typography>
+                    <Typography variant="body2" sx={{ color: 'text.primary', fontSize: '13px', fontWeight: 600 }}>انقر لتحميل وثيقة</Typography>
                     <Typography variant="caption" sx={{ color: '#9ca3af' }}>PDF أو صورة (PNG, JPG…)</Typography>
                   </Box>
                 </Box>
@@ -475,7 +479,7 @@ function TimerForm({ fetchTimers }) {
                     {isImageFile(file) ? <ImageIcon sx={{ color: '#667eea', fontSize: 22 }} /> : <PictureAsPdfIcon sx={{ color: '#667eea', fontSize: 22 }} />}
                   </Box>
                   <Box sx={{ flex: 1, minWidth: 0 }}>
-                    <Typography variant="body2" sx={{ color: '#374151', fontSize: '13px', fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    <Typography variant="body2" sx={{ color: 'text.primary', fontSize: '13px', fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                       {file.name}
                     </Typography>
                     <Typography variant="caption" sx={{ color: '#9ca3af' }}>
@@ -499,7 +503,7 @@ function TimerForm({ fetchTimers }) {
 
           {/* Row 5: Distraction stats */}
           {isActive && (
-            <Box sx={{ mt: '20px', borderRadius: '12px', border: '2px solid rgba(102,126,234,0.2)', bgcolor: 'white', p: 2, display: 'flex', alignItems: 'center', gap: 2, flexWrap: 'wrap' }}>
+            <Box sx={{ mt: '20px', borderRadius: '12px', border: '2px solid rgba(102,126,234,0.35)', bgcolor: 'background.paper', p: 2, display: 'flex', alignItems: 'center', gap: 2, flexWrap: 'wrap' }}>
               {currentAlert ? (
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
                   <WarningAmberIcon sx={{ fontSize: 18, color: EVENT_META[currentAlert]?.color }} />
@@ -508,10 +512,10 @@ function TimerForm({ fetchTimers }) {
               ) : (
                 <Chip icon={<CheckCircleIcon sx={{ fontSize: '14px !important', color: 'white !important' }} />} label="مركّز" size="small" sx={{ bgcolor: '#22c55e', color: '#fff', fontWeight: 700, fontSize: 11, height: 24 }} />
               )}
-              <Typography variant="caption" sx={{ color: '#6b7280', fontWeight: 700, mr: 'auto' }}>التشتيتات: {totalDistractions}</Typography>
+              <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 700, mr: 'auto' }}>التشتيتات: {totalDistractions}</Typography>
               {Object.entries(EVENT_META).map(([type, meta]) => (
                 <Chip key={type} label={`${meta.label}: ${eventCounts[type] || 0}`} size="small"
-                  sx={{ height: 20, fontSize: 10, fontWeight: 700, bgcolor: eventCounts[type] ? meta.bg : '#f3f4f6', color: eventCounts[type] ? meta.color : '#9ca3af', border: `1px solid ${eventCounts[type] ? meta.color+'40' : '#e5e7eb'}`, '& .MuiChip-label': { px: 1 } }}
+                  sx={{ height: 20, fontSize: 10, fontWeight: 700, bgcolor: eventCounts[type] ? meta.bg : 'action.disabledBackground', color: eventCounts[type] ? meta.color : 'text.secondary', border: '1px solid', borderColor: eventCounts[type] ? `${meta.color}40` : 'divider', '& .MuiChip-label': { px: 1 } }}
                 />
               ))}
             </Box>
@@ -519,9 +523,9 @@ function TimerForm({ fetchTimers }) {
 
           {/* Row 6: Info hint (idle) */}
           {!isRunning && (
-            <Box sx={{ mt: '20px', p: '12px 16px', borderRadius: '12px', background: 'rgba(102,126,234,0.05)', border: '2px solid #e5e7eb', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <Box sx={{ mt: '20px', p: '12px 16px', borderRadius: '12px', background: 'rgba(102,126,234,0.08)', border: '2px solid', borderColor: 'divider', display: 'flex', alignItems: 'center', gap: '8px' }}>
               <TimerIcon sx={{ color: '#667eea', fontSize: 20 }} />
-              <Typography variant="body2" sx={{ color: '#6b7280', fontSize: '13px', fontWeight: '500' }}>
+              <Typography variant="body2" sx={{ color: 'text.secondary', fontSize: '13px', fontWeight: '500' }}>
                 {cameraEnabled ? 'ستفتح الكاميرا تلقائياً عند بدء الجلسة لمراقبة تركيزك' : 'املأ الوصف والمادة، ثم اضغط على ابدأ لبدء جلستك'}
               </Typography>
             </Box>
@@ -534,7 +538,7 @@ function TimerForm({ fetchTimers }) {
                 <Typography variant="body2" sx={{ color: '#059669', fontWeight: '700', mb: '4px' }}>
                   جلسة نشطة {isActive ? '· مراقبة الكاميرا مفعلة' : ''}
                 </Typography>
-                <Typography variant="body2" sx={{ color: '#6b7280', fontSize: '13px', fontWeight: '500' }}>
+                <Typography variant="body2" sx={{ color: 'text.secondary', fontSize: '13px', fontWeight: '500' }}>
                   {textInput} — {subject}
                 </Typography>
               </Box>
