@@ -151,7 +151,8 @@ function Toolbar({ pageNav, zoom }) {
 // ─────────────────────────────────────────────────────────────────────────────
 // SecurePdfViewer — each instance gets its OWN plugin instances
 // ─────────────────────────────────────────────────────────────────────────────
-function SecurePdfViewer({ url, height = '680px', showToolbar = true }) {
+function SecurePdfViewer({ data, height = '680px', showToolbar = true }) {
+
   // ✅ Each SecurePdfViewer instance gets its own independent plugin instances
   const pageNavPlugin  = pageNavigationPlugin();
   const zoomPlug       = zoomPlugin();
@@ -224,7 +225,9 @@ function SecurePdfViewer({ url, height = '680px', showToolbar = true }) {
       >
         <Worker workerUrl="https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.worker.min.js">
           <Viewer
-            fileUrl={url}
+            fileUrl={data}
+            // pdf.js detaches the buffer it receives; the viewer later re-reads fileUrl, so hand pdf.js a copy
+            transformGetDocumentParams={(params) => ({ ...params, data: params.data.slice() })}
             plugins={[pageNavPlugin, zoomPlug, scrollModePlug]}
             defaultScale={SpecialZoomLevel.PageFit}
           />
@@ -242,14 +245,14 @@ export function PdfViewer({ pdf, expiryMinutes = 10 }) {
   const user = Auth.getUser();
   const [showModal, setShowModal] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
-  const [presignedUrl, setPresignedUrl] = useState(null);
+  const [pdfData, setPdfData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   const fileName = pdf.split('/').pop();
 
   const addWatermarkToPdf = async (pdfUrl, userEmail, userPhone) => {
-    const response = await fetch(pdfUrl, { mode: 'cors', credentials: 'omit' });
+    const response = await fetch(pdfUrl, { mode: 'cors', credentials: 'omit', cache: 'no-store' });
     if (!response.ok) throw new Error(`Failed to fetch PDF: ${response.status}`);
 
     const pdfBuffer = await response.arrayBuffer();
@@ -273,8 +276,8 @@ export function PdfViewer({ pdf, expiryMinutes = 10 }) {
       page.drawText('grinttaacademy.com', opts(-50));
     }
 
-    const bytes = await pdfDoc.save();
-    return URL.createObjectURL(new Blob([bytes], { type: 'application/pdf' }));
+    // Kept as raw bytes: a blob:application/pdf URL is what download managers (IDM…) intercept
+    return pdfDoc.save();
   };
 
   useEffect(() => {
@@ -287,8 +290,8 @@ export function PdfViewer({ pdf, expiryMinutes = 10 }) {
         const userPhone = user.data.phone;
         const res = await filesApi.presignedUrl(user, pdf, expiryMinutes);
         if (res.status !== 200) throw new Error(`Presigned URL error (${res.status})`);
-        const watermarkedUrl = await addWatermarkToPdf(res.data, userEmail, userPhone);
-        if (isMounted) setPresignedUrl(watermarkedUrl);
+        const watermarked = await addWatermarkToPdf(res.data, userEmail, userPhone);
+        if (isMounted) setPdfData(watermarked);
       } catch (err) {
         console.error('❌', err);
         if (isMounted) setError(`Erreur: ${err.message}`);
@@ -323,7 +326,7 @@ export function PdfViewer({ pdf, expiryMinutes = 10 }) {
     );
   }
 
-  if (!presignedUrl) return null;
+  if (!pdfData) return null;
 
   return (
     <>
@@ -366,7 +369,7 @@ export function PdfViewer({ pdf, expiryMinutes = 10 }) {
           </Box>
         </Tooltip>
 
-        <SecurePdfViewer url={presignedUrl} height="680px" showToolbar />
+        <SecurePdfViewer data={pdfData} height="680px" showToolbar />
 
         <Box sx={{
           padding: '14px 20px',
@@ -427,7 +430,7 @@ export function PdfViewer({ pdf, expiryMinutes = 10 }) {
 
         {/* ✅ Fixed: use calc height so toolbar + viewer both render correctly */}
         <DialogContent sx={{ padding: 0, flex: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
-          <SecurePdfViewer url={presignedUrl} height="calc(90vh - 68px)" showToolbar={true} />
+          {showModal && <SecurePdfViewer data={pdfData} height="calc(90vh - 68px)" showToolbar={true} />}
         </DialogContent>
       </Dialog>
     </>

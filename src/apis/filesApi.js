@@ -4,19 +4,39 @@ import { instance } from './adminApi'
 
 export const filesApi = {
   getPdfs,
-  presignedUrl
+  presignedUrl,
+  getPdfProgress,
+  updatePdfProgress
 }
 
-function getPdfs(user, subFolderName) {
- // console.log("Fetching PDFs for subFolderName:", subFolderName);
-  
-  // Check if subFolderName ends with "option" (case-insensitive)
+function buildFolderPrefix(user, subFolderName) {
   let finalSubFolderName = subFolderName;
   if (subFolderName.toLowerCase().endsWith('option')) {
     finalSubFolderName = `${subFolderName}/${user.data.option}`;
   }
- // console.log("Fetching PDFs for subFolderName:", finalSubFolderName );
-  return instance.get(`/api/files?folderPrefix=${user.data.level}/${user.data.field}/${finalSubFolderName}`, {
+  return `${user.data.level}/${user.data.field}/${finalSubFolderName}`;
+}
+
+function getPdfs(user, subFolderName) {
+  return instance.get(`/api/files?folderPrefix=${buildFolderPrefix(user, subFolderName)}`, {
+    headers: {
+      'Authorization': bearerAuth(user),
+      'Content-Type': 'application/json'
+    }
+  });
+}
+
+function getPdfProgress(user) {
+  return instance.get('/api/pdf-progress', {
+    headers: {
+      'Authorization': bearerAuth(user),
+      'Content-Type': 'application/json'
+    }
+  });
+}
+
+function updatePdfProgress(user, pdfKey, inProgress, completed) {
+  return instance.put('/api/pdf-progress', { pdfKey, inProgress, completed }, {
     headers: {
       'Authorization': bearerAuth(user),
       'Content-Type': 'application/json'
