@@ -111,6 +111,7 @@ class AuthProvider extends Component {
     localStorage.removeItem("monitoringSessionId");
     localStorage.removeItem("autoStopAt");
     localStorage.removeItem("filter_stat");
+    localStorage.removeItem("themeMode");
 
     this.setState({ user: null, unreadMessagesCount: 0 }, () => {
       clearInterval(this.state.tokenCheckInterval);
