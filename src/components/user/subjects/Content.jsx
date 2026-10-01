@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { filesApi } from '../../../apis/filesApi';
 import { PdfViewer } from '../../small/PdfViewer';
 import { useAuth } from '../../context/AuthContext';
+import { useThemeMode } from '../../context/ThemeModeContext';
 import { useLocation } from "react-router-dom";
 
 export function Content(props) {
@@ -10,6 +11,7 @@ export function Content(props) {
     const [progress, setProgress] = useState({});
     const [statusFilter, setStatusFilter] = useState("all");
     const Auth = useAuth();
+    const { mode } = useThemeMode();
     const user = Auth.getUser();
     const location = useLocation();
     const subFolderName = location.state?.subFolderName ?? 'books';
@@ -70,7 +72,7 @@ export function Content(props) {
     const inProgressCount = pdfFiles.filter((pdf) => getStatus(pdf).inProgress).length;
 
     return (
-        <div style={{ textAlign: 'center', padding: '20px' }}>
+        <div className={mode === 'dark' ? 'dark-mode' : ''} style={{ textAlign: 'center', padding: '20px' }}>
             <h1 style={{ fontSize: '2.5em', fontWeight: 'bold', margin: '20px 0' }}>
                 
             </h1>
@@ -294,6 +296,10 @@ export function Content(props) {
                     color: #fff;
                 }
 
+                .dark-mode .status-filter-btn:not(.active) {
+                    color: #fff;
+                }
+
                 .pdf-status {
                     display: flex;
                     justify-content: flex-end;
@@ -324,6 +330,18 @@ export function Content(props) {
                     background: #ecfdf5;
                     border-color: #10b981;
                     color: #047857;
+                }
+
+                .dark-mode .pdf-status label {
+                    color: #fff;
+                }
+
+                .dark-mode .pdf-status label.in-progress {
+                    background: #3b2a17;
+                }
+
+                .dark-mode .pdf-status label.completed {
+                    background: #12372a;
                 }
 
                 .pdf-item {

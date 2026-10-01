@@ -14,11 +14,20 @@ export const ThemeModeProvider = ({ children }) => {
     });
 
     useEffect(() => {
-        localStorage.setItem(STORAGE_KEY, mode);
-    }, [mode]);
+        const handleLogout = () => {
+            localStorage.removeItem(STORAGE_KEY);
+            setMode('light');
+        };
+        window.addEventListener('app:logout', handleLogout);
+        return () => window.removeEventListener('app:logout', handleLogout);
+    }, []);
 
     const toggleMode = () => {
-        setMode((prev) => (prev === 'light' ? 'dark' : 'light'));
+        setMode((prev) => {
+            const next = prev === 'light' ? 'dark' : 'light';
+            localStorage.setItem(STORAGE_KEY, next);
+            return next;
+        });
     };
 
     const theme = useMemo(() => createTheme({
