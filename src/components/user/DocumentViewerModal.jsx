@@ -33,14 +33,13 @@ function DocumentViewerModal({ open, onClose, documentUrl, onStop }) {
       open={open}
       onClose={onClose}
       maxWidth={false}
-      fullScreen={isMobile}
       PaperProps={{
         sx: {
-          width: isMobile ? '100vw' : '92vw',
-          height: isMobile ? '100dvh' : '92vh',
-          maxWidth: isMobile ? '100vw' : '92vw',
-          maxHeight: isMobile ? '100dvh' : '92vh',
-          borderRadius: isMobile ? 0 : '20px',
+          width: isMobile ? 'calc(100vw - 16px)' : '92vw',
+          height: isMobile ? '75dvh' : '92vh',
+          maxWidth: isMobile ? 'calc(100vw - 16px)' : '92vw',
+          maxHeight: isMobile ? '75dvh' : '92vh',
+          borderRadius: isMobile ? '8px' : '20px',
           overflow: 'hidden',
           display: 'flex',
           flexDirection: 'column',
