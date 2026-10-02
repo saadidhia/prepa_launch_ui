@@ -235,7 +235,7 @@ export function UsersStat() {
                             {topChronometerUsers.length === 0 ? (
                                 <Typography variant="body2" color="text.secondary">No data available.</Typography>
                             ) : (
-                                <TableContainer>
+                                <TableContainer sx={{ overflowX: 'auto' }}>
                                     <Table size="small">
                                         <TableHead>
                                             <TableRow>
@@ -245,6 +245,8 @@ export function UsersStat() {
                                                 <TableCell>Email</TableCell>
                                                 <TableCell align="right">Total Hours</TableCell>
                                                 <TableCell align="right">Total Seconds</TableCell>
+                                                <TableCell align="right">📵 هاتف</TableCell>
+                                                <TableCell align="right">👁 غياب وجه</TableCell>
                                             </TableRow>
                                         </TableHead>
                                         <TableBody>
@@ -256,6 +258,8 @@ export function UsersStat() {
                                                     <TableCell>{user.email}</TableCell>
                                                     <TableCell align="right">{user.totalHours.toFixed(2)}</TableCell>
                                                     <TableCell align="right">{user.totalSeconds.toLocaleString()}</TableCell>
+                                                    <TableCell align="right">{user.totalPhoneDetectedCount?.toLocaleString() ?? '—'}</TableCell>
+                                                    <TableCell align="right">{user.totalFaceAbsentCount?.toLocaleString() ?? '—'}</TableCell>
                                                 </TableRow>
                                             ))}
                                         </TableBody>
