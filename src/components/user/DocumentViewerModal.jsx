@@ -1,5 +1,6 @@
 import React from 'react';
-import { Dialog, DialogContent, Box, Typography, IconButton } from '@mui/material';
+import { Dialog, DialogContent, Box, Typography, IconButton, useMediaQuery } from '@mui/material';
+import { useTheme } from '@mui/material/styles';
 import {
   PictureAsPdf as PdfIcon,
   Stop as StopIcon,
@@ -7,6 +8,8 @@ import {
   PlayArrow as ResumeIcon,
 } from '@mui/icons-material';
 import { useChronometer } from '../context/ChronometerContext';
+import { Viewer, Worker, SpecialZoomLevel } from '@react-pdf-viewer/core';
+import '@react-pdf-viewer/core/lib/styles/index.css';
 
 const formatTime = (ms) => {
   const s = Math.floor(ms / 1000);
@@ -18,6 +21,8 @@ const formatTime = (ms) => {
 
 function DocumentViewerModal({ open, onClose, documentUrl, onStop }) {
   const { time, isPaused, pauseTimer, resumeTimer } = useChronometer();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   if (!documentUrl) return null;
 
@@ -28,13 +33,14 @@ function DocumentViewerModal({ open, onClose, documentUrl, onStop }) {
       open={open}
       onClose={onClose}
       maxWidth={false}
+      fullScreen={isMobile}
       PaperProps={{
         sx: {
-          width: '92vw',
-          height: '92vh',
-          maxWidth: '92vw',
-          maxHeight: '92vh',
-          borderRadius: '20px',
+          width: isMobile ? '100vw' : '92vw',
+          height: isMobile ? '100dvh' : '92vh',
+          maxWidth: isMobile ? '100vw' : '92vw',
+          maxHeight: isMobile ? '100dvh' : '92vh',
+          borderRadius: isMobile ? 0 : '20px',
           overflow: 'hidden',
           display: 'flex',
           flexDirection: 'column',
@@ -85,6 +91,15 @@ function DocumentViewerModal({ open, onClose, documentUrl, onStop }) {
                 boxShadow: '0 8px 32px rgba(0,0,0,0.4)',
               }}
             />
+          </Box>
+        ) : isMobile ? (
+          <Box sx={{ flex: 1, minHeight: 0, height: '100%', bgcolor: '#e5e7eb' }}>
+            <Worker workerUrl="https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.worker.min.js">
+              <Viewer
+                fileUrl={documentUrl}
+                defaultScale={SpecialZoomLevel.PageWidth}
+              />
+            </Worker>
           </Box>
         ) : (
           <iframe
