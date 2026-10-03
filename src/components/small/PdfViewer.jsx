@@ -30,6 +30,41 @@ import { zoomPlugin } from '@react-pdf-viewer/zoom';
 import { scrollModePlugin } from '@react-pdf-viewer/scroll-mode';
 import '@react-pdf-viewer/core/lib/styles/index.css';
 
+// Limits parallel PDF downloads so a page with many PDFs doesn't fail on first load
+const MAX_CONCURRENT_LOADS = 3;
+let activeLoads = 0;
+const loadQueue = [];
+
+const runLimited = (task) => new Promise((resolve, reject) => {
+  const run = () => {
+    activeLoads++;
+    task().then(resolve, reject).finally(() => {
+      activeLoads--;
+      const next = loadQueue.shift();
+      if (next) next();
+    });
+  };
+  if (activeLoads < MAX_CONCURRENT_LOADS) run();
+  else loadQueue.push(run);
+});
+
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
+async function withRetry(fn, attempts = 3) {
+  let lastErr;
+  for (let i = 0; i < attempts; i++) {
+    try {
+      return await fn();
+    } catch (e) {
+      lastErr = e;
+      const status = e?.response?.status;
+      if (status && status >= 400 && status < 500) throw e;
+      if (i < attempts - 1) await sleep(500 * (i + 1));
+    }
+  }
+  throw lastErr;
+}
+
 // ─────────────────────────────────────────────────────────────────────────────
 // Toolbar — no download, no print
 // ─────────────────────────────────────────────────────────────────────────────
@@ -285,16 +320,20 @@ export function PdfViewer({ pdf, expiryMinutes = 10 }) {
         const userEmail = user.data.email;
         const userPhone = user.data.phone;
         // Same-origin API call (no .pdf URL / pdf content-type) so IDM-like tools don't hijack it; presigned S3 URL is the fallback
-        let pdfBuffer;
-        try {
-          pdfBuffer = (await filesApi.fileContent(user, pdf)).data;
-        } catch (e) {
-          const res = await filesApi.presignedUrl(user, pdf, expiryMinutes);
-          if (res.status !== 200) throw new Error(`Presigned URL error (${res.status})`);
-          const response = await fetch(res.data, { mode: 'cors', credentials: 'omit', cache: 'no-store' });
-          if (!response.ok) throw new Error(`Failed to fetch PDF: ${response.status}`);
-          pdfBuffer = await response.arrayBuffer();
-        }
+        const pdfBuffer = await runLimited(async () => {
+          try {
+            return (await withRetry(() => filesApi.fileContent(user, pdf))).data;
+          } catch (e) {
+            return withRetry(async () => {
+              // Fresh presigned URL on each attempt
+              const res = await filesApi.presignedUrl(user, pdf, expiryMinutes);
+              if (res.status !== 200) throw new Error(`Presigned URL error (${res.status})`);
+              const response = await fetch(res.data, { mode: 'cors', credentials: 'omit', cache: 'no-store' });
+              if (!response.ok) throw new Error(`Failed to fetch PDF: ${response.status}`);
+              return response.arrayBuffer();
+            });
+          }
+        });
         const watermarked = await addWatermarkToPdf(pdfBuffer, userEmail, userPhone);
         if (isMounted) setPdfData(watermarked);
       } catch (err) {
