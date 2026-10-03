@@ -251,11 +251,7 @@ export function PdfViewer({ pdf, expiryMinutes = 10 }) {
 
   const fileName = pdf.split('/').pop();
 
-  const addWatermarkToPdf = async (pdfUrl, userEmail, userPhone) => {
-    const response = await fetch(pdfUrl, { mode: 'cors', credentials: 'omit', cache: 'no-store' });
-    if (!response.ok) throw new Error(`Failed to fetch PDF: ${response.status}`);
-
-    const pdfBuffer = await response.arrayBuffer();
+  const addWatermarkToPdf = async (pdfBuffer, userEmail, userPhone) => {
     const pdfDoc = await PDFDocument.load(pdfBuffer);
     const pages = pdfDoc.getPages();
     const font = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
@@ -288,9 +284,18 @@ export function PdfViewer({ pdf, expiryMinutes = 10 }) {
       try {
         const userEmail = user.data.email;
         const userPhone = user.data.phone;
-        const res = await filesApi.presignedUrl(user, pdf, expiryMinutes);
-        if (res.status !== 200) throw new Error(`Presigned URL error (${res.status})`);
-        const watermarked = await addWatermarkToPdf(res.data, userEmail, userPhone);
+        // Same-origin API call (no .pdf URL / pdf content-type) so IDM-like tools don't hijack it; presigned S3 URL is the fallback
+        let pdfBuffer;
+        try {
+          pdfBuffer = (await filesApi.fileContent(user, pdf)).data;
+        } catch (e) {
+          const res = await filesApi.presignedUrl(user, pdf, expiryMinutes);
+          if (res.status !== 200) throw new Error(`Presigned URL error (${res.status})`);
+          const response = await fetch(res.data, { mode: 'cors', credentials: 'omit', cache: 'no-store' });
+          if (!response.ok) throw new Error(`Failed to fetch PDF: ${response.status}`);
+          pdfBuffer = await response.arrayBuffer();
+        }
+        const watermarked = await addWatermarkToPdf(pdfBuffer, userEmail, userPhone);
         if (isMounted) setPdfData(watermarked);
       } catch (err) {
         console.error('❌', err);

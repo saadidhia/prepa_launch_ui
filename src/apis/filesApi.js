@@ -5,6 +5,7 @@ import { instance } from './adminApi'
 export const filesApi = {
   getPdfs,
   presignedUrl,
+  fileContent,
   getPdfProgress,
   updatePdfProgress
 }
@@ -40,6 +41,15 @@ function updatePdfProgress(user, pdfKey, inProgress, completed) {
     headers: {
       'Authorization': bearerAuth(user),
       'Content-Type': 'application/json'
+    }
+  });
+}
+
+function fileContent(user, pdf) {
+  return instance.get(`/api/files/content?key=${encodeURIComponent(pdf)}`, {
+    responseType: 'arraybuffer',
+    headers: {
+      'Authorization': bearerAuth(user)
     }
   });
 }
