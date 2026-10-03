@@ -1,5 +1,5 @@
-import React from 'react';
-import { Dialog, DialogContent, Box, Typography, IconButton, useMediaQuery } from '@mui/material';
+import React, { useEffect, useState } from 'react';
+import { Dialog, DialogContent, Box, Typography, IconButton, useMediaQuery, CircularProgress } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import {
   PictureAsPdf as PdfIcon,
