@@ -1,5 +1,5 @@
-import React from 'react';
-import { Dialog, DialogContent, Box, Typography, IconButton, useMediaQuery } from '@mui/material';
+import React, { useEffect, useState } from 'react';
+import { Dialog, DialogContent, Box, Typography, IconButton, useMediaQuery, CircularProgress } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import {
   PictureAsPdf as PdfIcon,
@@ -23,10 +23,30 @@ function DocumentViewerModal({ open, onClose, documentUrl, onStop }) {
   const { time, isPaused, pauseTimer, resumeTimer } = useChronometer();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const [pdfData, setPdfData] = useState(null);
+
+  const isImage = Boolean(documentUrl) && /\.(jpg|jpeg|png|gif|webp|svg)(\?|$)/i.test(documentUrl);
+
+  // Download managers (IDM…) hijack native PDF navigations/iframes; fetching the bytes and rendering with pdf.js avoids that
+  useEffect(() => {
+    setPdfData(null);
+    if (!open || !documentUrl || isImage) return undefined;
+    let cancelled = false;
+    (async () => {
+      try {
+        const res = await fetch(documentUrl, { cache: 'no-store' });
+        if (!res.ok) throw new Error(`Failed to fetch document: ${res.status}`);
+        const bytes = new Uint8Array(await res.arrayBuffer());
+        if (!cancelled) setPdfData(bytes);
+      } catch (err) {
+        console.error('Document fetch failed, falling back to URL', err);
+        if (!cancelled) setPdfData(documentUrl);
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [open, documentUrl, isImage]);
 
   if (!documentUrl) return null;
-
-  const isImage = /\.(jpg|jpeg|png|gif|webp|svg)(\?|$)/i.test(documentUrl);
 
   return (
     <Dialog
@@ -91,23 +111,26 @@ function DocumentViewerModal({ open, onClose, documentUrl, onStop }) {
               }}
             />
           </Box>
-        ) : isMobile ? (
-          <Box sx={{ flex: 1, minHeight: 0, height: '100%', bgcolor: '#e5e7eb' }}>
-            <Worker workerUrl="https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.worker.min.js">
-              <Viewer
-                fileUrl={documentUrl}
-                defaultScale={SpecialZoomLevel.PageWidth}
-              />
-            </Worker>
-          </Box>
         ) : (
-          <iframe
-            src={documentUrl}
-            width="100%"
-            height="100%"
-            style={{ border: 'none', display: 'block', flex: 1, minHeight: 0 }}
-            title="وثيقة المراجعة"
-          />
+          <Box sx={{ flex: 1, minHeight: 0, height: '100%', bgcolor: '#e5e7eb' }}>
+            {pdfData ? (
+              <Worker workerUrl="https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.worker.min.js">
+                <Viewer
+                  fileUrl={pdfData}
+                  // pdf.js detaches the buffer it receives; hand it a copy so re-reads still work
+                  transformGetDocumentParams={(params) => ({
+                    ...params,
+                    data: typeof params.data?.slice === 'function' ? params.data.slice() : params.data,
+                  })}
+                  defaultScale={SpecialZoomLevel.PageWidth}
+                />
+              </Worker>
+            ) : (
+              <Box sx={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <CircularProgress sx={{ color: '#667eea' }} />
+              </Box>
+            )}
+          </Box>
         )}
       </DialogContent>
 
