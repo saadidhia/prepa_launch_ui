@@ -156,7 +156,14 @@ const InterestedForm = () => {
         }
       } catch (error) {
         console.error('Network error:', error);
-        setSubmitStatus('error');
+        const message = error?.response?.data?.message || '';
+        if (error?.response?.status === 409 && /phone/i.test(message)) {
+          setErrors(prev => ({ ...prev, phone: 'Ce numéro de téléphone est déjà utilisé' }));
+        } else if (error?.response?.status === 409 && /email/i.test(message)) {
+          setErrors(prev => ({ ...prev, email: 'Cet email est déjà utilisé' }));
+        } else {
+          setSubmitStatus('error');
+        }
       } finally {
         setLoading(false);
       }

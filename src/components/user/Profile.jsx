@@ -117,7 +117,11 @@ export function Profile() {
             }, 3000);
         } catch (error) {
             console.error('Error updating phone number:', error);
-            setErrorMessage("تعذر تحديث رقم الهاتف. يرجى المحاولة مرة أخرى.");
+            if (error?.response?.status === 409) {
+                setErrorMessage("رقم الهاتف هذا مستخدم بالفعل من طرف حساب آخر.");
+            } else {
+                setErrorMessage("تعذر تحديث رقم الهاتف. يرجى المحاولة مرة أخرى.");
+            }
         }
     };
 
