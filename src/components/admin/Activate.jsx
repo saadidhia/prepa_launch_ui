@@ -54,6 +54,10 @@ export function NotVerifiedUsers() {
         fetchUsers();
       } catch (error) {
         console.error('Error verifying user:', error);
+        const msg = error.response?.data;
+        alert(typeof msg === 'string' && msg
+          ? msg
+          : "La vérification a échoué : l'email n'a pas pu être envoyé.");
       }
     }
   };
