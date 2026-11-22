@@ -12,6 +12,21 @@ const EVENT_COOLDOWN_MS = 5000
 const FACE_ABSENT_THRESHOLD_MS = 3000
 const DETECTION_INTERVAL_MS = 1000
 
+// Camera: ask for a bigger frame (helps detection at distance); "ideal" never fails
+const VIDEO_CONSTRAINTS = {
+  video: { width: { ideal: 640 }, height: { ideal: 480 }, facingMode: 'user' },
+}
+
+// Phone detection: decide on several frames, not a single one
+const PHONE_MIN_SCORE        = 0.35 // a frame counts as a "phone hit" above this
+const PHONE_REMOTE_MIN_SCORE = 0.55 // phones held in hand are often labelled "remote"
+const PHONE_STRONG_SCORE     = 0.7  // one very confident frame is enough
+const PHONE_HISTORY_SIZE     = 4    // look at the last N frames
+const PHONE_HITS_REQUIRED    = 2    // ...and require this many hits among them
+
+// Face: need a few consecutive frames with a face before clearing the "absent" timer
+const FACE_PRESENT_FRAMES_TO_RESET = 2
+
 export const EVENT_META = {
   FACE_ABSENT:    { label: 'وجه غائب',    color: '#ef4444', bg: '#fef2f2' },
   PHONE_DETECTED: { label: 'هاتف مكتشف',  color: '#8b5cf6', bg: '#f5f3ff' },
@@ -74,6 +89,16 @@ export function MonitoringProvider({ children }) {
   const audioCtxRef          = useRef(null)
   const faceModelRef         = useRef(null)
   const phoneModelRef        = useRef(null)
+  const phoneHistoryRef      = useRef([])
+  const facePresentStreakRef = useRef(0)
+  const detectingRef         = useRef(false)
+
+  function resetDetectionState() {
+    lastEventTimeRef.current     = {}
+    faceAbsentSinceRef.current   = null
+    phoneHistoryRef.current      = []
+    facePresentStreakRef.current = 0
+  }
 
   useEffect(() => {
     loadModels()
@@ -101,10 +126,11 @@ export function MonitoringProvider({ children }) {
       stopCamera()
     } else if (isRunning) {
       // Resuming — re-open camera and restart detection
-      navigator.mediaDevices.getUserMedia({
-        video: { width: 320, height: 240, facingMode: 'user' },
-      }).then(stream => {
+      navigator.mediaDevices.getUserMedia(VIDEO_CONSTRAINTS).then(stream => {
         streamRef.current = stream
+        faceAbsentSinceRef.current   = null
+        phoneHistoryRef.current      = []
+        facePresentStreakRef.current = 0
         if (videoRef.current) {
           videoRef.current.srcObject = stream
           videoRef.current.play().catch(() => {})
@@ -136,10 +162,15 @@ export function MonitoringProvider({ children }) {
     setModelsLoading(true)
     try {
       [faceModelRef.current, phoneModelRef.current] = await Promise.all([
+        // Full-range model detects faces further from the camera (student leaning back);
+        // fall back to the short-range model if it can't be loaded.
         faceDetection.createDetector(
           faceDetection.SupportedModels.MediaPipeFaceDetector,
+          { runtime: 'tfjs', modelType: 'full', maxFaces: 1 }
+        ).catch(() => faceDetection.createDetector(
+          faceDetection.SupportedModels.MediaPipeFaceDetector,
           { runtime: 'tfjs' }
-        ),
+        )),
         cocoSsd.load({ base: 'lite_mobilenet_v2' }),
       ])
       setModelsLoaded(true)
@@ -208,42 +239,66 @@ export function MonitoringProvider({ children }) {
   const runDetection = useCallback(async () => {
     const video = videoRef.current
     if (!video || video.readyState < 2 || !faceModelRef.current || !phoneModelRef.current) return
+    if (detectingRef.current) return // previous frame still being analysed
+    detectingRef.current = true
 
-    const [faces, objects] = await Promise.all([
-      faceModelRef.current.estimateFaces(video),
-      phoneModelRef.current.detect(video),
-    ])
+    try {
+      const [faces, objects] = await Promise.all([
+        faceModelRef.current.estimateFaces(video),
+        // coco-ssd drops everything under 0.5 by default — lower it and decide ourselves below
+        phoneModelRef.current.detect(video, 20, 0.3),
+      ])
 
-    if (objects.some(o => o.class === 'cell phone' && o.score > 0.45))
-      reportEvent('PHONE_DETECTED')
+      // ---- Phone: smoothed over the last frames ----
+      const phones = objects.filter(o =>
+        (o.class === 'cell phone' && o.score >= PHONE_MIN_SCORE) ||
+        (o.class === 'remote'     && o.score >= PHONE_REMOTE_MIN_SCORE)
+      )
+      const bestPhoneScore = phones.reduce((m, o) => Math.max(m, o.score), 0)
+      const history = [...phoneHistoryRef.current, bestPhoneScore].slice(-PHONE_HISTORY_SIZE)
+      phoneHistoryRef.current = history
+      const hits = history.filter(sc => sc > 0).length
+      if (bestPhoneScore >= PHONE_STRONG_SCORE || hits >= PHONE_HITS_REQUIRED) {
+        reportEvent('PHONE_DETECTED')
+        phoneHistoryRef.current = []
+      }
 
-    const canvas = canvasRef.current
-    if (canvas) {
-      canvas.width  = video.videoWidth
-      canvas.height = video.videoHeight
-      const c = canvas.getContext('2d')
-      c.clearRect(0, 0, canvas.width, canvas.height)
-      c.lineWidth = 2
-      faces.forEach(f => {
+      // ---- Overlay ----
+      const canvas = canvasRef.current
+      if (canvas) {
+        canvas.width  = video.videoWidth
+        canvas.height = video.videoHeight
+        const c = canvas.getContext('2d')
+        c.clearRect(0, 0, canvas.width, canvas.height)
+        c.lineWidth = 2
         c.strokeStyle = '#22c55e'
-        c.strokeRect(f.box.xMin, f.box.yMin, f.box.width, f.box.height)
-      })
-    }
+        faces.forEach(f => c.strokeRect(f.box.xMin, f.box.yMin, f.box.width, f.box.height))
+        c.strokeStyle = EVENT_META.PHONE_DETECTED.color
+        phones.forEach(o => c.strokeRect(o.bbox[0], o.bbox[1], o.bbox[2], o.bbox[3]))
+      }
 
-    if (faces.length === 0) {
-      if (!faceAbsentSinceRef.current) faceAbsentSinceRef.current = Date.now()
-      else if (Date.now() - faceAbsentSinceRef.current > FACE_ABSENT_THRESHOLD_MS)
-        reportEvent('FACE_ABSENT')
-      return
+      // ---- Face absent: needs a sustained absence, and a stable return to reset ----
+      if (faces.length === 0) {
+        facePresentStreakRef.current = 0
+        if (!faceAbsentSinceRef.current) faceAbsentSinceRef.current = Date.now()
+        else if (Date.now() - faceAbsentSinceRef.current > FACE_ABSENT_THRESHOLD_MS)
+          reportEvent('FACE_ABSENT')
+      } else {
+        facePresentStreakRef.current += 1
+        if (facePresentStreakRef.current >= FACE_PRESENT_FRAMES_TO_RESET)
+          faceAbsentSinceRef.current = null
+      }
+    } catch (err) {
+      handleLogError(err)
+    } finally {
+      detectingRef.current = false
     }
-    faceAbsentSinceRef.current = null
   }, [reportEvent])
 
   const startMonitoring = useCallback(async (monitoringSessionId) => {
     sessionIdRef.current = monitoringSessionId
     localStorage.setItem('monitoringSessionId', monitoringSessionId)
-    lastEventTimeRef.current  = {}
-    faceAbsentSinceRef.current = null
+    resetDetectionState()
 
     const existingSessionId = localStorage.getItem('monitoringSessionId')
     if (existingSessionId === monitoringSessionId) {
@@ -258,9 +313,7 @@ export function MonitoringProvider({ children }) {
 
     try {
       if (!streamRef.current) {
-        const stream = await navigator.mediaDevices.getUserMedia({
-          video: { width: 320, height: 240, facingMode: 'user' },
-        })
+        const stream = await navigator.mediaDevices.getUserMedia(VIDEO_CONSTRAINTS)
         streamRef.current = stream
       }
       setIsActive(true)
@@ -273,9 +326,7 @@ export function MonitoringProvider({ children }) {
   const requestCameraAccess = useCallback(async () => {
     if (streamRef.current) return true
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: { width: 320, height: 240, facingMode: 'user' },
-      })
+      const stream = await navigator.mediaDevices.getUserMedia(VIDEO_CONSTRAINTS)
       streamRef.current = stream
       return true
     } catch (err) {
@@ -369,9 +420,11 @@ export function MonitoringProvider({ children }) {
             </div>
           </div>
 
-          {/* Camera feed */}
-          {!minimized && (
-            <div style={{ position: 'relative', width: '100%', height: 168 }}>
+          {/* Camera feed — stays mounted when minimized so detection keeps running */}
+          {(
+            <div style={minimized
+              ? { position: 'absolute', width: 1, height: 1, opacity: 0.01, overflow: 'hidden', pointerEvents: 'none' }
+              : { position: 'relative', width: '100%', height: 168 }}>
               <video
                 ref={videoRef}
                 muted
