@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import {
-  Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper,
+  Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, TextField,
   Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle,
   Collapse, IconButton
 } from '@mui/material';
@@ -16,6 +16,7 @@ export function NotVerifiedUsers() {
   const [openVerifyDialog, setOpenVerifyDialog] = useState(false);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
+  const [filter, setFilter] = useState('');
 
   const fetchUsers = async () => {
     try {
@@ -30,6 +31,10 @@ export function NotVerifiedUsers() {
   useEffect(() => {
     fetchUsers();
   }, []);
+
+  const filteredUsers = users.filter(user =>
+    (user.email ?? '').toLowerCase().includes(filter.trim().toLowerCase())
+  );
 
   const toggleRow = (userId) => {
     setOpenRows(prev => ({ ...prev, [userId]: !prev[userId] }));
@@ -89,6 +94,14 @@ export function NotVerifiedUsers() {
     <div>
       <h2 style={{ marginBottom: 16 }}>Not Verified Users</h2>
 
+      <div style={{ display: 'flex', gap: 16, alignItems: 'center', marginBottom: 8 }}>
+        <TextField
+          label="Filter by Email"
+          value={filter}
+          onChange={(e) => setFilter(e.target.value)}
+        />
+      </div>
+
       <TableContainer component={Paper}>
         <Table>
           <TableHead>
@@ -108,7 +121,7 @@ export function NotVerifiedUsers() {
             </TableRow>
           </TableHead>
           <TableBody>
-            {users.map((user) => (
+            {filteredUsers.map((user) => (
               <React.Fragment key={user.id}>
                 <TableRow>
                   <TableCell>
@@ -174,7 +187,7 @@ export function NotVerifiedUsers() {
               </React.Fragment>
             ))}
 
-            {users.length === 0 && (
+            {filteredUsers.length === 0 && (
               <TableRow>
                 <TableCell colSpan={12} align="center" style={{ color: '#888', padding: 32 }}>
                   No unverified users found.
