@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useAuth } from '../context/AuthContext';
 import { adminApi } from '../../apis/adminApi';
-import { Box, Grid, Typography, Paper, CircularProgress, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material";
+import { Box, Grid, Typography, Paper, CircularProgress, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, MenuItem } from "@mui/material";
+import { UserActivity } from "./UserActivity";
 import { ResponsiveContainer, BarChart, CartesianGrid, XAxis, YAxis, Tooltip, Bar } from "recharts";
 
 export function UsersStat() {
@@ -37,29 +38,39 @@ export function UsersStat() {
 
     const MONTH_NAMES = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
-    const fetchMonthlyStats = async () => {
+    // A school season runs Jun (startYear) → Jul (startYear + 1). From June onwards we are in the new season.
+    const today = new Date();
+    const currentSeasonStart = today.getMonth() >= 5 ? today.getFullYear() : today.getFullYear() - 1;
+    const seasonOptions = Array.from({ length: 4 }, (_, i) => currentSeasonStart - i);
+    const [seasonStart, setSeasonStart] = useState(currentSeasonStart);
+    const [monthlyLoading, setMonthlyLoading] = useState(false);
+
+    const fetchMonthlyStats = async (startYear) => {
+        setMonthlyLoading(true);
         try {
-            const currentYear = new Date().getFullYear();
-            const prevYear = currentYear - 1;
-            const [resPrev, resCurrent] = await Promise.all([
-                adminApi.getCandidatesPerMonth(admin, prevYear),
-                adminApi.getCandidatesPerMonth(admin, currentYear),
+            const endYear = startYear + 1;
+            const [resStart, resEnd] = await Promise.all([
+                adminApi.getCandidatesPerMonth(admin, startYear),
+                adminApi.getCandidatesPerMonth(admin, endYear),
             ]);
-            // Jun prevYear → Jul currentYear (14 months)
+            // Jun startYear → Jul endYear (14 months)
             const months = Array.from({ length: 14 }, (_, i) => {
                 const monthIndex = (5 + i) % 12; // starts at June (index 5)
-                const year = i < 7 ? prevYear : currentYear; // Jun–Dec prevYear, Jan–Jul currentYear
+                const year = i < 7 ? startYear : endYear; // Jun–Dec startYear, Jan–Jul endYear
                 return { month: `${MONTH_NAMES[monthIndex]} ${year}`, count: 0 };
             });
-            const prevMap = Object.fromEntries(resPrev.data.map(d => [d.month, d.count]));
-            const currMap = Object.fromEntries(resCurrent.data.map(d => [d.month, d.count]));
+            const startMap = Object.fromEntries(resStart.data.map(d => [d.month, d.count]));
+            const endMap = Object.fromEntries(resEnd.data.map(d => [d.month, d.count]));
             months.forEach((entry, i) => {
                 const monthNum = ((5 + i) % 12) + 1;
-                entry.count = i < 7 ? (prevMap[monthNum] ?? 0) : (currMap[monthNum] ?? 0);
+                entry.count = i < 7 ? (startMap[monthNum] ?? 0) : (endMap[monthNum] ?? 0);
             });
             setMonthlyStats(months);
         } catch (error) {
             console.error('Error fetching monthly stats', error);
+            setMonthlyStats([]);
+        } finally {
+            setMonthlyLoading(false);
         }
     };
 
@@ -116,9 +127,16 @@ export function UsersStat() {
 
     useEffect(() => {
         fetchStatics();
-        fetchMonthlyStats();
         fetchTopChronometerUsers();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
+
+    useEffect(() => {
+        fetchMonthlyStats(seasonStart);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [seasonStart]);
+
+    const monthlyTotal = monthlyStats.reduce((sum, m) => sum + m.count, 0);
 
     if (loading) {
         return <CircularProgress />;
@@ -166,13 +184,36 @@ export function UsersStat() {
                 <Grid item xs={12}>
                     <Paper elevation={3}>
                         <Box p={3}>
-                            <Typography variant="h5" gutterBottom>
-                                New Registrations — Jun {new Date().getFullYear() - 1} → Jul {new Date().getFullYear()}
-                            </Typography>
-                            {monthlyStats.every(m => m.count === 0) ? (
+                            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 2, mb: 1 }}>
+                                <Typography variant="h5">
+                                    New Registrations — Jun {seasonStart} → Jul {seasonStart + 1}
+                                    <Typography component="span" variant="body1" color="text.secondary" sx={{ ml: 1 }}>
+                                        ({monthlyTotal} total)
+                                    </Typography>
+                                </Typography>
+                                <TextField
+                                    select
+                                    size="small"
+                                    label="Season"
+                                    value={seasonStart}
+                                    onChange={e => setSeasonStart(Number(e.target.value))}
+                                    sx={{ minWidth: 200 }}
+                                >
+                                    {seasonOptions.map(y => (
+                                        <MenuItem key={y} value={y}>
+                                            Jun {y} → Jul {y + 1}{y === currentSeasonStart ? ' (current)' : ''}
+                                        </MenuItem>
+                                    ))}
+                                </TextField>
+                            </Box>
+                            {monthlyLoading ? (
+                                <Box sx={{ height: 350, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                    <CircularProgress />
+                                </Box>
+                            ) : monthlyStats.every(m => m.count === 0) ? (
                                 <Box sx={{ height: 350, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: 'text.secondary' }}>
                                     <Typography variant="h6">No data available</Typography>
-                                    <Typography variant="body2">No registrations recorded from Jun {new Date().getFullYear() - 1} to Jul {new Date().getFullYear()}.</Typography>
+                                    <Typography variant="body2">No registrations recorded from Jun {seasonStart} to Jul {seasonStart + 1}.</Typography>
                                 </Box>
                             ) : (
                                 <Box sx={{ width: '100%', height: 350 }}>
@@ -225,6 +266,10 @@ export function UsersStat() {
                         </Paper>
                     </Grid>
                 )}
+
+                <Grid item xs={12}>
+                    <UserActivity admin={admin} />
+                </Grid>
 
                 <Grid item xs={12}>
                     <Paper elevation={3}>
