@@ -29,6 +29,7 @@ export const adminApi = {
   verifyUser,
   getCandidatesPerMonth,
   getTopChronometerUsers,
+  getUserActivity,
   exportUsersCSV
 }
 
@@ -255,6 +256,15 @@ function getCandidatesPerMonth(admin, year) {
 
 function getTopChronometerUsers(admin) {
   return instance.get('/api/admin/top-users/chronometer', {
+    headers: {
+      'Authorization': bearerAuth(admin),
+      'Content-type': 'application/json'
+    }
+  })
+}
+
+function getUserActivity(admin) {
+  return instance.get('/api/admin/users/activity', {
     headers: {
       'Authorization': bearerAuth(admin),
       'Content-type': 'application/json'
