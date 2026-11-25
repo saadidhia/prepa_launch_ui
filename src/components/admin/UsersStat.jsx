@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useAuth } from '../context/AuthContext';
 import { adminApi } from '../../apis/adminApi';
-import { Box, Grid, Typography, Paper, CircularProgress, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, MenuItem } from "@mui/material";
-import { UserActivity } from "./UserActivity";
+import { Box, Grid, Typography, Paper, CircularProgress, TextField, MenuItem } from "@mui/material";
 import { ResponsiveContainer, BarChart, CartesianGrid, XAxis, YAxis, Tooltip, Bar } from "recharts";
 
 export function UsersStat() {
@@ -32,7 +31,6 @@ export function UsersStat() {
     const [chinois, setChinois] = useState(0);
     const [cityStats, setCityStats] = useState([]);
     const [monthlyStats, setMonthlyStats] = useState([]);
-    const [topChronometerUsers, setTopChronometerUsers] = useState([]);
 
     const [loading, setLoading] = useState(true);
 
@@ -116,18 +114,8 @@ export function UsersStat() {
         }
     };
 
-    const fetchTopChronometerUsers = async () => {
-        try {
-            const response = await adminApi.getTopChronometerUsers(admin);
-            setTopChronometerUsers(response.data);
-        } catch (error) {
-            console.error('Error fetching top chronometer users', error);
-        }
-    };
-
     useEffect(() => {
         fetchStatics();
-        fetchTopChronometerUsers();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
@@ -266,54 +254,6 @@ export function UsersStat() {
                         </Paper>
                     </Grid>
                 )}
-
-                <Grid item xs={12}>
-                    <UserActivity admin={admin} />
-                </Grid>
-
-                <Grid item xs={12}>
-                    <Paper elevation={3}>
-                        <Box p={3}>
-                            <Typography variant="h5" gutterBottom>
-                                Top 50 Users — Time Spent in Chronometer
-                            </Typography>
-                            {topChronometerUsers.length === 0 ? (
-                                <Typography variant="body2" color="text.secondary">No data available.</Typography>
-                            ) : (
-                                <TableContainer sx={{ overflowX: 'auto' }}>
-                                    <Table size="small">
-                                        <TableHead>
-                                            <TableRow>
-                                                <TableCell>#</TableCell>
-                                                <TableCell>Name</TableCell>
-                                                <TableCell>Username</TableCell>
-                                                <TableCell>Email</TableCell>
-                                                <TableCell align="right">Total Hours</TableCell>
-                                                <TableCell align="right">Total Seconds</TableCell>
-                                                <TableCell align="right">📵 هاتف</TableCell>
-                                                <TableCell align="right">👁 غياب وجه</TableCell>
-                                            </TableRow>
-                                        </TableHead>
-                                        <TableBody>
-                                            {topChronometerUsers.map((user, index) => (
-                                                <TableRow key={user.userId} hover>
-                                                    <TableCell>{index + 1}</TableCell>
-                                                    <TableCell>{user.name}</TableCell>
-                                                    <TableCell>{user.username}</TableCell>
-                                                    <TableCell>{user.email}</TableCell>
-                                                    <TableCell align="right">{user.totalHours.toFixed(2)}</TableCell>
-                                                    <TableCell align="right">{user.totalSeconds.toLocaleString()}</TableCell>
-                                                    <TableCell align="right">{user.totalPhoneDetectedCount?.toLocaleString() ?? '—'}</TableCell>
-                                                    <TableCell align="right">{user.totalFaceAbsentCount?.toLocaleString() ?? '—'}</TableCell>
-                                                </TableRow>
-                                            ))}
-                                        </TableBody>
-                                    </Table>
-                                </TableContainer>
-                            )}
-                        </Box>
-                    </Paper>
-                </Grid>
             </Grid>
         </Box>
     );

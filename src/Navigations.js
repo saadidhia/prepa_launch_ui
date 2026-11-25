@@ -17,6 +17,7 @@ import { CreateBook } from './components/admin/createBook'
 import { Books } from './components/admin/Books'
 import Chronometer  from './components/user/chronometer'
 import { UsersStat } from './components/admin/UsersStat'
+import { ActivityStats } from './components/admin/ActivityStats'
 import { Progression }  from './components/user/Progression'
 import Agenda from './components/user/Agenda'
 import{ News }from './components/admin/News'
@@ -142,9 +143,9 @@ const navigations = [
         role: "admin"
     },
     {
-        text: "إدارة التحفيز",
-        link: "motivation-admin",
-        component: Motivations,
+        text: "النشاط",
+        link: "activity",
+        component: ActivityStats,
         role: "admin"
     },
     {
