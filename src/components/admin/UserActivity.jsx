@@ -13,7 +13,8 @@ const STATUSES = {
     ACTIVE: { label: 'Active (7 days)', color: 'primary' },
     OCCASIONAL: { label: 'Occasional (30 days)', color: 'info' },
     INACTIVE: { label: 'Inactive (> 30 days)', color: 'warning' },
-    NEVER: { label: 'Never used', color: 'error' },
+    // Not "never used": a user can have logged in and browsed before login tracking existed without leaving any trace
+    NEVER: { label: 'No activity found', color: 'error' },
 };
 
 function getStatus(u, now) {
@@ -60,6 +61,8 @@ const COLUMNS = [
     { id: 'quizAttempts', label: 'Quizzes', align: 'right', sortValue: u => u.quizAttempts },
     { id: 'pdfsOpened', label: 'PDFs', align: 'right', sortValue: u => u.pdfsOpened },
     { id: 'messagesSent', label: 'Messages', align: 'right', sortValue: u => u.messagesSent },
+    { id: 'agendaItems', label: 'Agenda', align: 'right', sortValue: u => u.agendaItems },
+    { id: 'cards', label: 'Cards', align: 'right', sortValue: u => u.cards },
     { id: 'registeredOn', label: 'Registered', sortValue: u => u.registeredOn || '' },
     { id: 'expiresOn', label: 'Expires', sortValue: u => u.expiresOn || '' },
 ];
@@ -128,8 +131,10 @@ export function UserActivity({ admin }) {
                 <Typography variant="h5" gutterBottom>User Activity — who really uses the platform</Typography>
                 <Typography variant="body2" color="text.secondary" gutterBottom>
                     "Last activity" is the latest of: login, any request to the app, study session (chronometer),
-                    quiz attempt, PDF opened, or message sent. Login count and last login are only recorded from
-                    the moment this tracking was deployed; study/quiz/PDF/message history goes back to the start.
+                    camera monitoring, quiz attempt, PDF opened, message sent, agenda item or card. Login count and
+                    last login are only recorded from the moment this tracking was deployed; the other history goes
+                    back to the start. So "No activity found" means no trace was found, not that the user never logged
+                    in: someone who only logged in, browsed and logged out before the deploy leaves no trace.
                 </Typography>
 
                 {loading ? (
@@ -221,6 +226,8 @@ export function UserActivity({ admin }) {
                                             <TableCell align="right">{u.quizAttempts}</TableCell>
                                             <TableCell align="right">{u.pdfsOpened}</TableCell>
                                             <TableCell align="right">{u.messagesSent}</TableCell>
+                                            <TableCell align="right">{u.agendaItems}</TableCell>
+                                            <TableCell align="right">{u.cards}</TableCell>
                                             <TableCell sx={{ whiteSpace: 'nowrap' }}>{u.registeredOn || '—'}</TableCell>
                                             <TableCell sx={{ whiteSpace: 'nowrap' }}>{u.expiresOn || '—'}</TableCell>
                                         </TableRow>
